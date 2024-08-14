@@ -27,30 +27,42 @@
 
     <script>
         const posts = [
-            "post1.html",
-            "post2.html"
+            {title: "post1.html", content: ""},
+            {title: "post2.html", content: ""}
             // Add the rest of your posts here
         ];
 
         const postsList = document.getElementById("postsList");
 
-        // Populate the list
-        posts.forEach(post => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = `posts/${post}`;
-            a.textContent = post.replace('.html', '');
-            li.appendChild(a);
-            postsList.appendChild(li);
+        // Function to fetch the content of a post
+        function fetchPostContent(post) {
+            return fetch(`posts/${post.title}`)
+                .then(response => response.text())
+                .then(data => {
+                    post.content = data.toLowerCase(); // Store content in lowercase
+                    return post;
+                });
+        }
+
+        // Populate the list and fetch content
+        Promise.all(posts.map(fetchPostContent)).then(() => {
+            posts.forEach(post => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = `posts/${post.title}`;
+                a.textContent = post.title.replace('.html', '');
+                li.appendChild(a);
+                postsList.appendChild(li);
+            });
         });
 
         // Filter the list based on search input
         document.getElementById("searchBar").addEventListener("keyup", function() {
             const query = this.value.toLowerCase();
             const items = postsList.getElementsByTagName("li");
-            Array.from(items).forEach(item => {
-                const title = item.textContent.toLowerCase();
-                item.style.display = title.includes(query) ? "" : "none";
+            posts.forEach((post, index) => {
+                const isMatch = post.title.toLowerCase().includes(query) || post.content.includes(query);
+                items[index].style.display = isMatch ? "" : "none";
             });
         });
     </script>
