@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - List of Posts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Include the content of header.html -->
+        <nav>Header Content Here</nav>
+    </header>
+
+    <main>
+        <h1>Posts</h1>
+        <input type="text" id="searchBar" placeholder="Search posts...">
+        <ul id="postsList">
+            <!-- Dynamically populated list of posts -->
+        </ul>
+    </main>
+
+    <footer>
+        <!-- Include the content of footer.html -->
+        <div>Footer Content Here</div>
+    </footer>
+
+    <script>
+        const posts = [
+            "post1.html",
+            "post2.html"
+            // Add the rest of your posts here
+        ];
+
+        const postsList = document.getElementById("postsList");
+
+        // Populate the list
+        posts.forEach(post => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = `posts/${post}`;
+            a.textContent = post.replace('.html', '');
+            li.appendChild(a);
+            postsList.appendChild(li);
+        });
+
+        // Filter the list based on search input
+        document.getElementById("searchBar").addEventListener("keyup", function() {
+            const query = this.value.toLowerCase();
+            const items = postsList.getElementsByTagName("li");
+            Array.from(items).forEach(item => {
+                const title = item.textContent.toLowerCase();
+                item.style.display = title.includes(query) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html>
