@@ -13,7 +13,6 @@
 
     <main>
         <h1>Posts</h1>
-        <input type="text" id="searchBar" placeholder="Search posts...">
         <ul id="postsList">
             <!-- Dynamically populated list of posts -->
         </ul>
@@ -30,41 +29,16 @@
         fetch('posts.json')
             .then(response => response.json())
             .then(posts => {
-                // Fetch and store the content of each post
-                Promise.all(posts.map(post => fetchPostContent(post))).then(() => {
-                    posts.forEach(post => {
-                        const li = document.createElement("li");
-                        const a = document.createElement("a");
-                        a.href = `posts/${post.title}`;
-                        a.textContent = post.title.replace('.html', '');
-                        li.appendChild(a);
-                        postsList.appendChild(li);
-                    });
+                posts.forEach(post => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = `posts/${post.filename}`;
+                    a.textContent = post.title;
+                    li.appendChild(a);
+                    postsList.appendChild(li);
                 });
-            });
-
-        // Function to fetch the content of a post
-        function fetchPostContent(post) {
-            return fetch(`posts/${post.title}`)
-                .then(response => response.text())
-                .then(data => {
-                    post.content = data.toLowerCase(); // Store content in lowercase for searching
-                });
-        }
-
-        // Filter the list based on search input
-        document.getElementById("searchBar").addEventListener("keyup", function() {
-            const query = this.value.toLowerCase();
-            const items = postsList.getElementsByTagName("li");
-            fetch('posts.json')
-                .then(response => response.json())
-                .then(posts => {
-                    posts.forEach((post, index) => {
-                        const isMatch = post.title.toLowerCase().includes(query) || post.content.includes(query);
-                        items[index].style.display = isMatch ? "" : "none";
-                    });
-                });
-        });
+            })
+            .catch(error => console.error('Error loading posts:', error));
     </script>
 </body>
 </html>
