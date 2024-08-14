@@ -1,0 +1,13 @@
+{
+  "name": "my-static-site",
+  "description": "A simple static website",
+  "scripts": {},
+  "env": {},
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": []
+}
