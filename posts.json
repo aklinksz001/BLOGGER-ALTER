@@ -1,6 +1,5 @@
 [
-    {"title": "Drama Point.html", "content": ""},
-    {"title": "post2.html", "content": ""},
-    {"title": "post3.html", "content": ""}
-    // Add more posts as needed
+    {"title": "Post 1", "filename": "post1.html"},
+    {"title": "Post 2", "filename": "post2.html"},
+    {"title": "Post 3", "filename": "Drama Point.html"}
 ]
