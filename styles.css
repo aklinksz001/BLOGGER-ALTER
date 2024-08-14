@@ -13,8 +13,8 @@ header {
 }
 
 header nav {
-    font-size: 20px;
-    letter-spacing: 2px;
+    font-size: 24px;
+    letter-spacing: 1px;
 }
 
 main {
@@ -28,15 +28,6 @@ main {
 h1 {
     color: #333;
     text-align: center;
-}
-
-#searchBar {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
 }
 
 ul {
