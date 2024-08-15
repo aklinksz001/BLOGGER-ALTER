@@ -22,11 +22,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     const links = document.querySelectorAll('a');
     for (const link of links) {
         const originalUrl = link.href;
-        try {
-            const shortenedUrl = await shortenUrl(originalUrl);
-            link.href = shortenedUrl;
-        } catch (error) {
-            console.error('Failed to shorten URL for', originalUrl, error);
+
+        if (window.location.pathname.includes('/posts/')) {
+            // Check if the current page is within the posts folder
+            try {
+                const shortenedUrl = await shortenUrl(originalUrl);
+                link.href = shortenedUrl;
+            } catch (error) {
+                console.error('Failed to shorten URL for', originalUrl, error);
+            }
         }
     }
 });
