@@ -173,35 +173,25 @@
         const postsList = document.getElementById("postsList");
 
         fetch('posts.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(posts => {
                 posts.forEach(post => {
                     const li = document.createElement("li");
-
                     const a = document.createElement("a");
                     a.href = `posts/${post.filename}`;
-                    a.classList.add("post-link");
-
-                    const thumbnailWrapper = document.createElement("div");
-                    thumbnailWrapper.classList.add("thumbnail-wrapper");
-
-                    const img = document.createElement("img");
-                    img.src = post.thumbnail;
-                    img.alt = post.title;
-                    img.classList.add("thumbnail");
-
-                    thumbnailWrapper.appendChild(img);
-
-                    const title = document.createElement("span");
-                    title.textContent = post.title;
-
-                    a.appendChild(thumbnailWrapper);
-                    a.appendChild(title);
+                    a.textContent = post.title;
                     li.appendChild(a);
                     postsList.appendChild(li);
                 });
             })
-            .catch(error => console.error('Error loading posts:', error));
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     </script>
 
      </div>
