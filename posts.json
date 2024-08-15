@@ -1,17 +1,5 @@
 [
-    {
-        "title": "Post 1",
-        "filename": "post1.html",
-        "thumbnail": "image/Thumbnail.jpg"
-    },
-    {
-        "title": "Post 2",
-        "filename": "post2.html",
-        "thumbnail": "image/Thumbnail.jpg"
-    },
-    {
-        "title": "Post 3",
-        "filename": "post3.html",
-        "thumbnail": "image/Thumbnail.jpg"
-    }
+    {"title": "Post 1", "filename": "post1.html"},
+    {"title": "Post 2", "filename": "post2.html"},
+    {"title": "Post 3", "filename": "post3.html"}
 ]
