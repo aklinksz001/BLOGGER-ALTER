@@ -172,7 +172,6 @@
             <script>
         const postsList = document.getElementById("postsList");
 
-        // Fetch the JSON file and populate the list of posts
         fetch('posts.json')
             .then(response => response.json())
             .then(posts => {
@@ -183,15 +182,20 @@
                     a.href = `posts/${post.filename}`;
                     a.classList.add("post-link");
 
+                    const thumbnailWrapper = document.createElement("div");
+                    thumbnailWrapper.classList.add("thumbnail-wrapper");
+
                     const img = document.createElement("img");
                     img.src = post.thumbnail;
                     img.alt = post.title;
                     img.classList.add("thumbnail");
 
+                    thumbnailWrapper.appendChild(img);
+
                     const title = document.createElement("span");
                     title.textContent = post.title;
 
-                    a.appendChild(img);
+                    a.appendChild(thumbnailWrapper);
                     a.appendChild(title);
                     li.appendChild(a);
                     postsList.appendChild(li);
