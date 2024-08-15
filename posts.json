@@ -1,5 +1,17 @@
 [
-    {"title": "Post 1", "filename": "post1.html"},
-    {"title": "Post 2", "filename": "post2.html"},
-    {"title": "Post 3", "filename": "Drama Point.html"}
+    {
+        "title": "Post 1",
+        "filename": "post1.html",
+        "thumbnail": "thumbnails/post1.jpg"
+    },
+    {
+        "title": "Post 2",
+        "filename": "post2.html",
+        "thumbnail": "thumbnails/post2.jpg"
+    },
+    {
+        "title": "Post 3",
+        "filename": "post3.html",
+        "thumbnail": "thumbnails/post3.jpg"
+    }
 ]
