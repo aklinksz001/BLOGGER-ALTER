@@ -2,16 +2,16 @@
     {
         "title": "Post 1",
         "filename": "post1.html",
-        "thumbnail": "https://telegra.ph/file/81e3ad3d71bee95ae8288.jpg"
+        "thumbnail": "image/Thumbnail.jpg"
     },
     {
         "title": "Post 2",
         "filename": "post2.html",
-        "thumbnail": "thumbnails/post2.jpg"
+        "thumbnail": "image/Thumbnail.jpg"
     },
     {
         "title": "Post 3",
         "filename": "post3.html",
-        "thumbnail": "thumbnails/post3.jpg"
+        "thumbnail": "image/Thumbnail.jpg"
     }
 ]
