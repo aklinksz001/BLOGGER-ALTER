@@ -25,9 +25,13 @@
     <script>
         const postsList = document.getElementById("postsList");
 
-        // Fetch the JSON file and populate the list of posts
         fetch('posts.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(posts => {
                 posts.forEach(post => {
                     const li = document.createElement("li");
@@ -38,7 +42,9 @@
                     postsList.appendChild(li);
                 });
             })
-            .catch(error => console.error('Error loading posts:', error));
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     </script>
 </body>
 </html>
