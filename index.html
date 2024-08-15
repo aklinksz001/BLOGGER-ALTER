@@ -428,6 +428,48 @@
             document.getElementById(subSectionId + 'Link').classList.add('active');
         }
     </script>
+
+<!--Url Shortener-->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the current page is within the 'posts' folder
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/posts/')) {
+                const apiToken = '17950084501a0650a1be53be2dc8437fa202f0ce';
+                const links = document.querySelectorAll('a');
+
+                links.forEach(link => {
+                    link.addEventListener('click', async function(event) {
+                        event.preventDefault(); // Prevent the default link click behavior
+                        const originalUrl = this.href;
+
+                        // Encode the URL for the API request
+                        const encodedUrl = encodeURIComponent(originalUrl);
+                        const apiUrl = `https://modijiurl.com/api?api=${apiToken}&url=${encodedUrl}`;
+
+                        try {
+                            const response = await fetch(apiUrl);
+                            const result = await response.json();
+
+                            if (result.status === 'success') {
+                                // Redirect to the shortened URL
+                                window.location.href = result.shortenedUrl;
+                            } else {
+                                console.error('Error shortening URL:', result.message);
+                                // If shortening fails, fallback to the original URL
+                                window.location.href = originalUrl;
+                            }
+                        } catch (error) {
+                            console.error('Failed to shorten URL:', error);
+                            // If there is a network or other error, fallback to the original URL
+                            window.location.href = originalUrl;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
     
     <footer>
         <!-------------------Copyrights---------------------------->
