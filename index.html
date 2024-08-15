@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Aklinksz</title>
+    <link rel="stylesheet" href="C:\Users\alexp\OneDrive\Desktop\website\styles.css">
     <style>
         body, html {
             margin: 0;
@@ -39,20 +38,38 @@
 
 
         .title {
-            font-size: 24px;
-            font-weight: bold;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            color: black;
-        }
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    flex-grow: 1; /* Allow the title to grow and take up available space */
+    text-align: center; /* Center the title within its flex container */
+}
 
-        .menu {
-            display: flex;
-            gap: 20px;
-            position: relative;
-            color: black;
-        }
+.menu {
+    display: flex;
+    gap: 20px;
+    color: black;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .title {
+        position: static; /* Remove absolute positioning */
+        transform: none; /* Remove transform */
+        margin-top: 10px;
+        font-size: 20px; /* Adjust font size if needed */
+    }
+
+    .menu {
+        justify-content: center;
+        margin-top: 10px;
+    }
+}
 
         .menu a {
             text-decoration: none;
