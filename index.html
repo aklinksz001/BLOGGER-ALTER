@@ -3,48 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - List of Posts</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Post Title</title>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
-        <nav>My Blog</nav>
+        <div class="header-left">
+            <a href="#"><img src="https://your-logo-url.com/logo.png" alt="Logo"></a>
+        </div>
+        <div class="header-center">
+            <h1>Aklinksz</h1>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle">Dark Theme</button>
+        </div>
     </header>
 
     <main>
-        <h1>Posts</h1>
-        <ul id="postsList">
-            <!-- Dynamically populated list of posts -->
-        </ul>
+        <h2>Post Title</h2>
+        <p>This is the content of the post.</p>
     </main>
 
     <footer>
-        <div>© 2024 My Blog. All Rights Reserved.</div>
+        <div>© 2024 Aklinksz. All Rights Reserved.</div>
     </footer>
 
     <script>
-        const postsList = document.getElementById("postsList");
-
-        fetch('posts.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(posts => {
-                posts.forEach(post => {
-                    const li = document.createElement("li");
-                    const a = document.createElement("a");
-                    a.href = `posts/${post.filename}`;
-                    a.textContent = post.title;
-                    li.appendChild(a);
-                    postsList.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+        // Theme Toggle Script
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            if (document.body.classList.contains('dark-theme')) {
+                themeToggleBtn.textContent = 'Light Theme';
+            } else {
+                themeToggleBtn.textContent = 'Dark Theme';
+            }
+        });
     </script>
 </body>
 </html>
