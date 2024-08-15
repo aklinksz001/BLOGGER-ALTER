@@ -170,30 +170,35 @@
             </main>
 
             <script>
-                const postsList = document.getElementById("postsList");
-        
-                fetch('posts.json')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(posts => {
-                        posts.forEach(post => {
-                            const li = document.createElement("li");
-                            const a = document.createElement("a");
-                            a.href = `posts/${post.filename}`;
-                            a.textContent = post.title;
-                            li.appendChild(a);
-                            postsList.appendChild(li);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                    });
-            </script>
+        const postsList = document.getElementById("postsList");
 
+        // Fetch the JSON file and populate the list of posts
+        fetch('posts.json')
+            .then(response => response.json())
+            .then(posts => {
+                posts.forEach(post => {
+                    const li = document.createElement("li");
+
+                    const a = document.createElement("a");
+                    a.href = `posts/${post.filename}`;
+                    a.classList.add("post-link");
+
+                    const img = document.createElement("img");
+                    img.src = post.thumbnail;
+                    img.alt = post.title;
+                    img.classList.add("thumbnail");
+
+                    const title = document.createElement("span");
+                    title.textContent = post.title;
+
+                    a.appendChild(img);
+                    a.appendChild(title);
+                    li.appendChild(a);
+                    postsList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error loading posts:', error));
+    </script>
 
      </div>
 
