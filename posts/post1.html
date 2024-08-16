@@ -5,7 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post 1</title>
     <link rel="stylesheet" href="../styles.css">
-    <script src="javascript/streamlink.py"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var placeholder = 'aklinksz.fun';
+            var regexPlaceholder = /{{STREAMLINK}}/g;
+
+            // Function to replace text in attributes
+            function replaceInAttributes(attrValue) {
+                return attrValue.replace(regexPlaceholder, placeholder);
+            }
+
+            // Replace in all elements' attributes
+            document.querySelectorAll('*').forEach(function(element) {
+                ['href', 'src', 'data-url'].forEach(function(attr) {
+                    if (element.hasAttribute(attr)) {
+                        var attrValue = element.getAttribute(attr);
+                        var updatedValue = replaceInAttributes(attrValue);
+                        element.setAttribute(attr, updatedValue);
+                    }
+                });
+            });
+
+            // Replace in inline scripts
+            document.querySelectorAll('script').forEach(function(script) {
+                if (script.textContent) {
+                    script.textContent = replaceInAttributes(script.textContent);
+                }
+            });
+        });</script>
     <script src="javascript/shorten-urls.js"></script>
 </head>
 <body>
