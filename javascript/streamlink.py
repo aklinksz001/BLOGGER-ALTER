@@ -1,5 +1,5 @@
 
-        window.onload = function() {
+        document.addEventListener("DOMContentLoaded", function() {
             var placeholder = 'aklinksz.fun';
             var regexPlaceholder = /{{STREAMLINK}}/g;
 
@@ -25,16 +25,4 @@
                     script.textContent = replaceInAttributes(script.textContent);
                 }
             });
-
-            // Replace in external scripts loaded dynamically
-            document.querySelectorAll('script[src]').forEach(function(script) {
-                var src = script.getAttribute('src');
-                fetch(src).then(response => response.text()).then(text => {
-                    var updatedText = replaceInAttributes(text);
-                    var blob = new Blob([updatedText], { type: 'application/javascript' });
-                    var newUrl = URL.createObjectURL(blob);
-                    script.setAttribute('src', newUrl);
-                });
-            });
-        }
-    
+        });
