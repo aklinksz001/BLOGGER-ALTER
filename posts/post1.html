@@ -27,6 +27,14 @@
 
         <br>
         <hr>
+        
+        <div class="search-container">
+        <input type="text" id="search-bar" class="search-input" placeholder="Search titles...">
+    </div>
+
+    <div id="results" class="results-container">
+        <!-- Titles will be injected here -->
+    </div>
 <!-- Post list -->
         <h4 class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
 <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
@@ -624,7 +632,67 @@
 </a>
         
         
-        
+        <script>
+        const titles = [
+            'THE GIRL WHO SEES SMELLS',
+            'THE HEIRS',
+            'THE LEGEND OF SHUSHAN',
+            'THE LOVE BY HYPNOTIC',
+            'THE LONG BALLAD',
+            'THE PACKAGE',
+            'THE PENTHOUSE',
+            'THE SECRET LIFE OF MY SECRETARY',
+            'THE SLEEPLESS PRINCESS',
+            'THE SMILING PROUD WANDERER',
+            'THE TALE OF NOKDU',
+            'THE TAOISM GRANDMASTER',
+            'THE UNTAMED',
+            'THE WAY YOU SHINE',
+            'TIME TO FALL IN LOVE',
+            'TO ALL THE GUYS WHO LOVED ME',
+            'TRIBES AND EMPIRES',
+            'UNTOUCHABLE',
+            'VIP',
+            'WARM MEET YOU',
+            'WEIGHTLIFTING FAIRY KIM BOK JOO',
+            'WHEN THE WEATHER IS FINE',
+            'WHEN WE MEET',
+            'WHERE STARS LAND',
+            'WORD OF HONOR',
+            'W TWO WORLDS APART',
+            'YONG PAL',
+            'YOU ARE MY DESTINY',
+            'YOUR HONOR'
+        ];
+
+        const resultsContainer = document.getElementById('results');
+        const searchBar = document.getElementById('search-bar');
+
+        function displayTitles(filteredTitles) {
+            resultsContainer.innerHTML = '';
+            filteredTitles.forEach(title => {
+                const titleElement = document.createElement('h2');
+                titleElement.className = 'heading-title title-item';
+                titleElement.textContent = title;
+                resultsContainer.appendChild(titleElement);
+            });
+        }
+
+        function filterTitles(query) {
+            const filteredTitles = titles.filter(title =>
+                title.toLowerCase().includes(query.toLowerCase())
+            );
+            displayTitles(filteredTitles);
+        }
+
+        searchBar.addEventListener('input', () => {
+            const query = searchBar.value;
+            filterTitles(query);
+        });
+
+        // Initial display of all titles
+        displayTitles(titles);
+        </script>
         
     </main>
 
