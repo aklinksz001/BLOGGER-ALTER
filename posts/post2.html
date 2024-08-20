@@ -15,47 +15,56 @@
             width: 100%;
             box-sizing: border-box;
         }
-        .heading-title {
+        .container {
             margin: 20px 0;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <input type="text" id="searchBar" placeholder="Search titles...">
 
-    <h4 id="title-1" class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
-    <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
-        <img src="https://google.com" alt="Download" width="256" height="144">
-    </a>
+    <div class="container" id="item-1">
+        <h4 class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
+        <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
+            <img src="https://google.com" alt="Download" width="256" height="144">
+        </a>
+    </div>
 
-    <h4 id="title-2" class="heading-title">2. 365 REPEAT THE YEAR</h4>
-    <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
-        <img src="https://google.com" alt="Download" width="256" height="144">
-    </a>
+    <div class="container" id="item-2">
+        <h4 class="heading-title">2. 365 REPEAT THE YEAR</h4>
+        <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
+            <img src="https://google.com" alt="Download" width="256" height="144">
+        </a>
+    </div>
 
-    <!-- Add more titles up to title-119 -->
+    <!-- Add more containers up to item-119 -->
 
-    <h4 id="title-119" class="heading-title">119. YOUR HONOR</h4>
-    <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
-        <img src="https://google.com" alt="Download" width="256" height="144">
-    </a>
+    <div class="container" id="item-119">
+        <h4 class="heading-title">119. YOUR HONOR</h4>
+        <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
+            <img src="https://google.com" alt="Download" width="256" height="144">
+        </a>
+    </div>
 
     <script>
         document.getElementById('searchBar').addEventListener('input', function() {
             var query = this.value.toLowerCase();
-            var headings = document.querySelectorAll('.heading-title');
+            var containers = document.querySelectorAll('.container');
             
-            headings.forEach(function(heading) {
-                var titleText = heading.textContent.toLowerCase();
-                var id = heading.id;
+            containers.forEach(function(container) {
+                var heading = container.querySelector('.heading-title').textContent.toLowerCase();
+                var id = container.id;
 
-                if (titleText.includes(query)) {
-                    heading.style.display = '';
-                    if (heading.scrollIntoView) {
-                        heading.scrollIntoView({ behavior: 'smooth' });
+                if (heading.includes(query)) {
+                    container.classList.remove('hidden');
+                    if (container.scrollIntoView) {
+                        container.scrollIntoView({ behavior: 'smooth' });
                     }
                 } else {
-                    heading.style.display = 'none';
+                    container.classList.add('hidden');
                 }
             });
         });
