@@ -67,23 +67,21 @@ ul li a:hover {
 
 /* Search bar */
 
-.search-container {
+#searchBar {
             margin-bottom: 20px;
-        }
-        .search-input {
-            width: 100%;
             padding: 10px;
-            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .results-container {
+        .container {
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        #noResults {
+            display: none;
+            color: red;
+            font-weight: bold;
             margin-top: 20px;
-        }
-        .heading-title {
-            margin: 10px 0;
-        }
-        .title-item {
-            display: none; /* Hide all items initially */
-        }
-        .title-item.show {
-            display: block;
         }
