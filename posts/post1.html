@@ -635,46 +635,28 @@
       
 
     <script>
-        const titles = [
-            'TITLE ONE',
-            'TITLE TWO',
-            'TITLE THREE'
-        ];
-
-        const resultsContainer = document.getElementById('results');
-        const searchBar = document.getElementById('search-bar');
-
-        function displayTitles(filteredTitles) {
-            resultsContainer.innerHTML = '';
-            filteredTitles.forEach((title, index) => {
-                const titleElement = document.createElement('h2');
-                titleElement.className = 'heading-title';
-                titleElement.id = `title-${index + 1}`; // Add unique ID starting from 1
-                titleElement.textContent = title;
-                resultsContainer.appendChild(titleElement);
+        document.getElementById('searchBar').addEventListener('input', function() {
+            var query = this.value.toLowerCase();
+            var containers = document.querySelectorAll('.container');
+            var noResults = document.getElementById('noResults');
+            var found = false;
+            
+            containers.forEach(function(container) {
+                var heading = container.querySelector('.heading-title').textContent.toLowerCase();
+                
+                if (heading.includes(query)) {
+                    container.classList.remove('hidden');
+                    if (container.scrollIntoView) {
+                        container.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    found = true;
+                } else {
+                    container.classList.add('hidden');
+                }
             });
-        }
-
-        function filterTitles(query) {
-            const filteredTitles = titles.filter(title =>
-                title.toLowerCase().includes(query.toLowerCase())
-            );
-            displayTitles(filteredTitles);
-
-            // Scroll to the first matching title if any
-            if (filteredTitles.length > 0) {
-                const firstTitleId = `title-${titles.indexOf(filteredTitles[0]) + 1}`;
-                document.getElementById(firstTitleId).scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        searchBar.addEventListener('input', () => {
-            const query = searchBar.value;
-            filterTitles(query);
+            
+            noResults.style.display = found ? 'none' : 'block';
         });
-
-        // Initial display of all titles
-        displayTitles(titles);
     </script>
         
    
