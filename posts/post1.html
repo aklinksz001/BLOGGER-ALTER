@@ -33,7 +33,10 @@
     </div>
 
     <div id="results" class="results-container">
-        <!-- Titles will be injected here -->
+        <h4 id="title-1" class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
+        <h4 id="title-2" class="heading-title">2. 365 REPEAT THE YEAR</h4>
+        <h4 id="title-3" class="heading-title">3. ALICE</h4>
+        <!-- Add more titles here -->
     </div>
 <!-- Post list -->
         <h4 class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
@@ -632,37 +635,15 @@
 </a>
         
         
-        <script>
+        
+        <!-- Titles will be injected here -->
+    </div>
+
+    <script>
         const titles = [
-            'THE GIRL WHO SEES SMELLS',
-            'THE HEIRS',
-            'THE LEGEND OF SHUSHAN',
-            'THE LOVE BY HYPNOTIC',
-            'THE LONG BALLAD',
-            'THE PACKAGE',
-            'THE PENTHOUSE',
-            'THE SECRET LIFE OF MY SECRETARY',
-            'THE SLEEPLESS PRINCESS',
-            'THE SMILING PROUD WANDERER',
-            'THE TALE OF NOKDU',
-            'THE TAOISM GRANDMASTER',
-            'THE UNTAMED',
-            'THE WAY YOU SHINE',
-            'TIME TO FALL IN LOVE',
-            'TO ALL THE GUYS WHO LOVED ME',
-            'TRIBES AND EMPIRES',
-            'UNTOUCHABLE',
-            'VIP',
-            'WARM MEET YOU',
-            'WEIGHTLIFTING FAIRY KIM BOK JOO',
-            'WHEN THE WEATHER IS FINE',
-            'WHEN WE MEET',
-            'WHERE STARS LAND',
-            'WORD OF HONOR',
-            'W TWO WORLDS APART',
-            'YONG PAL',
-            'YOU ARE MY DESTINY',
-            'YOUR HONOR'
+            'TITLE ONE',
+            'TITLE TWO',
+            'TITLE THREE'
         ];
 
         const resultsContainer = document.getElementById('results');
@@ -670,9 +651,10 @@
 
         function displayTitles(filteredTitles) {
             resultsContainer.innerHTML = '';
-            filteredTitles.forEach(title => {
+            filteredTitles.forEach((title, index) => {
                 const titleElement = document.createElement('h2');
-                titleElement.className = 'heading-title title-item';
+                titleElement.className = 'heading-title';
+                titleElement.id = `title-${index + 1}`; // Add unique ID starting from 1
                 titleElement.textContent = title;
                 resultsContainer.appendChild(titleElement);
             });
@@ -683,6 +665,12 @@
                 title.toLowerCase().includes(query.toLowerCase())
             );
             displayTitles(filteredTitles);
+
+            // Scroll to the first matching title if any
+            if (filteredTitles.length > 0) {
+                const firstTitleId = `title-${titles.indexOf(filteredTitles[0]) + 1}`;
+                document.getElementById(firstTitleId).scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         searchBar.addEventListener('input', () => {
@@ -692,7 +680,7 @@
 
         // Initial display of all titles
         displayTitles(titles);
-        </script>
+    </script>
         
     </main>
 
@@ -701,6 +689,11 @@
         <div>© 2024 My Blog. All Rights Reserved.</div>
     </footer>
 
-    
+    <div id="results" class="results-container">
+        <h4 id="title-4" class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
+        <h4 id="title-5" class="heading-title">2. 365 REPEAT THE YEAR</h4>
+        <h4 id="title-6" class="heading-title">3. VIP</h4>
+        <!-- Add more titles here -->
+    </div>
 </body>
 </html>
