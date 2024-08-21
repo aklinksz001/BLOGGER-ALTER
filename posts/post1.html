@@ -862,31 +862,27 @@
     </a>
 </div>
     
-      <div id="noResults">Spelling is Wrong Or Not Available in This Page</div>
+      
     
 <!-- Search Bar Script -->
     <script>
         document.getElementById('searchBar').addEventListener('input', function() {
             var query = this.value.toLowerCase();
             var containers = document.querySelectorAll('.container');
-            var noResults = document.getElementById('noResults');
-            var found = false;
             
             containers.forEach(function(container) {
                 var heading = container.querySelector('.heading-title').textContent.toLowerCase();
-                
+                var id = container.id;
+
                 if (heading.includes(query)) {
                     container.classList.remove('hidden');
                     if (container.scrollIntoView) {
                         container.scrollIntoView({ behavior: 'smooth' });
                     }
-                    found = true;
                 } else {
                     container.classList.add('hidden');
                 }
             });
-            
-            noResults.style.display = found ? 'none' : 'block';
         });
     </script>
         
