@@ -79,9 +79,3 @@ ul li a:hover {
         .hidden {
             display: none;
         }
-        #noResults {
-            display: none;
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
-        }
