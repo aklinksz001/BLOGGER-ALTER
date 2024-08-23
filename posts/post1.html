@@ -956,28 +956,24 @@
     <!-- Popup for Links -->
 
     <script>
-    // Function to open the popup
     function openPopup(popupId) {
         var popup = document.getElementById(popupId);
-        popup.style.display = "flex"; // Display the popup with flex to maintain centering
+        popup.style.display = "flex";
     }
 
-    // Function to close the popup
     function closePopup(popup) {
-        popup.style.display = "none"; // Hide the popup
+        popup.style.display = "none";
     }
 
-    // Attach click event to all elements with class 'trigger-popup'
     var triggerPopups = document.querySelectorAll('.trigger-popup');
     triggerPopups.forEach(function(trigger) {
         trigger.onclick = function(event) {
-            event.preventDefault(); // Prevent default action
+            event.preventDefault();
             var popupId = this.getAttribute('data-popup-id');
             openPopup(popupId);
         };
     });
 
-    // Attach click event to all close buttons
     var closeButtons = document.querySelectorAll('.close');
     closeButtons.forEach(function(closeButton) {
         closeButton.onclick = function() {
@@ -986,7 +982,6 @@
         };
     });
 
-    // Close the popup when clicking outside of it
     window.onclick = function(event) {
         var popups = document.querySelectorAll('.popup');
         popups.forEach(function(popup) {
@@ -998,10 +993,5 @@
 </script>
         
    
-
-    
-    
-
-    
 </body>
 </html>
