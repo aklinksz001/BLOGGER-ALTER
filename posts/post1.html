@@ -38,31 +38,35 @@
 <!-- Popup links -->
     
 <style>
-        .popup {
+        /* Modal container */
+        .modal {
             display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
-            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
         }
 
-        .popup-content {
+        /* Modal content */
+        .modal-content {
             background-color: #fefefe;
+            margin: auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            max-width: 500px; /* Optional: to limit the maximum width */
-            text-align: center; /* Center the content */
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25); /* Optional: for a nice shadow effect */
-            border-radius: 8px; /* Optional: for rounded corners */
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
         }
 
+        /* Close button */
         .close {
             color: #aaa;
             float: right;
@@ -481,13 +485,13 @@
 
 <div class="container" id="item-57">
     <h4 class="heading-title">57. MY GIRLFRIEND IS AN ALIEN</h4>
-    <a href="#" class="trigger-popup" data-popup-id="popup-57" style="display: block; text-align: center;">
+    <a href="#" class="trigger-modal" data-modal-id="modal-57" style="display: block; text-align: center;">
         <img src="https://telegra.ph/file/f75b1633ca34c26a7da86.jpg" alt="Download" width="256" height="144">
     </a>
 </div>
 
-<div id="popup-57" class="popup">
-    <div class="popup-content">
+<div id="modal-57" class="modal">
+    <div class="modal-content">
         <span class="close">&times;</span>
         <h4>Select Your Season :</h4>
         <a href="https://aklinksz.cfd/batch/1172" id="download-link1" target="_blank">Season 1 (Tamil)</a><br>
@@ -957,24 +961,24 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function to open the popup
-        function openPopup(popupId) {
-            var popup = document.getElementById(popupId);
-            popup.style.display = "flex"; // Display the popup
+        // Function to open the modal
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.style.display = "flex"; // Display the modal
         }
 
-        // Function to close the popup
-        function closePopup(popup) {
-            popup.style.display = "none"; // Hide the popup
+        // Function to close the modal
+        function closeModal(modal) {
+            modal.style.display = "none"; // Hide the modal
         }
 
-        // Attach click event to all elements with class 'trigger-popup'
-        var triggerPopups = document.querySelectorAll('.trigger-popup');
-        triggerPopups.forEach(function(trigger) {
+        // Attach click event to all elements with class 'trigger-modal'
+        var triggerModals = document.querySelectorAll('.trigger-modal');
+        triggerModals.forEach(function(trigger) {
             trigger.onclick = function(event) {
                 event.preventDefault(); // Prevent default action
-                var popupId = this.getAttribute('data-popup-id');
-                openPopup(popupId);
+                var modalId = this.getAttribute('data-modal-id');
+                openModal(modalId);
             };
         });
 
@@ -982,17 +986,17 @@
         var closeButtons = document.querySelectorAll('.close');
         closeButtons.forEach(function(closeButton) {
             closeButton.onclick = function() {
-                var popup = this.closest('.popup');
-                closePopup(popup);
+                var modal = this.closest('.modal');
+                closeModal(modal);
             };
         });
 
-        // Close the popup when clicking outside of it
+        // Close the modal when clicking outside of it
         window.onclick = function(event) {
-            var popups = document.querySelectorAll('.popup');
-            popups.forEach(function(popup) {
-                if (event.target == popup) {
-                    closePopup(popup);
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(function(modal) {
+                if (event.target == modal) {
+                    closeModal(modal);
                 }
             });
         };
