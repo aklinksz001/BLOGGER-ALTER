@@ -5,20 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webseries - List of Posts</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Inline CSS for styling the links as subheadings */
-        .post-link {
-            text-decoration: none; /* Remove underline */
-            font-size: 1.5em; /* Increase font size to look like a subheading */
-            color: #0000ff; /* Set a color for the subheadings */
-            display: block; /* Make the link fill the space like a block element */
-            margin: 10px 0; /* Add some margin for spacing */
-        }
-
-        .post-link:hover {
-            color: #800080; /* Optional: Change color on hover */
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -37,22 +23,21 @@
     </footer>
 
     <script>
-        const postData = [
-            { filename: "posts/1500 Webseries/Numbers.html", title: "Numbers" },
-            { filename: "Numbers.html", title: "Example Webseries 2" }
-        ];
-
         const postsList = document.getElementById("Alphabet-List");
 
-        postData.forEach(post => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = `verify.html?redirect=posts/1500%20Webseries/${encodeURIComponent(post.filename)}`;
-            a.textContent = post.title;
-            a.className = "post-link"; // Apply the subheading style
-            li.appendChild(a);
-            postsList.appendChild(li);
-        });
+        fetch('Alphabet-List.json')
+            .then(response => response.json())
+            .then(posts => {
+                posts.forEach(post => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = `verify.html?redirect=${encodeURIComponent('posts/1500 Webseries/' + post.filename)}`;
+                    a.textContent = post.title;
+                    li.appendChild(a);
+                    postsList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error loading posts:', error));
     </script>
 </body>
 </html>
