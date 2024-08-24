@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webseries - List of Posts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>My Blog</nav>
+    </header>
+
+    <main>
+        <h1>Posts</h1>
+        <ul id="Alphabet-List">
+            <!-- Dynamically populated list of posts -->
+        </ul>
+    </main>
+
+    <footer>
+        <div>© 2024 My Blog. All Rights Reserved.</div>
+    </footer>
+
+    <script>
+        const postsList = document.getElementById("Alphabet-List");
+
+        fetch('Alphabet-List.json')
+            .then(response => response.json())
+            .then(posts => {
+                posts.forEach(post => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = `verify.html?redirect=posts/1500 Webseries/${post.filename}`;
+                    a.textContent = post.title;
+                    li.appendChild(a);
+                    postsList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error loading posts:', error));
+    </script>
+</body>
+</html>
