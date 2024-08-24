@@ -31,7 +31,7 @@
                 posts.forEach(post => {
                     const li = document.createElement("li");
                     const a = document.createElement("a");
-                    a.href = `verify.html?redirect=${encodeURIComponent('posts/1500 Webseries/' + post.filename)}`;
+                    a.href = `verify.html?redirect=posts/1500%20Webseries/${post.filename}`;
                     a.textContent = post.title;
                     li.appendChild(a);
                     postsList.appendChild(li);
