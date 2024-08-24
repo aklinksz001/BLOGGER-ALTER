@@ -28,31 +28,14 @@
     <main>
         <h1>Posts</h1>
         <ul id="Alphabet-List">
-            <!-- Dynamically populated list of posts -->
+            <li><a href="verify.html?redirect=posts/1500%20Webseries/Numbers.html" class="post-link">Numbers</a></li>
+            <li><a href="verify.html?redirect=Numbers.html" class="post-link">Example Webseries 2</a></li>
+            <!-- Add more list items here as needed -->
         </ul>
     </main>
 
     <footer>
         <div>© 2024 My Blog. All Rights Reserved.</div>
     </footer>
-
-    <script>
-        const postData = [
-            { filename: "posts/1500 Webseries/Numbers.html", title: "Numbers" },
-            { filename: "Demo.html", title: "Example Webseries 2" }
-        ];
-
-        const postsList = document.getElementById("Alphabet-List");
-
-        postData.forEach(post => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = `verify.html?redirect=${encodeURIComponent(post.filename)}`;
-            a.textContent = post.title;
-            a.className = "post-link"; // Apply the subheading style
-            li.appendChild(a);
-            postsList.appendChild(li);
-        });
-    </script>
 </body>
 </html>
