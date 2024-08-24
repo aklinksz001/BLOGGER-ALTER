@@ -23,21 +23,28 @@
     </footer>
 
     <script>
-        const postsList = document.getElementById("Alphabet-List");
+        document.addEventListener("DOMContentLoaded", () => {
+            const postsList = document.getElementById("Alphabet-List");
 
-        fetch('Alphabet-List.json')
-            .then(response => response.json())
-            .then(posts => {
-                posts.forEach(post => {
-                    const li = document.createElement("li");
-                    const a = document.createElement("a");
-                    a.href = `verify.html?redirect=posts/1500 Webseries/${post.filename}`;
-                    a.textContent = post.title;
-                    li.appendChild(a);
-                    postsList.appendChild(li);
-                });
-            })
-            .catch(error => console.error('Error loading posts:', error));
+            fetch('Alphabet-List.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(posts => {
+                    posts.forEach(post => {
+                        const li = document.createElement("li");
+                        const a = document.createElement("a");
+                        a.href = `verify.html?redirect=posts/1500%20Webseries/${encodeURIComponent(post.filename)}`;
+                        a.textContent = post.title;
+                        li.appendChild(a);
+                        postsList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error loading posts:', error));
+        });
     </script>
 </body>
 </html>
