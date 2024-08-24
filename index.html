@@ -25,7 +25,7 @@
     <script>
         const postsList = document.getElementById("postsList");
 
-        fetch('posts.json')
+        fetch('Home-Posts.json')
             .then(response => response.json())
             .then(posts => {
                 posts.forEach(post => {
