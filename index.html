@@ -31,7 +31,7 @@ fetch('Home-Posts.json')
             const a = document.createElement("a");
             a.href = `verify.html?redirect=posts/${post.filename}`;
             // Adding the arrow symbol before the title
-            a.innerHTML = '&#x279E; ' + post.title;
+            a.innerHTML = '➥ ' + post.title;
             li.appendChild(a);
             postsList.appendChild(li);
         });
