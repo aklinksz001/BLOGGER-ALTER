@@ -58,7 +58,7 @@ ul li a:hover {
 /* Movie and Series Title*/
 
 .heading-title {
-    font-size: 24px; /* Customize the font size */
+    font-size: 16px; /* Customize the font size */
     color: #333; /* Change the text color */
     font-weight: bold; /* Make the text bold */
     margin-bottom: 15px; /* Space below the heading */
