@@ -20,3 +20,16 @@ function checkRedirection() {
 
 // Run the checkRedirection function when the page loads
 checkRedirection();
+
+// Listen for changes in localStorage to sync across multiple tabs
+window.addEventListener('storage', function(event) {
+    if (event.key === 'lastVisitTime') {
+        const currentTime = new Date().getTime();
+        const lastVisitTime = event.newValue;
+
+        if (lastVisitTime && currentTime - lastVisitTime >= fiveMinutesInMs) {
+            // Redirect to the home page if 5 minutes have passed in another tab
+            window.location.href = HOME_URL;
+        }
+    }
+});
