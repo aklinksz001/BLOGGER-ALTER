@@ -67,7 +67,8 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const redirectUrl = urlParams.get('redirect');
                 if (redirectUrl) {
-                    window.location.href = redirectUrl;
+                    // Redirect to password.html with the same redirect URL
+                    window.location.href = `password.html?redirect=${redirectUrl}`;
                 }
                 return false;
             } else {
