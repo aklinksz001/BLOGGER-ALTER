@@ -1,4 +1,5 @@
-const HOME_URL = 'index.html'; // Change this to your home page URL
+const HOME_URL = '/';  // Redirect to the root (home) of your website
+const fiveMinutesInMs = 5 * 60 * 1000;  // 5 minutes in milliseconds
 
 function checkRedirection() {
     const currentTime = new Date().getTime();
@@ -6,10 +7,9 @@ function checkRedirection() {
 
     if (lastVisitTime) {
         const timeElapsed = currentTime - lastVisitTime;
-        const oneHourInMs = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
 
-        if (timeElapsed >= oneHourInMs) {
-            // Redirect to the home page if 1 hour has passed
+        if (timeElapsed >= fiveMinutesInMs) {
+            // Redirect to the home page if 5 minutes have passed
             window.location.href = HOME_URL;
         }
     }
