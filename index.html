@@ -5,54 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - List of Posts</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Inline styles for better organization */
+        .center {
+            text-align: center;
+        }
+        .no-border {
+            border: none;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        main h2 {
+            font-size: 1.5em;
+        }
+    </style>
 </head>
 <body>
-    <div style="text-align: center;">
-    <h2>𝐀𝐊𝐋𝐈𝐍𝐊𝐒𝐙 - 𝐍𝐄𝐓𝐖𝐎𝐑𝐊</h2>
+    <div class="center">
+        <h2>𝐀𝐊𝐋𝐈𝐍𝐊𝐒𝐙 - 𝐍𝐄𝐓𝐖𝐎𝐑𝐊</h2>
     </div>
-    
-   <hr>
-<div style="text-align: center;">
-    <a href="https://t.me/Aklinksz" target="_blank">
-        <img src="https://telegra.ph/file/5d7cb51664ee9e1e93138.png" alt="Click to Join Channel" width="320" height="70" style="border: none;">
-    </a>
-</div>
 
-<hr>
+    <hr>
+
+    <div class="center">
+        <a href="https://t.me/Aklinksz" target="_blank">
+            <img src="https://telegra.ph/file/5d7cb51664ee9e1e93138.png" alt="Click to Join Channel" width="320" height="70" class="no-border">
+        </a>
+    </div>
+
+    <hr>
+
     <main>
         <h2>🄾🅄🅁 🄻🄸🅂🅃</h2>
         <ul id="postsList">
             <!-- Dynamically populated list of posts -->
         </ul>
     </main>
-       
-<hr>
-   
-    <footer>
-    <div style="text-align: center;">
-        © 2024 Aklinksz. All Rights Reserved.
-    </div>
-</footer>
 
+    <hr>
+
+    <footer>
+        <div class="center">
+            © 2024 Aklinksz. All Rights Reserved.
+        </div>
+    </footer>
 
     <script>
-        const postsList = document.getElementById("postsList");
+        async function loadPosts() {
+            try {
+                const response = await fetch('Home-Posts.json');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const posts = await response.json();
+                const postsList = document.getElementById("postsList");
 
-fetch('Home-Posts.json')
-    .then(response => response.json())
-    .then(posts => {
-        posts.forEach(post => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = `verify.html?redirect=posts/${post.filename}`;
-            // Adding the arrow symbol before the title
-            a.innerHTML = '➥ ' + post.title;
-            li.appendChild(a);
-            postsList.appendChild(li);
-        });
-    })
-    .catch(error => console.error('Error loading posts:', error));
+                posts.forEach(post => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = `verify.html?redirect=posts/${post.filename}`;
+                    a.innerHTML = `➥ ${post.title}`;
+                    li.appendChild(a);
+                    postsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                const postsList = document.getElementById("postsList");
+                const errorMessage = document.createElement("li");
+                errorMessage.textContent = 'Failed to load posts. Please try again later.';
+                postsList.appendChild(errorMessage);
+            }
+        }
 
+        document.addEventListener('DOMContentLoaded', loadPosts);
     </script>
 </body>
 </html>
