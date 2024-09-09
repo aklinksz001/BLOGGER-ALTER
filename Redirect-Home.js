@@ -1,5 +1,12 @@
-const HOME_URL = '/';  // Redirect to the root (home) of your website
-const fiveMinutesInMs = 5 * 60 * 1000;  // 5 minutes in milliseconds
+const HOME_URL = '/';  
+const fiveMinutesInMs = 5 * 60 * 1000;  
+let warningShown = false;
+
+// Function to reset inactivity timer
+function resetInactivityTimer() {
+    localStorage.setItem('lastVisitTime', new Date().getTime());
+    warningShown = false;  // Reset warning flag
+}
 
 // Function to check and handle redirection
 function checkRedirection() {
@@ -13,6 +20,10 @@ function checkRedirection() {
             // Redirect to the home page if 5 minutes have passed
             window.location.href = HOME_URL;
             return;
+        } else if (timeElapsed >= fiveMinutesInMs - 30 * 1000 && !warningShown) {
+            // Show warning 30 seconds before redirect
+            alert('You will be redirected to the homepage in 30 seconds due to inactivity.');
+            warningShown = true;
         }
     }
 
@@ -30,5 +41,9 @@ window.addEventListener('storage', function(event) {
     }
 });
 
+// Listen for user activity to reset the timer
+window.addEventListener('mousemove', resetInactivityTimer);
+window.addEventListener('keydown', resetInactivityTimer);
+
 // Periodically check for inactivity every minute
-setInterval(checkRedirection, 60 * 1000); // 60 seconds
+setInterval(checkRedirection, 60 * 1000);  // 60 seconds
