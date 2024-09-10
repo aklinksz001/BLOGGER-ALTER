@@ -1,1 +1,1 @@
-DOMAIN = 'https://aklinksz.cfd'
+DOMAIN = 'https://aklinksz.site'
