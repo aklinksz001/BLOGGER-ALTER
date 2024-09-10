@@ -16,9 +16,9 @@ env = Environment(loader=file_loader)
 
 # Dictionary of templates and their corresponding output paths
 file_paths = {
-    'posts/Anime-English.html': 'output/Anime-English.html',
-    'posts/Filmography.html': 'output/Filmography.html',
-    'posts/Webseries-Files/Numbers.html': 'output/Numbers.html',
+    'Anime-English.html': 'output/Anime-English.html',
+    'Filmography.html': 'output/Filmography.html',
+    'Webseries-Files/Numbers.html': 'output/Webseries-Files/Numbers.html',
     # Add more templates and output paths as needed
 }
 
@@ -35,6 +35,7 @@ def ensure_directory_exists(path):
 def generate_html_files(file_paths):
     for template_name, output_path in file_paths.items():
         # Load the template
+        print(f"Loading template: {template_name}")
         template = env.get_template(template_name)
         
         # Render the template with the domain value from config.py
