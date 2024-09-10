@@ -80,3 +80,14 @@ ul li a:hover {
             display: none;
         }
 
+        .get-password-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+   
+        
+   
