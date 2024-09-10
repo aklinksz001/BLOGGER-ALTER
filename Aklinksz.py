@@ -11,7 +11,7 @@ PORT = int(os.environ.get('PORT', 8000))
 Handler = http.server.SimpleHTTPRequestHandler
 
 # Set up Jinja2 environment
-file_loader = FileSystemLoader('templates')
+file_loader = FileSystemLoader('.')  # Load from the current directory (project root)
 env = Environment(loader=file_loader)
 
 # Dictionary of templates and their corresponding output paths
