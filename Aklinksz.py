@@ -18,7 +18,6 @@ env = Environment(loader=file_loader)
 file_paths = {
     'posts/Anime-English.html': 'output/Anime-English.html',
     'posts/Filmography.html': 'output/Filmography.html',
-    'posts/Webseries-Files/Numbers.html': 'output/Numbers.html',
     # Add more templates and output paths as needed
 }
 
