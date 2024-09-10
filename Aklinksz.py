@@ -1,8 +1,6 @@
 import http.server
 import socketserver
 import os
-from jinja2 import Environment, FileSystemLoader
-import config
 
 # Define the port to serve on
 PORT = int(os.environ.get('PORT', 8000))
@@ -10,9 +8,8 @@ PORT = int(os.environ.get('PORT', 8000))
 # Define the handler to serve files
 Handler = http.server.SimpleHTTPRequestHandler
 
-# Set up Jinja2 environment
-file_loader = FileSystemLoader('.')  # Load from the current directory (project root)
-env = Environment(loader=file_loader)
+# Domain value from config
+DOMAIN = 'https://aklinksz.cfd'  # Change to your desired domain
 
 # Dictionary of templates and their corresponding output paths
 file_paths = {
@@ -30,33 +27,30 @@ def ensure_directory_exists(path):
     else:
         print(f"Directory already exists: {directory}")
 
-# Function to generate HTML files from templates
-def generate_html_files(file_paths):
-    for template_name, output_path in file_paths.items():
+# Function to replace placeholders in the template files
+def generate_html_files(file_paths, domain):
+    for template_path, output_path in file_paths.items():
         try:
-            # Load the template
-            print(f"Loading template: {template_name}")
-            template = env.get_template(template_name)
+            # Read the template file
+            with open(template_path, 'r', encoding='utf-8') as file:
+                content = file.read()
             
-            # Render the template with the domain value from config.py
-            output = template.render(DOMAIN=config.DOMAIN)
-            
-            # Debug: print the rendered output
-            print(f"Rendered output:\n{output}")
+            # Replace the placeholder with the actual domain
+            content = content.replace('{{ DOMAIN }}', domain)
             
             # Ensure the output directory exists
             ensure_directory_exists(output_path)
             
-            # Write the rendered HTML to the output file
+            # Write the updated content to the output file
             with open(output_path, 'w', encoding='utf-8') as file:
-                file.write(output)
+                file.write(content)
             
             print(f"HTML file generated successfully at {output_path}!")
         except Exception as e:
-            print(f"Error processing template {template_name}: {e}")
+            print(f"Error processing file {template_path}: {e}")
 
 # Generate HTML files before starting the server
-generate_html_files(file_paths)
+generate_html_files(file_paths, DOMAIN)
 
 # Create the server
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
