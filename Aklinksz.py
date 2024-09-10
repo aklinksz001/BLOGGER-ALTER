@@ -1,6 +1,7 @@
 import http.server
 import socketserver
 import os
+from string import Template
 
 # Define the port to serve on
 PORT = int(os.environ.get('PORT', 8000))
@@ -27,7 +28,7 @@ def ensure_directory_exists(path):
     else:
         print(f"Directory already exists: {directory}")
 
-# Function to replace placeholders in the template files
+# Function to replace placeholders in the template files using string.Template
 def generate_html_files(file_paths, domain):
     for template_path, output_path in file_paths.items():
         try:
@@ -35,8 +36,11 @@ def generate_html_files(file_paths, domain):
             with open(template_path, 'r', encoding='utf-8') as file:
                 content = file.read()
             
-            # Replace the placeholder with the actual domain
-            content = content.replace('{{ DOMAIN }}', domain)
+            # Create a Template object
+            template = Template(content)
+            
+            # Substitute the placeholder with the actual domain
+            content = template.substitute(DOMAIN=domain)
             
             # Ensure the output directory exists
             ensure_directory_exists(output_path)
