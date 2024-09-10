@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - List of Posts</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="main-index.css">
 </head>
 <body>
     <div class="center">
@@ -26,13 +27,23 @@
         </ul>
     </main>
 
-    
+    <!-- Get Password  -->
     <h4> Everyday Password Will Be Change ❗</h4>
     <div class="center">
-    <button class="get-password-btn" onclick="window.location.href='https://t.me/aklinksz_Updates';">
-    GET PASSWORD
-</button>
-        </div>
+    <button class="get-password-btn" onclick="openModal()">GET PASSWORD</button>
+    </div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <a href="https://whatsapp.com/channel/0029Va5ksUb47XeIIYWs4j3N" target="_blank">
+            <button class="modal-btn green-btn">Green Button</button>
+        </a>
+        <a href="https://t.me/aklinksz_Updates" target="_blank">
+            <button class="modal-btn blue-btn">Blue Button</button>
+        </a>
+    </div>
+</div>
+        
     <br>
     
     <footer>
@@ -59,6 +70,27 @@ fetch('Home-Posts.json')
     })
     .catch(error => console.error('Error loading posts:', error));
 
+    </script>
+
+<!--- GET PASSWORD --->
+    
+    <script>
+    // Function to open the modal
+    function openModal() {
+        document.getElementById('myModal').style.display = 'block';
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('myModal').style.display = 'none';
+    }
+
+    // Close the modal if the user clicks outside of it
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('myModal')) {
+            closeModal();
+        }
+    }
     </script>
 </body>
 </html>
