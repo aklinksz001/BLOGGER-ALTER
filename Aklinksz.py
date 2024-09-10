@@ -33,21 +33,27 @@ def ensure_directory_exists(path):
 # Function to generate HTML files from templates
 def generate_html_files(file_paths):
     for template_name, output_path in file_paths.items():
-        # Load the template
-        print(f"Loading template: {template_name}")
-        template = env.get_template(template_name)
-        
-        # Render the template with the domain value from config.py
-        output = template.render(DOMAIN=config.DOMAIN)
-        
-        # Ensure the output directory exists
-        ensure_directory_exists(output_path)
-        
-        # Write the rendered HTML to the output file
-        with open(output_path, 'w', encoding='utf-8') as file:
-            file.write(output)
-        
-        print(f"HTML file generated successfully at {output_path}!")
+        try:
+            # Load the template
+            print(f"Loading template: {template_name}")
+            template = env.get_template(template_name)
+            
+            # Render the template with the domain value from config.py
+            output = template.render(DOMAIN=config.DOMAIN)
+            
+            # Debug: print the rendered output
+            print(f"Rendered output:\n{output}")
+            
+            # Ensure the output directory exists
+            ensure_directory_exists(output_path)
+            
+            # Write the rendered HTML to the output file
+            with open(output_path, 'w', encoding='utf-8') as file:
+                file.write(output)
+            
+            print(f"HTML file generated successfully at {output_path}!")
+        except Exception as e:
+            print(f"Error processing template {template_name}: {e}")
 
 # Generate HTML files before starting the server
 generate_html_files(file_paths)
