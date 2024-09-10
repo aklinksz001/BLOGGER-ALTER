@@ -1,2 +1,3 @@
-web: python -m Aklinksz
+web: python Aklinksz.py
+
 
