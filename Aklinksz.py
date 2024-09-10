@@ -16,11 +16,20 @@ env = Environment(loader=file_loader)
 
 # Dictionary of templates and their corresponding output paths
 file_paths = {
-    'posts/Filmography.html': 'output/Filmography.html',
+    'posts/Anime-English.html': 'output/posts/Anime-English.html',
     'posts/1500-Webseries/BBB.html': 'output/posts/1500-Webseries/BBB.html',
     'Webseries-Files/Numbers.html': 'output/Webseries-Files/Numbers.html',
     # Add more templates and output paths as needed
 }
+
+# Function to ensure directory exists
+def ensure_directory_exists(path):
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        print(f"Creating directory: {directory}")
+        os.makedirs(directory, exist_ok=True)
+    else:
+        print(f"Directory already exists: {directory}")
 
 # Function to generate HTML files from templates
 def generate_html_files(file_paths):
@@ -32,7 +41,7 @@ def generate_html_files(file_paths):
         output = template.render(DOMAIN=config.DOMAIN)
         
         # Ensure the output directory exists
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        ensure_directory_exists(output_path)
         
         # Write the rendered HTML to the output file
         with open(output_path, 'w', encoding='utf-8') as file:
