@@ -16,9 +16,9 @@ env = Environment(loader=file_loader)
 
 # Dictionary of templates and their corresponding output paths
 file_paths = {
-    'posts/Anime-English.html': 'output/posts/Anime-English.html',
-    'posts/1500-Webseries/BBB.html': 'output/posts/1500-Webseries/BBB.html',
-    'Webseries-Files/Numbers.html': 'output/Webseries-Files/Numbers.html',
+    'posts/Anime-English.html': 'output/Anime-English.html',
+    'posts/Filmography.html': 'output/Filmography.html',
+    'posts/Webseries-Files/Numbers.html': 'output/Numbers.html',
     # Add more templates and output paths as needed
 }
 
