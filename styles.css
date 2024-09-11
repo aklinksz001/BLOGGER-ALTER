@@ -98,7 +98,7 @@ ul li a:hover {
 /* Only Title link */
 
 .Title-Link {
-    font-size: 12px; /* Adjust the size as needed */
+    font-size: 15px; /* Adjust the size as needed */
     text-decoration: none; /* Removes the underline */
     color: blue;
 }
