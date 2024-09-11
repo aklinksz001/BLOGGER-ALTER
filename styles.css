@@ -101,6 +101,7 @@ ul li a:hover {
     font-size: 17px; /* Adjust the size as needed */
     text-decoration: none; /* Removes the underline */
     color: blue;
+    text-transform: uppercase;
 }
 
 .Title-Link:hover {
