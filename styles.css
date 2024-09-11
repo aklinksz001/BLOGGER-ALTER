@@ -94,6 +94,9 @@ ul li a:hover {
             justify-content: center;
             align-items: center;
         }
+
+/* Only Title link */
+
 .Title-Link {
     font-size: 12px; /* Adjust the size as needed */
     text-decoration: none; /* Removes the underline */
