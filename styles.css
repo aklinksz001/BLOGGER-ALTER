@@ -94,4 +94,15 @@ ul li a:hover {
             justify-content: center;
             align-items: center;
         }
+.Title-Link {
+    font-size: 12px; /* Adjust the size as needed */
+    text-decoration: none; /* Removes the underline */
+    color: blue;
+}
+
+.Title-Link:hover {
+    color: red;
+    text-decoration: none; /* Keeps the underline removed on hover */
+}
+
    
