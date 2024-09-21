@@ -1,10 +1,9 @@
 [
-    {"title": "NEWLY RELEASED ᴹᵁᴸᵀᴵ", "filename": "Index-Newly-Released.html"},
+    {"title": "NEWLY RELEASED ᴹᵁᴸᵀᴵ", "filename": "index-posts/Index-Newly-Released.html"},
     {"title": "DUBBED MOVIES ᵀᴬᴹᴵᴸ", "filename": "index-posts/Index-Dubbed-Movies.html"},
     {"title": "1500 WEBSERIES ᴱᴺᴳᴸᴵˢᴴ", "filename": "Index-1500-Webseries.html"},
-    {"title": "FILMOGRAPHY ᴹᵁᴸᵀᴵ", "filename": "Filmography.html"},
     {"title": "K & C - DRAMA ᵀᴬᴹᴵᴸ", "filename": "Korean-Drama-Tamil.html"},
-    {"title": "CARTOON & ANIME ᵀᴬᴹᴵᴸ", "filename": "Cartoon-Anime-Tamil.html"},
-    {"title": "SPECIAL SHOWS & SERIES ᵀᴬᴹᴵᴸ", "filename": "Special-Shows-Series.html"},
-    {"title": "ANIME COLLECTION ᴱᴺᴳᴸᴵˢᴴ", "filename": "Anime-English.html"}
+    {"title": "CARTOON & ANIME ᴹᵁᴸᵀᴵ", "filename": "index-posts/Index-Cartoon-Anime.html"},
+    {"title": "FILMOGRAPHY ᴹᵁᴸᵀᴵ", "filename": "Filmography.html"},
+    {"title": "SPECIAL SHOWS & SERIES ᵀᴬᴹᴵᴸ", "filename": "Special-Shows-Series.html"}
 ]
