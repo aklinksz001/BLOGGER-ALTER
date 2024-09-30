@@ -67,8 +67,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const redirectUrl = urlParams.get('redirect');
                 if (redirectUrl) {
-                    // Redirect to password.html with the same redirect URL
-                    window.location.href = `password.html?redirect=${redirectUrl}`;
+                    window.location.href = redirectUrl;
                 }
                 return false;
             } else {
@@ -80,6 +79,5 @@
         // Generate the initial CAPTCHA when the page loads
         generateCaptcha();
     </script>
-    
 </body>
 </html>
