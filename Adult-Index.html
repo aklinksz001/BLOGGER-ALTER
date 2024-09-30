@@ -22,9 +22,6 @@
             padding: 15px 0;
             text-align: center;
         }
-        .header h1 {
-            margin: 0;
-        }
         .video-section {
             display: flex;
             flex-wrap: wrap;
@@ -36,22 +33,16 @@
             margin: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Set width of video card */
-            height: 180px; /* Set height of video card */
+            width: 256px;
+            height: 144px;
             text-align: center;
-            border: 2px solid #ccc; /* Border around video card */
-            box-sizing: border-box; /* Include padding and border in element's total width and height */
-        }
-        .video-card h2 {
-            font-size: 0.9rem; /* Smaller title size */
-            margin-top: 5px;
-            margin-bottom: 10px;
-            height: 50px; /* Title height */
+            border: 2px solid #ccc;
+            box-sizing: border-box;
         }
         video {
-            width: 256px; /* Video width */
-            height: 144px; /* Video height */
-            object-fit: cover; /* Ensure video covers the entire box */
+            width: 100%; /* Fill the card width */
+            height: 100%; /* Fill the card height */
+            object-fit: cover;
         }
         .load-more {
             display: block;
@@ -84,31 +75,9 @@
 
     <script>
         const videos = [
-            { src: 'https://aklinksz.fun/185835/%40Team_HDT+-+The.White.Haired.Witch.of.Lunar.Kingdom.2014.Blu.mkv', title: 'Movie Clip 1' },
-            { src: 'https://aklinksz.fun/185818', title: 'Movie Clip 2' },
-            { src: 'https://example.com/videos/clip3.mp4', title: 'Movie Clip 3' },
-            { src: 'https://example.com/videos/clip4.mp4', title: 'Movie Clip 4' },
-            { src: 'https://example.com/videos/clip5.mp4', title: 'Movie Clip 5' },
-            { src: 'https://example.com/videos/clip6.mp4', title: 'Movie Clip 6' },
-            { src: 'https://example.com/videos/clip7.mp4', title: 'Movie Clip 7' },
-            { src: 'https://example.com/videos/clip8.mp4', title: 'Movie Clip 8' },
-            { src: 'https://example.com/videos/clip9.mp4', title: 'Movie Clip 9' },
-            { src: 'https://example.com/videos/clip10.mp4', title: 'Movie Clip 10' },
-            { src: 'https://example.com/videos/clip11.mp4', title: 'Movie Clip 11' },
-            { src: 'https://example.com/videos/clip12.mp4', title: 'Movie Clip 12' },
-            { src: 'https://example.com/videos/clip13.mp4', title: 'Movie Clip 13' },
-            { src: 'https://example.com/videos/clip14.mp4', title: 'Movie Clip 14' },
-            { src: 'https://example.com/videos/clip15.mp4', title: 'Movie Clip 15' },
-            { src: 'https://example.com/videos/clip16.mp4', title: 'Movie Clip 16' },
-            { src: 'https://example.com/videos/clip17.mp4', title: 'Movie Clip 17' },
-            { src: 'https://example.com/videos/clip18.mp4', title: 'Movie Clip 18' },
-            { src: 'https://example.com/videos/clip19.mp4', title: 'Movie Clip 19' },
-            { src: 'https://example.com/videos/clip20.mp4', title: 'Movie Clip 20' },
-            { src: 'https://example.com/videos/clip21.mp4', title: 'Movie Clip 21' },
-            { src: 'https://example.com/videos/clip22.mp4', title: 'Movie Clip 22' },
-            { src: 'https://example.com/videos/clip23.mp4', title: 'Movie Clip 23' },
-            { src: 'https://example.com/videos/clip24.mp4', title: 'Movie Clip 24' },
-            { src: 'https://example.com/videos/clip25.mp4', title: 'Movie Clip 25' },
+            { src: 'https://www.w3schools.com/html/mov_bbb.mp4', title: 'Sample Video 1' }, // Test URL
+            { src: 'https://www.w3schools.com/html/mov_bbb.mp4', title: 'Sample Video 2' }, // Test URL
+            // Add more videos here...
         ];
 
         let currentIndex = 0;
@@ -130,9 +99,7 @@
                 const videoCard = document.createElement('div');
                 videoCard.className = 'video-card';
                 videoCard.innerHTML = `
-                    <a href="play.html?video=${encodeURIComponent(video.src)}">
-                        <video src="${video.src}" controls></video>
-                    </a>
+                    <video src="${video.src}" controls></video>
                     <h2>${video.title}</h2>
                 `;
                 videoSection.appendChild(videoCard);
