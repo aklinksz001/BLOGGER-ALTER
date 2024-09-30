@@ -65,13 +65,12 @@
         const password = document.getElementById("passwordInput").value;
 
         if (password === "555") {
-            // Redirect to index.html if the password is "111"
+            sessionStorage.setItem('authenticated', 'true');
             window.location.href = "Movie-Index.html";
         } else if (password === "222") {
-            // Redirect to index2.html if the password is "222"
+            sessionStorage.setItem('authenticated', 'true');
             window.location.href = "index2.html";
         } else {
-            // Display error message if the password is incorrect
             document.getElementById('errorMessage').style.display = 'block';
         }
     }
