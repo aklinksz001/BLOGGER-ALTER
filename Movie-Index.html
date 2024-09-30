@@ -55,5 +55,14 @@ fetch('Home-Posts.json')
 
     </script>
 
+
+    <!--- Verify the user enter password --->
+    <script>
+    if (sessionStorage.getItem('authenticated') !== 'true') {
+        window.location.href = "index.html";
+    }
+    </script>
+    
+
 </body>
 </html>
