@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video</title>
+</head>
+<body>
+    <h1>Upload Video</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="text" name="video_name" placeholder="Enter video name" required>
+        <input type="file" name="video" accept="video/*" required>
+        <select name="stream" required>
+            <option value="Stream 1">Stream 1</option>
+            <option value="Stream 2">Stream 2</option>
+            <option value="Stream 3">Stream 3</option>
+        </select>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="message"></div>
+
+    <h2>Videos</h2>
+    <div id="video-list"></div>
+    <button id="show-more" style="display:none;">Show More</button>
+
+    <script>
+        let currentStream = 'Stream 1';
+        let currentPage = 0;
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+            loadVideos(); // Reload videos after upload
+        });
+
+        document.getElementById('show-more').addEventListener('click', () => {
+            currentPage++;
+            loadVideos();
+        });
+
+        async function loadVideos() {
+            const response = await fetch(`/videos?stream=${currentStream}&page=${currentPage}`);
+            const videos = await response.json();
+            const videoList = document.getElementById('video-list');
+
+            // Clear previous videos if it's the first page
+            if (currentPage === 0) {
+                videoList.innerHTML = '';
+            }
+
+            videos.forEach(video => {
+                const videoElement = document.createElement('video');
+                videoElement.controls = true;
+                videoElement.src = video.video_link; // Set video source to the link
+                videoElement.style.width = '300px'; // Set a fixed width for the videos
+                videoElement.style.margin = '10px';
+                
+                const videoNameElement = document.createElement('p'); // Create a paragraph for the video name
+                videoNameElement.innerText = video.video_name; // Set the video name
+                
+                videoList.appendChild(videoElement);
+                videoList.appendChild(videoNameElement); // Append video name below the video
+            });
+
+            // Show or hide "Show More" button
+            document.getElementById('show-more').style.display = videos.length === 10 ? 'block' : 'none';
+        }
+
+        loadVideos(); // Load initial videos
+    </script>
+</body>
+</html>
