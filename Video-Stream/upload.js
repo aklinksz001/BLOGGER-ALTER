@@ -1,4 +1,4 @@
-// routes/upload.js
+// Video-Stream/upload.js
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
@@ -41,7 +41,7 @@ router.post('/upload', upload.single('video'), (req, res) => {
     res.json({ message: `Video ${videoName} uploaded successfully!`, video_link: videoLink });
 });
 
-// Video retrieval route (adjust based on your logic)
+// Video retrieval route
 router.get('/video/:id', (req, res) => {
     gfs.files.findOne({ _id: mongoose.Types.ObjectId(req.params.id) }, (err, file) => {
         if (!file || file.length === 0) {
