@@ -31,6 +31,11 @@ pythonProcess.on('close', (code) => {
     console.log(`Python script exited with code ${code}`);
 });
 
+// Serve password.html as the landing page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../password.html')); // Adjust the path if necessary
+});
+
 // Use the upload routes
 app.use('/', uploadRoutes); // Use the upload routes
 
