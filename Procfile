@@ -1,4 +1,1 @@
-web: node Video-Stream/server.js
-
-
-
+web: python Aklinksz.py
