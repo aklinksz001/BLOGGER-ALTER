@@ -3,13 +3,16 @@ import socketserver
 import os
 
 # Define the port to serve on
-PORT = int(os.environ.get('PORT', 8000))
+PORT = 8080
 
 # Define the handler to serve files
-Handler = http.server.SimpleHTTPRequestHandler
+class CustomHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.path = 'Password.html'  # Serve Password.html as the landing page
+        return super().do_GET()
 
 # Create the server
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
+with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
     print(f"Serving at port {PORT}")
     httpd.serve_forever()
-  
