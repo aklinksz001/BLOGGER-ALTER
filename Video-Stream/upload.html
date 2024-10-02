@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video</title>
+</head>
+<body>
+    <h1>Upload Video</h1>
+    <div id="auth">
+        <input type="password" id="upload-password" placeholder="Enter upload password" required>
+        <button id="auth-button">Authenticate</button>
+    </div>
+    <div id="upload-section" style="display: none;">
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="text" name="video_name" placeholder="Enter video name" required>
+            <input type="file" name="video" accept="video/*" required>
+            <select name="stream" required>
+                <option value="Stream 1">Stream 1</option>
+                <option value="Stream 2">Stream 2</option>
+                <option value="Stream 3">Stream 3</option>
+            </select>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('auth-button').addEventListener('click', () => {
+            const password = document.getElementById('upload-password').value;
+            if (password === 'your_secure_password') { // Replace with your password
+                document.getElementById('upload-section').style.display = 'block';
+            } else {
+                alert('Incorrect password! Only you can upload videos.');
+            }
+        });
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+        });
+    </script>
+</body>
+</html>
