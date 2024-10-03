@@ -19,7 +19,7 @@
 }
 
 main {
-    padding: 20px 20px; /* 40px top/bottom padding, 20px left/right */
+    padding: 40px 20px; /* 40px top/bottom padding, 20px left/right */
     max-width: 800px;
     margin: auto;
     background-color: transparent;
