@@ -14,7 +14,7 @@ openTutorialModelLink.addEventListener('click', () => {
     // After 3 seconds, inject the iframe with autoplay enabled
     setTimeout(() => {
         videoContainer.innerHTML = `
-            <iframe width="560" height="315" 
+            <iframe width="426" height="240" 
                 src="https://www.youtube.com/embed/qRa8WCkigmk?autoplay=1" 
                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
