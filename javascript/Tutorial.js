@@ -1,11 +1,11 @@
 // Get elements
-const openTutorialModalBtn = document.querySelector('.open-tutorial-modal-btn');
+const openTutorialModalText = document.querySelector('.open-tutorial-modal-text');
 const tutorialModal = document.getElementById('tutorialModal');
 const closeTutorialModalBtn = document.querySelector('.close-tutorial-modal-btn');
 const youtubeTutorial = document.getElementById('youtubeTutorial');
 
 // Function to open tutorial modal and play video after 3 seconds
-openTutorialModalBtn.addEventListener('click', () => {
+openTutorialModalText.addEventListener('click', () => {
     tutorialModal.style.display = 'flex';
 
     // Delay autoplay by 3 seconds
