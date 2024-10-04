@@ -19,7 +19,7 @@ openTutorialModelLink.addEventListener('click', () => {
                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
         `;
-    }, 3000); // 3-second delay
+    }, 1000); // 1-second delay
 });
 
 // Function to close the tutorial model
