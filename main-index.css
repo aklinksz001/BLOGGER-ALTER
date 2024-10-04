@@ -1,3 +1,11 @@
+/* Center the "Watch Tutorial" link */
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
 /* Basic tutorial model styles */
 .tutorial-model {
     display: none; /* Hidden by default */
