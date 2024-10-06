@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Age Verification</h1>
+    <p>Select your date of birth to continue:</p>
+    <input type="date" id="dob" name="dob">
+    <br><br>
+    <button onclick="verifyAge()">Verify</button>
+    
+    <div id="message" class="message"></div>
+
+    <script>
+        function verifyAge() {
+            var dob = document.getElementById('dob').value;
+            if (!dob) {
+                document.getElementById('message').innerText = "Please select your date of birth.";
+                return;
+            }
+            var dobDate = new Date(dob);
+            var today = new Date();
+            var age = today.getFullYear() - dobDate.getFullYear();
+            var month = today.getMonth() - dobDate.getMonth();
+
+            if (month < 0 || (month === 0 && today.getDate() < dobDate.getDate())) {
+                age--;
+            }
+
+            if (age >= 18) {
+                window.location.href = "index.html";  // Redirect to the next page if 18 or older
+            } else {
+                document.getElementById('message').innerText = "Try After 18 Age Completed";
+            }
+        }
+    </script>
+</body>
+</html>
