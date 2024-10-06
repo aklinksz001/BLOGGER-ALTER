@@ -6,12 +6,61 @@
     <title>Age Verification</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
         }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         .message {
             margin-top: 20px;
+            font-size: 1.2em;
             font-weight: bold;
             color: red;
         }
@@ -43,7 +92,9 @@
             }
 
             if (age >= 18) {
-                window.location.href = "index.html";  // Redirect to the next page if 18 or older
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect') || 'index.html';
+                window.location.href = redirectUrl;
             } else {
                 document.getElementById('message').innerText = "Try After 18 Age Completed";
             }
