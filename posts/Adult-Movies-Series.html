@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aklinksz</title>
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Search bar css -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #searchBar {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .container {
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+<!-- Popup links -->
+    
+<style>
+        /* Modal container */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+    
+</head>
+<body>
+
+    <h1>AKLINKSZ</h1>
+         <hr>
+        <input type="text" id="searchBar" placeholder="Search Here...">
+
+    <!-- Post list -->
+        <div class="container" id="item-1">
+    <h4 class="heading-title">1. 20TH CENTURY BOY AND GIRL</h4>
+    <a href="https://t.me/Aklinksz" style="display: block; text-align: center;">
+        <img src="https://google.com" alt="Download" width="256" height="144">
+    </a>
+        </div>
+
+
+    <!-- Search Bar Script -->
+    <script>
+        document.getElementById('searchBar').addEventListener('input', function() {
+            var query = this.value.toLowerCase();
+            var containers = document.querySelectorAll('.container');
+            
+            containers.forEach(function(container) {
+                var heading = container.querySelector('.heading-title').textContent.toLowerCase();
+                var id = container.id;
+
+                if (heading.includes(query)) {
+                    container.classList.remove('hidden');
+                    if (container.scrollIntoView) {
+                        container.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    container.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+    <!-- Links Shortener-->
+
+    <script type="text/javascript">
+    var app_url = 'https://omegalinks.in/';
+    var app_api_token = '089f3662f187f47f1cc3f38b8e41bd71edc7da6b';
+    var app_advert = 2;
+    var app_exclude_domains = ["Google.com"];
+</script>
+<script src='//omegalinks.in/js/full-page-script.js'></script>
+
+    <!-- Popup Links modal -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to open the modal
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.style.display = "flex"; // Display the modal
+        }
+
+        // Function to close the modal
+        function closeModal(modal) {
+            modal.style.display = "none"; // Hide the modal
+        }
+
+        // Attach click event to all elements with class 'trigger-modal'
+        var triggerModals = document.querySelectorAll('.trigger-modal');
+        triggerModals.forEach(function(trigger) {
+            trigger.onclick = function(event) {
+                event.preventDefault(); // Prevent default action
+                var modalId = this.getAttribute('data-modal-id');
+                openModal(modalId);
+            };
+        });
+
+        // Attach click event to all close buttons
+        var closeButtons = document.querySelectorAll('.close');
+        closeButtons.forEach(function(closeButton) {
+            closeButton.onclick = function() {
+                var modal = this.closest('.modal');
+                closeModal(modal);
+            };
+        });
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(function(modal) {
+                if (event.target == modal) {
+                    closeModal(modal);
+                }
+            });
+        };
+    });
+</script>
+    <script src="../Redirect-Home.js"></script>
+</body>
+</html>
