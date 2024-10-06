@@ -93,7 +93,7 @@
 
             if (age >= 18) {
                 const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect') || 'index.html';
+                const redirectUrl = urlParams.get('redirect') || 'Index.html';
                 window.location.href = redirectUrl;
             } else {
                 document.getElementById('message').innerText = "Try After 18 Age Completed";
