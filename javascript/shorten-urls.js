@@ -1,23 +1,11 @@
-<script type="text/javascript">
-        var app_url = 'https://modijiurl.com/';
-        var app_api_token = '17950084501a0650a1be53be2dc8437fa202f0ce';
-        var app_advert = 2;
-        var app_exclude_domains = ["Google.com"];
 
-        function handleLinkClick(event) {
-            // Prevent default link behavior
-            event.preventDefault();
-            var targetUrl = event.currentTarget.getAttribute('data-url');
-            
-            // Logic to handle URL redirection
-            if (app_exclude_domains.some(domain => targetUrl.includes(domain))) {
-                console.log('Domain is excluded.');
-                return;
-            }
-            
-            // Perform redirection
-            window.location.href = targetUrl;
-        }
-    </script>
+// Your configuration variables
+var app_url = 'https://omegalinks.in/';
+var app_api_token = '089f3662f187f47f1cc3f38b8e41bd71edc7da6b';
+var app_advert = 2;
+var app_exclude_domains = ["Google.com"];
 
-<script src='//modijiurl.com/js/full-page-script.js'></script>
+// Dynamically load the external script
+var script = document.createElement('script');
+script.src = '//omegalinks.in/js/full-page-script.js';
+document.head.appendChild(script);
