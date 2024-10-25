@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple CAPTCHA Verification</title>
+    <title>Enhanced CAPTCHA Verification</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,28 +12,55 @@
             align-items: center;
             height: 100vh;
             background-color: #f4f4f4;
+            margin: 0;
         }
         .captcha-container {
             text-align: center;
             background: #fff;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+        .captcha-container:hover {
+            transform: scale(1.02);
         }
         input[type="text"] {
             padding: 10px;
             margin-top: 10px;
             width: 100%;
             max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
         }
         button {
             padding: 10px 20px;
             margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
         }
         .refresh-button {
-            margin-top: 10px;
             background-color: #007bff;
             color: #fff;
-            border: none;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -41,13 +68,13 @@
     <div class="captcha-container">
         <h1>Solve the CAPTCHA</h1>
         <p id="captchaQuestion" aria-live="polite"></p>
-        <form id="captchaForm" onsubmit="return validateCaptcha()">
+        <form id="captchaForm">
             <input type="text" id="captchaAnswer" placeholder="Enter your answer" aria-label="Captcha answer" required>
             <br/>
             <button type="submit">Verify</button>
-            <button type="button" class="refresh-button" onclick="generateCaptcha()">Refresh CAPTCHA</button>
+            <button type="button" class="refresh-button">Refresh CAPTCHA</button>
         </form>
-        <p id="errorMessage" style="color: red; display: none;">Incorrect answer, please try again.</p>
+        <p id="errorMessage" class="error-message" aria-live="polite">Incorrect answer, please try again.</p>
     </div>
 
     <script>
@@ -56,12 +83,14 @@
         function generateCaptcha() {
             const num1 = Math.floor(Math.random() * 10) + 1;
             const num2 = Math.floor(Math.random() * 10) + 1;
-            correctAnswer = num1 + num2;
-            document.getElementById('captchaQuestion').textContent = `What is ${num1} + ${num2}?`;
+            const operation = Math.random() > 0.5 ? '+' : '-';
+            correctAnswer = operation === '+' ? num1 + num2 : num1 - num2;
+            document.getElementById('captchaQuestion').textContent = `What is ${num1} ${operation} ${num2}?`;
             document.getElementById('errorMessage').style.display = 'none';
         }
 
-        function validateCaptcha() {
+        function validateCaptcha(event) {
+            event.preventDefault();
             const userAnswer = document.getElementById('captchaAnswer').value;
             if (parseInt(userAnswer) === correctAnswer) {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -69,16 +98,18 @@
                 if (redirectUrl) {
                     window.location.href = redirectUrl;
                 }
-                return false;
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
-                return false;
+                document.getElementById('captchaAnswer').focus();
             }
         }
 
-        // Generate the initial CAPTCHA when the page loads
+        // Event listeners
+        document.getElementById('captchaForm').addEventListener('submit', validateCaptcha);
+        document.querySelector('.refresh-button').addEventListener('click', generateCaptcha);
+
+        // Generate the initial CAPTCHA on load
         generateCaptcha();
     </script>
-    <script src="Redirect-Home.js"></script>
 </body>
 </html>
