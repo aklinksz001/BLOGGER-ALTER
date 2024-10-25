@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADULT PAGE</title>
     <link rel="stylesheet" href="../styles.css">
+    <script src="config.js"></script>
 
     <!-- Search bar css -->
     <style>
@@ -83,7 +84,7 @@
     <!-- Post list -->
         <div class="container" id="item-1">
     <h4 class="heading-title">1. SEX/LIFE </h4>
-    <a href="https://aklinksz.site/batch/4842" style="display: block; text-align: center;">
+    <a href="{LINK_URL}/batch/4842" style="display: block; text-align: center;">
         <img src="https://i.ibb.co/khvmd6r/image.jpg" alt="Download" width="256" height="144">
     </a>
         </div>
@@ -113,14 +114,20 @@
 
     <!-- Links Shortener-->
 
-    <script type="text/javascript">
-    var app_url = 'https://omegalinks.in/';
-    var app_api_token = '089f3662f187f47f1cc3f38b8e41bd71edc7da6b';
-    var app_advert = 2;
-    var app_exclude_domains = ["Google.com"];
-</script>
-<script src='//omegalinks.in/js/full-page-script.js'></script>
+    <script>
+        window.onload = function() {
+            // Access the config file and update the link dynamically
+            var placeholder1 = "{LINK_URL}";
 
+            // Get the link elements
+            var linkElement1 = document.getElementById("dynamicLink1");
+
+            // Replace placeholders with actual URLs from config.js
+            linkElement1.href = config.LINK_URL;
+            linkElement1.textContent = config.LINK_URL;
+
+        };
+    </script>
     <!-- Popup Links modal -->
 
 <script>
