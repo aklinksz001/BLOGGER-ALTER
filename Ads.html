@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification with Modal and Randomized Links</title>
+    <style>
+        /* Button Styles */
+        .verify-btn {
+            background-color: red;
+            color: white;
+            padding: 12px 24px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+        .verified {
+            background-color: green;
+        }
+        .verify-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Darker background */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #f3f3f3, #ffffff);
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Countdown Styling */
+        #countdown {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff1493;
+            animation: countdownFade 1s ease infinite;
+        }
+
+        @keyframes countdownFade {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        /* Hidden Redirect Button */
+        #redirectBtn {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #redirectBtn:hover {
+            background-color: #45a049;
+        }
+
+        h2, p {
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        #thankYouMessage {
+            display: none;
+            font-size: 18px;
+            color: green;
+            margin-top: 20px;
+        }
+
+        #videoContainer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #youtubeVideo {
+            width: 80%;
+            max-width: 600px;
+            height: 315px;
+        }
+
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 90%;
+            }
+            #youtubeVideo {
+                width: 100%;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        let verifyCount = 0;
+
+        // URLs for verification buttons
+        const urls = [
+            'https://luglawhaulsano.net/4/7821485',
+            'https://luglawhaulsano.net/4/7697132',
+            'https://luglawhaulsano.net/4/7536317',
+            'https://luglawhaulsano.net/4/8303262',
+            'https://luglawhaulsano.net/4/8303261',
+            'https://luglawhaulsano.net/4/8303260'
+        ];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Start the countdown for the modal
+            let seconds = 15;
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.innerText = seconds;
+
+            const countdownInterval = setInterval(function () {
+                seconds--;
+                countdownElement.innerText = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    openModal();
+                    hideVideo();
+                }
+            }, 1000);
+
+            // Shuffle URLs and assign to buttons
+            shuffle(urls);
+            document.getElementById('verifyBtn1').setAttribute('onclick', `openPopup('verifyBtn1', '${urls[0]}')`);
+            document.getElementById('verifyBtn2').setAttribute('onclick', `openPopup('verifyBtn2', '${urls[1]}')`);
+            document.getElementById('verifyBtn3').setAttribute('onclick', `openPopup('verifyBtn3', '${urls[2]}')`);
+        });
+
+        // Shuffle function to randomize URLs
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function openPopup(verifyBtnId, url) {
+            const button = document.getElementById(verifyBtnId);
+            if (button.disabled) return; // Prevent multiple clicks
+            button.disabled = true;
+
+            const popup = window.open(url, '_blank', 'width=800,height=600,scrollbars=yes');
+
+            // Check if popup is blocked
+            if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                alert('Popup blocked! Please allow popups for this site.');
+                button.disabled = false;
+                return;
+            }
+
+            // Close the popup after 3 seconds and mark button as verified
+            setTimeout(function () {
+                if (popup) {
+                    popup.close();
+                }
+                markVerified(verifyBtnId);
+            }, 3000);
+        }
+
+        function markVerified(verifyBtnId) {
+            const button = document.getElementById(verifyBtnId);
+            button.classList.add('verified');
+            button.innerText = button.innerText.replace('VERIFY LINK', 'VERIFIED');
+
+            verifyCount++;
+
+            if (verifyCount === 3) {
+                showThankYouMessage();
+                showRedirectButton();
+            }
+        }
+
+        function showRedirectButton() {
+            document.getElementById('verifyButtons').style.display = 'none';
+            document.getElementById('redirectBtn').style.display = 'inline-block';
+        }
+
+        function showThankYouMessage() {
+            document.getElementById('verificationMessage').style.display = 'none';
+            document.getElementById('thankYouMessage').style.display = 'block';
+        }
+
+        function redirectToVideo() {
+            // Get the 'video' parameter from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('video'); // Get the 'video' parameter from the URL
+            
+            // Base URL for the video links
+            const baseUrl = "https://aklinksz.site/batch/";
+            let redirectUrl = null;
+
+            // Check if videoId is provided
+            if (videoId) {
+                redirectUrl = baseUrl + videoId; // Construct the full URL
+            }
+
+            // Redirect if a valid videoId is provided
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else {
+                document.getElementById("message").textContent = "No valid video ID provided. Please check the URL.";
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "flex";  // Show the modal with flex (to center it)
+        }
+
+        function hideVideo() {
+            const videoContainer = document.getElementById("videoContainer");
+            videoContainer.style.display = "none";  // Hide the video
+        }
+    </script>
+</head>
+<body>
+    <br>
+    <h2 style="color:red;">PLEASE WAIT FOR THE TIMER TO FINISH</h2>
+    <h3>MODAL WILL OPEN IN <span id="countdown">15</span> SECONDS...</h3>
+
+    <!-- YouTube Video Embed Section -->
+    <div id="videoContainer">
+        <iframe id="youtubeVideo" src="https://www.youtube.com/embed/Icgd6qPQAZE?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div id="verificationMessage">
+                <h2>VERIFY LINKS TO PROCEED</h2>
+                <p>CLICK ALL THE BUTTONS BELOW TO VERIFY THE LINKS. ONCE ALL LINKS ARE VERIFIED, THE REDIRECT BUTTON WILL APPEAR.</p>
+            </div>
+            <div id="thankYouMessage">
+                <h2>THANK YOU SO MUCH FOR VERIFYING</h2>
+                <p>HERE IS YOUR LINK:</p>
+            </div>
+            <div id="verifyButtons">
+                <!-- Verification Buttons inside the modal -->
+                <button id="verifyBtn1" class="verify-btn">VERIFY LINK 1</button>
+                <button id="verifyBtn2" class="verify-btn">VERIFY LINK 2</button>
+                <button id="verifyBtn3" class="verify-btn">VERIFY LINK 3</button>
+            </div>
+
+            <!-- Redirect Button inside the modal -->
+            <button id="redirectBtn" onclick="redirectToVideo()">REDIRECT TO VIDEO</button>
+        </div>
+    </div>
+</body>
+</html>
