@@ -72,6 +72,13 @@
             color: red;
             text-align: center;
         }
+
+        .loading {
+            display: none;
+            font-size: 1.2em;
+            color: green;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -83,6 +90,7 @@
     <button onclick="verifyAge()">Verify</button>
     
     <div id="message" class="message"></div>
+    <div id="loading" class="loading">Loading...</div>
 
     <script>
         function verifyAge() {
@@ -92,6 +100,7 @@
 
             if (!day || !month || !year) {
                 document.getElementById('message').innerText = "Please enter a valid day, month, and year.";
+                document.getElementById('loading').style.display = 'none'; // Hide loading message
                 return;
             }
 
@@ -104,12 +113,20 @@
                 age--;
             }
 
+            // Show age message
+            document.getElementById('message').innerText = `Your age is ${age}.`;
+
             if (age >= 18) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect') || 'Index.html';
-                window.location.href = redirectUrl; // Redirect to the specified URL or default
+                // Show loading animation for 3 seconds
+                document.getElementById('loading').style.display = 'block'; // Show loading message
+                setTimeout(function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect') || 'Index.html';
+                    window.location.href = redirectUrl; // Redirect to the specified URL or default
+                }, 3000); // 3000 milliseconds = 3 seconds
             } else {
-                document.getElementById('message').innerText = `Your age is ${age}. You must be 18 years or older to proceed.`;
+                document.getElementById('message').innerText += " You must be 18 years or older to proceed.";
+                document.getElementById('loading').style.display = 'none'; // Hide loading message
             }
         }
     </script>
