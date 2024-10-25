@@ -30,12 +30,14 @@
         }
 
         input[type="date"] {
-            padding: 10px;
+            padding: 12px;
             font-size: 1em;
             border: 2px solid #ccc;
             border-radius: 5px;
             outline: none;
             transition: border-color 0.3s ease;
+            width: 100%;
+            max-width: 300px;
         }
 
         input[type="date"]:focus {
@@ -52,6 +54,8 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 300px;
         }
 
         button:hover {
@@ -63,15 +67,16 @@
             font-size: 1.2em;
             font-weight: bold;
             color: red;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <h1>Age Verification</h1>
     <p>Select your date of birth to continue:</p>
-    <input type="date" id="dob" name="dob">
+    <input type="date" id="dob" name="dob" aria-label="Select your date of birth">
     <br><br>
-    <button onclick="verifyAge()">Verify</button>
+    <button onclick="verifyAge()" aria-label="Verify age button">Verify</button>
     
     <div id="message" class="message"></div>
 
@@ -92,11 +97,14 @@
             }
 
             if (age >= 18) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect') || 'Index.html';
-                window.location.href = redirectUrl;
+                const confirmRedirect = confirm(`Your age is ${age}. You are 18 or older. Do you want to proceed?`);
+                if (confirmRedirect) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect') || 'Index.html';
+                    window.location.href = redirectUrl;
+                }
             } else {
-                document.getElementById('message').innerText = "Try After 18 Age Completed";
+                document.getElementById('message').innerText = `Your age is ${age}. Try After 18 Age Completed`;
             }
         }
     </script>
