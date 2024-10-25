@@ -105,7 +105,9 @@
             }
 
             if (age >= 18) {
-                document.getElementById('message').innerText = `Your age is ${age}. You are eligible to proceed.`;
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect') || 'Index.html';
+                window.location.href = redirectUrl; // Redirect to the specified URL or default
             } else {
                 document.getElementById('message').innerText = `Your age is ${age}. You must be 18 years or older to proceed.`;
             }
