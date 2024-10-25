@@ -1,5 +1,5 @@
 const HOME_URL = '/';  // Redirect to the root (home) of your website
-const fiveMinutesInMs = 5 * 60 * 1000;  // 5 minutes in milliseconds
+const tenMinutesInMs = 10 * 60 * 1000;  // 10 minutes in milliseconds
 
 // Function to check and handle redirection
 function checkRedirection() {
@@ -9,11 +9,11 @@ function checkRedirection() {
     if (lastVisitTime) {
         const timeElapsed = currentTime - lastVisitTime;
 
-        if (timeElapsed >= fiveMinutesInMs) {
+        if (timeElapsed >= tenMinutesInMs) {
             // Clear LocalStorage and Cookies on redirect
             clearLocalStorageAndCookies();
             
-            // Redirect to the home page if 5 minutes have passed
+            // Redirect to the home page if 10 minutes have passed
             window.location.href = HOME_URL;
             return;
         }
