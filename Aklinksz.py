@@ -9,7 +9,7 @@ PORT = 8080
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
-            self.path = 'Password.html'  # Serve Password.html as the landing page
+            self.path = 'others/Password.html'  # Serve Password.html as the landing page
         return super().do_GET()
 
 # Create the server
