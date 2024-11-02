@@ -33,7 +33,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Darker background */
+            background-color: rgba(0, 0, 0, 0.6);
             justify-content: center;
             align-items: center;
         }
@@ -120,14 +120,12 @@
     <script type="text/javascript">
         let verifyCount = 0;
 
-        // URLs for verification buttons
+        // URLs for verification buttons (Keep only 3 links here)
         const urls = [
-            'https://luglawhaulsano.net/4/7821485',
-            'https://luglawhaulsano.net/4/7697132',
-            'https://luglawhaulsano.net/4/7536317',
-            'https://luglawhaulsano.net/4/8303262',
-            'https://luglawhaulsano.net/4/8303261',
-            'https://luglawhaulsano.net/4/8303260'
+            'https://chikraighotoops.com/4/7536317',
+            'https://chikraighotoops.com/4/8303260',
+            'https://chikraighotoops.com/4/7821485',
+            // Add more links here if needed
         ];
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -209,20 +207,16 @@
         }
 
         function redirectToVideo() {
-            // Get the 'video' parameter from the URL
             const urlParams = new URLSearchParams(window.location.search);
-            const videoId = urlParams.get('video'); // Get the 'video' parameter from the URL
-            
-            // Base URL for the video links
+            const videoId = urlParams.get('video');
+
             const baseUrl = "https://aklinksz.site/batch/";
             let redirectUrl = null;
 
-            // Check if videoId is provided
             if (videoId) {
                 redirectUrl = baseUrl + videoId; // Construct the full URL
             }
 
-            // Redirect if a valid videoId is provided
             if (redirectUrl) {
                 window.location.href = redirectUrl;
             } else {
