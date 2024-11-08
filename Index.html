@@ -78,8 +78,9 @@
 
     <!--- Verify the user enter password or not--->
     <script>
-    if (sessionStorage.getItem('authenticated') !== 'true') {
-        window.location.href = "others/Password.html";
+    if (!sessionStorage.getItem('authenticated')) {
+    alert('You need to enter the password to access this page.');
+    window.location.href = "others/Password.html";
     }
     </script>
 
