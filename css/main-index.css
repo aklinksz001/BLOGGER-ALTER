@@ -40,10 +40,22 @@ ul li a:hover {
 }
 
 /* Style for the list items (apply effects only to the link) */
+/* Typing effect */
 #postsList li {
-    list-style: none;
-    margin-bottom: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 3s steps(20, end) infinite;
 }
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
 
 .post-link {
     display: inline-block;
@@ -52,17 +64,6 @@ ul li a:hover {
     animation: pulseEffect 1.5s infinite;
 }
 
-/* Pulse effect (example) */
-@keyframes pulseEffect {
-    0%, 100% {
-        transform: scale(1);
-        color: blue;
-    }
-    50% {
-        transform: scale(1.05);
-        color: darkblue;
-    }
-}
 
 /* Style for the arrow symbol (stable, no effects) */
 .arrow-symbol {
