@@ -66,11 +66,35 @@ ul li a:hover {
 
 
 /* Style for the arrow symbol (stable, no effects) */
+/* Arrow symbol with color-changing effect */
 .arrow-symbol {
-    color: red;
     font-weight: bold;
     margin-right: 5px;
+    animation: colorChangeLoop 2s infinite;
 }
+
+/* Keyframes for color change animation */
+@keyframes colorChangeLoop {
+    0% {
+        color: red;
+    }
+    20% {
+        color: blue;
+    }
+    40% {
+        color: green;
+    }
+    60% {
+        color: pink;
+    }
+    80% {
+        color: yellow;
+    }
+    100% {
+        color: red;
+    }
+}
+
 
 
 /* Basic tutorial model styles */
