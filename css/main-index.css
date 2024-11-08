@@ -1,3 +1,69 @@
+/* Main Script*/
+
+main {
+    margin: 10px auto; /* 10px margin at the top and bottom, auto for centering horizontally */
+    padding: 20px;
+    max-width: 800px;
+    background-color: transparent;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 10px 0;
+    font-size: 17px;
+}
+
+ul li a {
+    color: #007BFF;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+ul li a:hover {
+    background-color: #f0f0f0;
+}
+
+.post-link span {
+    font-size: 15px;
+    color: #333;
+}
+
+/* Style for the list items (apply effects only to the link) */
+#postsList li {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.post-link {
+    display: inline-block;
+    color: blue;
+    text-decoration: none;
+    animation: pulseEffect 1.5s infinite;
+}
+
+/* Pulse effect (example) */
+@keyframes pulseEffect {
+    0%, 100% {
+        transform: scale(1);
+        color: blue;
+    }
+    50% {
+        transform: scale(1.05);
+        color: darkblue;
+    }
+}
+
 /* Style for the arrow symbol (stable, no effects) */
 .arrow-symbol {
     color: red;
