@@ -1,3 +1,10 @@
+/* Style for the arrow symbol (stable, no effects) */
+.arrow-symbol {
+    color: red;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 
 /* Basic tutorial model styles */
 .tutorial-model {
