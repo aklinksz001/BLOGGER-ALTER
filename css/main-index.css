@@ -42,9 +42,18 @@ ul li a:hover {
 /* Style for the list items (apply effects only to the link) */
 /* Pulsating effect */
 #postsList li {
+    list-style: none;
+}
+
+/* Pulsating effect for the link text only */
+.post-link {
+    display: inline-block;
+    color: blue;
+    text-decoration: none;
     animation: pulse 1.5s infinite;
 }
 
+/* Keyframes for the pulse animation */
 @keyframes pulse {
     0%, 100% {
         transform: scale(1);
@@ -56,13 +65,6 @@ ul li a:hover {
     }
 }
 
-
-.post-link {
-    display: inline-block;
-    color: blue;
-    text-decoration: none;
-    animation: pulseEffect 1.5s infinite;
-}
 
 
 /* Style for the arrow symbol (stable, no effects) */
