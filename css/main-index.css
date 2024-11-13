@@ -50,21 +50,7 @@ ul li a:hover {
     display: inline-block;
     color: blue;
     text-decoration: none;
-    animation: pulse 1.5s infinite;
 }
-
-/* Keyframes for the pulse animation */
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-    }
-}
-
 
 
 /* Style for the arrow symbol (stable, no effects) */
