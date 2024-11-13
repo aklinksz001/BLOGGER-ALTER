@@ -7,17 +7,51 @@
     <script src="../../others/Redirect-Home.js"></script>
     
     <style>
-        /* Inline CSS for styling the links as subheadings */
+        /* Style for the main container */
+        main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        /* Style for the heading */
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff6347; /* Tomato color for the heading */
+        }
+
+        /* Style for the list box */
+        #Alphabet-List {
+            list-style-type: none; /* Remove default bullets */
+            padding: 20px;
+            border: 2px solid #1e90ff; /* Blue border for a fresh look */
+            border-radius: 10px;
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+            background-color: #f0f0f0; /* Light gray background */
+        }
+
+        /* Style for the links */
         .post-link {
-            text-decoration: none; /* Remove underline */
-            font-size: 1em; /* Increase font size to look like a subheading */
-            color: #0000ff; /* Set a color for the subheadings */
-            display: block; /* Make the link fill the space like a block element */
-            margin: 10px 0; /* Add some margin for spacing */
+            text-decoration: none;
+            font-size: 1.2em;
+            color: #0000ff;
+            display: block;
+            margin: 10px 0;
         }
 
         .post-link:hover {
-            color: #800080; /* Optional: Change color on hover */
+            color: #800080;
+        }
+
+        /* Footer styling */
+        footer {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -26,10 +60,9 @@
     <main>
         <h1>NEWLY RELEASED</h1>
         <ul id="Alphabet-List">
-    <li><a href="../NEW-THEATRE-PRINT.html" class="post-link">NEWLY RELEASED THEATRE PRINT</a></li>
-    <li><a href="../NEW-HD-PRINT.html" class="post-link">NEWLY RELEASED HD PRINT</a></li>
-</ul>
-
+            <li><a href="../NEW-THEATRE-PRINT.html" class="post-link" aria-label="Newly Released Theatre Print">NEWLY RELEASED THEATRE PRINT</a></li>
+            <li><a href="../NEW-HD-PRINT.html" class="post-link" aria-label="Newly Released HD Print">NEWLY RELEASED HD PRINT</a></li>
+        </ul>
     </main>
 
     <footer>
