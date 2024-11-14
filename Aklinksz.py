@@ -1,43 +1,43 @@
 import http.server
 import socketserver
 import os
-from mongodb.database import verify_hash
+import subprocess
 from dotenv import load_dotenv
+import threading
 
+# Load environment variables
 load_dotenv()
-PORT = int(os.getenv("PORT", 8080))
-STATIC_PASSWORD = os.getenv("PASSWORD")
 
+PORT = int(os.getenv("PORT", 8080))
+TELEGRAM_BOT_PATH = "telegram/bot.py"
+
+# Define the HTTP server handler
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
             self.path = 'others/Password.html'
+        return super().do_GET()
 
-        elif self.path.startswith("/verify"):
-            query = self.path.split("?")[1]
-            params = dict(param.split("=") for param in query.split("&"))
-            password = params.get("password")
-            hash_value = params.get("hash")
+# Function to start the HTTP server
+def start_server():
+    with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
 
-            # Check for static password or hash verification
-            if password == STATIC_PASSWORD:
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(b"valid")
+# Function to start the Telegram bot
+def start_bot():
+    print("Starting Telegram bot...")
+    subprocess.run(["python", TELEGRAM_BOT_PATH])
 
-            elif hash_value and verify_hash(hash_value):
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(b"valid")
+# Main function to start both server and bot
+if __name__ == "__main__":
+    # Run the server and bot in separate threads
+    server_thread = threading.Thread(target=start_server)
+    bot_thread = threading.Thread(target=start_bot)
 
-            else:
-                self.send_response(403)
-                self.end_headers()
-                self.wfile.write(b"invalid")
+    server_thread.start()
+    bot_thread.start()
 
-        else:
-            super().do_GET()
-
-with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()
+    # Wait for both threads to complete
+    server_thread.join()
+    bot_thread.join()
