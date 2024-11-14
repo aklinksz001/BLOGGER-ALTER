@@ -15,7 +15,7 @@ TELEGRAM_BOT_PATH = "telegram/bot.py"
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
-            self.path = 'others/Password.html'
+            self.path = 'others/Password.html'  # Serve Password.html as the landing page
         return super().do_GET()
 
 # Function to start the HTTP server
