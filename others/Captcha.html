@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/main-index.css">
+    <title>Captcha Verification</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .captcha-container {
+            text-align: center;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        button {
+            padding: 12px 25px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #errorMessage.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-container">
+        <h1>Please Verify You're Not a Robot</h1>
+        <div class="g-recaptcha" data-sitekey="6LdHfH4qAAAAAHZBeSDiBjN8665lExiUOiD_wNT_"></div>
+        <br/>
+        <button onclick="verifyCaptcha()">Continue</button>
+        <p id="errorMessage">Please solve the CAPTCHA to continue.</p>
+    </div>
+
+    <script>
+        function verifyCaptcha() {
+            const captchaResponse = grecaptcha.getResponse();
+
+            // Check if the CAPTCHA is solved
+            if (captchaResponse.length !== 0) {
+                // Redirect the user to Index.html
+                window.location.href = "Index.html";
+            } else {
+                // Show error message if CAPTCHA is not solved
+                const errorMessage = document.getElementById("errorMessage");
+                errorMessage.classList.add('show');
+            }
+        }
+    </script>
+</body>
+</html>
