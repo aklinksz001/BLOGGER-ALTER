@@ -12,7 +12,7 @@ load_dotenv()
 # Fetch MongoDB URI and website URL from environment variables
 MONGO_URI = os.getenv("MONGO_URI")
 WEBSITE_URL = os.getenv("WEBSITE_URL")
-DB_NAME = os.getenv("DB_NAME")  # Add this in your .env file with the name of the database
+DB_NAME = os.getenv("DB_NAME")  # Fetch database name from .env
 
 # MongoDB setup
 client = MongoClient(MONGO_URI)
