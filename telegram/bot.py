@@ -28,10 +28,13 @@ def generate_hash():
     return hash_value
 
 def send_access_link(chat_id):
-    hash_value = generate_hash()
-    access_link = f"{WEBSITE_URL}?hash={hash_value}"
-    message = f"Your access link: {access_link}\nValid for 5 minutes."
-    bot.send_message(chat_id=chat_id, text=message)
+    try:
+        hash_value = generate_hash()
+        access_link = f"{WEBSITE_URL}?hash={hash_value}"
+        message = f"Your access link: {access_link}\nValid for 5 minutes."
+        bot.send_message(chat_id=chat_id, text=message)
+    except Exception as e:
+        bot.send_message(chat_id=chat_id, text=f"Error: {str(e)}")
 
 from telegram.ext import Updater, CommandHandler
 
@@ -44,6 +47,8 @@ def start_bot():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("getlink", handle_message))
+
+    print("Bot is starting...")
     updater.start_polling()
 
 if __name__ == '__main__':
