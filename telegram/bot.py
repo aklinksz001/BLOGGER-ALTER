@@ -1,65 +1,50 @@
-
-
 import os
 import hashlib
 import time
+import random
+import string
 import telegram
 from dotenv import load_dotenv
-from mongodb.database import save_hash_to_db  # Import MongoDB function to save generated hash
+from mongodb.database import save_hash_to_db
 
-# Load environment variables from .env file
 load_dotenv()
-
-# Telegram Bot Token (from .env)
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-ADMIN_ID = os.getenv("ADMIN_ID")  # The Telegram user ID for the bot admin
-WEBSITE_URL = os.getenv("WEBSITE_URL")  # Get the updated website URL from .env
+ADMIN_ID = os.getenv("ADMIN_ID")
+WEBSITE_URL = os.getenv("WEBSITE_URL")
 
-# Initialize the Telegram bot
 bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
-# Generate a time-based access hash for Telegram users
+def generate_secret_key(length=16):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choices(characters, k=length))
+
 def generate_hash():
-    timestamp = int(time.time())  # Current Unix timestamp
-    hash_object = hashlib.sha256((str(timestamp) + os.getenv("SECRET_KEY")).encode())  # Secret key and timestamp
-    hash_value = hash_object.hexdigest()[:6]  # Use the first 6 characters as the hash
-    expiry_time = timestamp + 300  # Valid for 5 minutes (300 seconds)
-    
-    # Save hash and expiry time to the database
-    save_hash_to_db(hash_value, expiry_time)
-    
+    timestamp = int(time.time())
+    secret_key = generate_secret_key()
+    hash_object = hashlib.sha256((str(timestamp) + secret_key).encode())
+    hash_value = hash_object.hexdigest()[:6]
+    expiry_time = timestamp + 300
+    save_hash_to_db(hash_value, expiry_time, secret_key)
     return hash_value
 
-# Send a message with a time-based link to Telegram users
 def send_access_link(chat_id):
-    hash_value = generate_hash()  # Generate the hash
-    access_link = f"{WEBSITE_URL}?hash={hash_value}"  # Construct the access link using the updated website URL
-    message = f"Your time-based access link: {access_link}\nThis link will expire in 5 minutes."
-    
-    # Send the message to the Telegram user
+    hash_value = generate_hash()
+    access_link = f"{WEBSITE_URL}?hash={hash_value}"
+    message = f"Your access link: {access_link}\nValid for 5 minutes."
     bot.send_message(chat_id=chat_id, text=message)
 
-# Command handler for the bot to generate and send the access link
-def handle_message(update, context):
-    user_id = update.message.chat_id
-    text = update.message.text
-
-    if text.lower() == "/getlink":
-        send_access_link(user_id)  # Send access link when the command /getlink is received
-
-# Set up the bot to listen for commands
 from telegram.ext import Updater, CommandHandler
 
-def start_bot():
-    updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
-    
-    # Add command handler for /getlink
-    dispatcher.add_handler(CommandHandler("getlink", handle_message))
+def handle_message(update, context):
+    chat_id = update.message.chat_id
+    if update.message.text.lower() == "/getlink":
+        send_access_link(chat_id)
 
-    # Start the bot
+def start_bot():
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("getlink", handle_message))
     updater.start_polling()
 
 if __name__ == '__main__':
     start_bot()
-  
