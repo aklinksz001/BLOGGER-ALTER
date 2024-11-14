@@ -5,14 +5,18 @@ from urllib.parse import parse_qs
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import datetime
+import threading
+from telegram.ext import Updater, CommandHandler
 
 # Load environment variables from .env
 load_dotenv()
 
-# Fetch MongoDB URI and website URL from environment variables
+# Fetch MongoDB URI, website URL, and Telegram bot token from environment variables
 MONGO_URI = os.getenv("MONGO_URI")
 WEBSITE_URL = os.getenv("WEBSITE_URL")
 DB_NAME = os.getenv("DB_NAME")  # Fetch database name from .env
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")  # Telegram bot token
+PORT = int(os.getenv("PORT", 8080))  # Port for the HTTP server
 
 # MongoDB setup
 client = MongoClient(MONGO_URI)
@@ -20,10 +24,7 @@ db = client[DB_NAME]  # Specify the database name explicitly
 password_collection = db["passwords"]
 access_collection = db["access_links"]
 
-# Set up HTTP server
-PORT = int(os.getenv("PORT", 8080))
-
-# Custom request handler to handle incoming requests
+# Custom request handler to handle incoming HTTP requests
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/verify"):
@@ -71,7 +72,35 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 access_collection.delete_one({"access_code": input})
         return False
 
-# Create and run the HTTP server
-with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()
+# Start the Telegram Bot
+def start_bot():
+    def start(update, context):
+        update.message.reply_text("Bot is working!")
+
+    updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler("start", start))
+    updater.start_polling()
+    updater.idle()  # Keep the bot running
+
+# Start the Web Server (HTTP Server)
+def start_server():
+    with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
+
+# Function to start both server and bot concurrently
+def start_services():
+    # Run both the bot and the server in separate threads
+    bot_thread = threading.Thread(target=start_bot)
+    server_thread = threading.Thread(target=start_server)
+
+    bot_thread.start()
+    server_thread.start()
+
+    bot_thread.join()
+    server_thread.join()
+
+if __name__ == '__main__':
+    # Start both bot and server concurrently
+    start_services()
