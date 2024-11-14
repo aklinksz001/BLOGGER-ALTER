@@ -2,8 +2,11 @@ import http.server
 import socketserver
 import os
 from mongodb.database import verify_hash
+from dotenv import load_dotenv
 
+load_dotenv()
 PORT = int(os.getenv("PORT", 8080))
+STATIC_PASSWORD = os.getenv("PASSWORD")
 
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -16,7 +19,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             password = params.get("password")
             hash_value = params.get("hash")
 
-            if password == os.getenv("PASSWORD"):
+            # Check for static password or hash verification
+            if password == STATIC_PASSWORD:
                 self.send_response(200)
                 self.end_headers()
                 self.wfile.write(b"valid")
@@ -31,7 +35,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b"invalid")
 
-        return super().do_GET()
+        else:
+            super().do_GET()
 
 with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
     print(f"Serving at port {PORT}")
