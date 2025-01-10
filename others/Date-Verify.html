@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/main-index.css">
+    <title>Date Access Protection</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .date-container {
+            text-align: center;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 5px;
+            width: 80px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #errorMessage.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="date-container">
+        <h1>Enter Today's Date to Access</h1>
+        <div>
+            <input type="number" id="dayInput" placeholder="DD" min="1" max="31" required>
+            <input type="number" id="monthInput" placeholder="MM" min="1" max="12" required>
+        </div>
+        <button onclick="checkDate()">Submit</button>
+        <p id="errorMessage">Incorrect date, please try again.</p>
+    </div>
+
+    <script>
+        function checkDate() {
+            const dayInput = document.getElementById("dayInput").value;
+            const monthInput = document.getElementById("monthInput").value;
+            const errorMessage = document.getElementById("errorMessage");
+
+            const today = new Date();
+            const currentDay = today.getDate().toString().padStart(2, '0');
+            const currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
+
+            if ((dayInput === currentDay && monthInput === currentMonth) || 
+                (dayInput === currentMonth && monthInput === currentDay)) {
+                errorMessage.classList.remove('show');
+                sessionStorage.setItem('authenticated', 'true');
+                window.location.href = "Index.html"; // Redirect to index.html
+            } else {
+                errorMessage.classList.add('show');
+            }
+        }
+    </script>
+</body>
+</html>
