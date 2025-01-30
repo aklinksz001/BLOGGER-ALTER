@@ -1,37 +1,55 @@
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import os
-import database
+import logging
+from dotenv import load_dotenv
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
 
-def start(update: Update, context: CallbackContext) -> None:
-    """Send a math problem to the user."""
-    import random
-    num1 = random.randint(1, 20)
-    num2 = random.randint(1, 20)
-    answer = num1 + num2
-    context.user_data['answer'] = answer
-    update.message.reply_text(f"Solve this: {num1} + {num2} = ?")
+# Load environment variables
+load_dotenv()
 
-def check_answer(update: Update, context: CallbackContext) -> None:
-    """Check the user's answer and generate a key if correct."""
-    user_answer = update.message.text.strip()
+# Setup Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    if user_answer.isdigit() and int(user_answer) == context.user_data.get('answer'):
-        key = database.store_key()
-        update.message.reply_text(f"✅ Correct! Here is your key link: https://yourwebsite.com/home?key={key}")
+# Retrieve the bot token and mongo URI from the .env file
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+MONGO_URI = os.getenv("MONGO_URI")
+
+# Initialize Pyrogram Client
+bot = Client("my_bot", bot_token=TELEGRAM_BOT_TOKEN)
+
+# Command handler for the /start command
+@bot.on_message(filters.command("start"))
+async def start(client, message: Message):
+    await message.reply("Hello, I am your verification bot. Send a math sum to get the access key!")
+
+# Command handler for verifying math sum
+@bot.on_message(filters.text)
+async def verify_math_sum(client, message: Message):
+    user_answer = message.text.strip()
+    
+    # A simple math sum for verification (e.g., 3 + 2)
+    correct_answer = "5"  # You can make this dynamic based on a function
+
+    if user_answer == correct_answer:
+        access_key = "https://aklinksz1.site/home?key=your_generated_key_here"
+        await message.reply(f"Correct! Here's your access key: {access_key}")
     else:
-        update.message.reply_text("❌ Incorrect. Try again!")
+        await message.reply("Incorrect answer, try again!")
 
-def main():
-    """Start the bot."""
-    updater = Updater(os.getenv("TELEGRAM_BOT_TOKEN"))
-    dispatcher = updater.dispatcher
+# Scheduler to run tasks
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(monitor_bot, 'interval', seconds=10)  # Monitor every 10 seconds
+    scheduler.start()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, check_answer))
+# Bot function to monitor or log the status
+def monitor_bot():
+    logger.info(f"Bot running... {time.ctime()}")
 
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+# Start bot and scheduler
+if __name__ == "__main__":
+    start_scheduler()  # Start the background task scheduler
+    bot.run()  # Run the bot
