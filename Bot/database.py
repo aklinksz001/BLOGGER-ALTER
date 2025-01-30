@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Connect to MongoDB
 client = pymongo.MongoClient(os.getenv("MONGO_URI"))
 db = client["VerificationDB"]
 keys_collection = db["keys"]
@@ -22,7 +21,7 @@ def store_key():
     expiration_time = datetime.utcnow() + timedelta(minutes=30)
 
     keys_collection.insert_one({"key": key, "expires_at": expiration_time})
-    
+
     return key
 
 def check_key_validity(key):
