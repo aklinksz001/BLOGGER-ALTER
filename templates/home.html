@@ -1,29 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
-    <h1>Access Granted</h1>
-    <div id="countdown">
-        <svg>
-            <circle r="18" cx="20" cy="20"></circle>
-            <circle id="progress" r="18" cx="20" cy="20"></circle>
-        </svg>
-        <div id="timer">{{ remaining_time }}</div>
-    </div>
-    <script>
-        var timeLeft = {{ remaining_time }};
-        function updateTimer() {
-            document.getElementById("timer").innerText = timeLeft + "s";
-            timeLeft--;
-            if (timeLeft <= 0) {
-                window.location.href = "/expired";
-            } else {
-                setTimeout(updateTimer, 1000);
-            }
-        }
-        updateTimer();
-    </script>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to Home</h1>
+<p>You have access for <span id="time-left">{{ remaining_time }}</span> seconds.</p>
+{% endblock %}
