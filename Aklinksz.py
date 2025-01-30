@@ -2,7 +2,7 @@ import http.server
 import socketserver
 import os
 import urllib.parse
-import database  # Importing the database functions
+from Bot import database # Importing the database functions
 
 # Define the port to serve on
 PORT = 8080
