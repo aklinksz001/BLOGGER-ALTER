@@ -1,6 +1,7 @@
-from Bot import database
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+import os
+import database
 
 def start(update: Update, context: CallbackContext) -> None:
     """Send a math problem to the user."""
@@ -17,7 +18,7 @@ def check_answer(update: Update, context: CallbackContext) -> None:
 
     if user_answer.isdigit() and int(user_answer) == context.user_data.get('answer'):
         key = database.store_key()
-        update.message.reply_text(f"✅ Correct! Here is your key link: https://aklinksz1.site/home?key={key}")
+        update.message.reply_text(f"✅ Correct! Here is your key link: https://yourwebsite.com/home?key={key}")
     else:
         update.message.reply_text("❌ Incorrect. Try again!")
 
