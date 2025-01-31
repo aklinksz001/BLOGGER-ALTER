@@ -52,7 +52,7 @@ setInterval(checkRedirection, 60 * 1000); // 60 seconds
 // VERIFY CHECK 
 
     if (sessionStorage.getItem('authenticated') !== 'true') {
-        window.location.href = "Index";     
+        window.location.href = "Index.html";     
     }
     
     
