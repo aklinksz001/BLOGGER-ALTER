@@ -1,39 +1,104 @@
-/* Container for search results */
-#searchResults {
-    width: 100%;
-    max-width: 650px;
-    margin: 20px auto;
-    padding: 15px;
-    background: #1a1a1a; /* Dark background for premium feel */
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+/* General Reset */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: #121212;
+    color: white;
+    text-align: center;
 }
 
-/* Individual result item */
+/* Header Styling */
+.search-header {
+    padding: 20px;
+    background: linear-gradient(45deg, #ff0000, #800000);
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    border-bottom: 3px solid #ff0000;
+    box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.5);
+}
+
+.search-header h1 {
+    font-size: 32px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.search-header p {
+    font-size: 18px;
+    margin-top: 5px;
+    opacity: 0.8;
+}
+
+/* Search Bar Container */
+.search-container {
+    margin: 30px auto;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 18px;
+    border-radius: 50px;
+    border: 2px solid #ff0000;
+    background: #1e1e1e;
+    color: white;
+    outline: none;
+    text-align: center;
+    box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.5);
+}
+
+.search-container input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Search Icon */
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Search Results */
+#searchResults {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+/* Each result item */
 .result-item {
     display: flex;
     align-items: center;
+    padding: 15px;
     margin-bottom: 15px;
-    padding: 12px;
     border-radius: 8px;
-    background: #2c2c2c; /* Slightly lighter than main background */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background: #1e1e1e;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 10px rgba(255, 0, 0, 0.15);
 }
 
-/* Add hover effect */
+/* Hover effect */
 .result-item:hover {
     transform: scale(1.03);
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
 }
 
-/* Thumbnail (left side) */
+/* Thumbnail image (Left side) */
 .result-item img {
-    width: 110px;
-    height: 70px;
+    width: 120px;
+    height: 80px;
     border-radius: 5px;
     margin-right: 15px;
     object-fit: cover;
-    border: 2px solid #ff4444; /* Red border for modern touch */
+    border: 2px solid #ff0000;
 }
 
 /* Title, Language, Download - Centered */
@@ -47,54 +112,58 @@
 /* Title Styling */
 .result-item h4 {
     margin: 5px 0;
-    font-size: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Language Styling */
+.result-item p {
+    margin: 5px 0;
+    font-size: 18px;
     font-weight: bold;
     text-transform: uppercase;
     color: #ffffff;
-    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.2);
 }
 
-/* Language Styling - Black for "Language:", Green for actual language */
-.result-item p {
-    margin: 5px 0;
-    font-size: 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #aaaaaa; /* Soft gray */
-}
-
+/* Make only the actual language name Green */
 .result-item p strong {
-    color: #cccccc; /* "Language:" remains light gray */
+    color: #ffffff;
 }
 
 .result-item p strong + span {
-    color: #00FF00; /* Language name (e.g., "English") in Neon Green */
+    color: #00FF00;
+    text-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
 }
 
 /* Download Link Styling */
 .result-item a {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: bold;
     text-transform: uppercase;
-    text-decoration: none; /* ❌ Remove Underline */
+    text-decoration: none;
     display: inline-block;
     padding: 8px 12px;
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
-    color: #ff4444; /* Red color */
-    background: #222; /* Dark background */
-    box-shadow: 0 3px 5px rgba(255, 68, 68, 0.3);
+    color: #ff0000;
+    background: black;
+    border: 2px solid #ff0000;
+    box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
 }
 
 /* Download Arrow Symbol */
 .result-item a::before {
     content: "➥ ";
-    color: white; /* Arrow color */
+    color: white;
 }
 
 /* Hover effect for Download Link */
 .result-item a:hover {
-    background: #ff4444; /* Red background */
-    color: white; /* White text */
+    background: #ff0000;
+    color: white;
+    border: 2px solid white;
     transform: scale(1.05);
 }
