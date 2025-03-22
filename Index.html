@@ -35,7 +35,7 @@
 </div>
     </div>
 
-      <input type="text" id="searchBar" placeholder="Search Here..." onclick="redirectToSearch()">
+      <input type="text" id="searchBar" placeholder="Search Here..." onclick="openSearchPage()">
 
     <main>
         <h2>𝙾𝚄𝚁 𝙻𝙸𝚂𝚃 </h2>
@@ -94,6 +94,11 @@ function redirectToSearch() {
     // Store scroll position before redirect
     sessionStorage.setItem("scrollToSearch", "true");
     window.location.href = "others/Search.html";
+}
+
+function openSearchPage() {
+    sessionStorage.setItem("focusSearch", "true"); // Store focus state
+    window.location.href = "others/search.html";
 }
     </script>
     <!---- Link Script --->
