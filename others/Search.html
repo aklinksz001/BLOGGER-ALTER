@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Movies</title>
+    <title>Movie Search</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/Search.css">
 </head>
 <body>
 
+    <!-- Header -->
+    <header class="search-header">
+        <h1>Find Your Movie</h1>
+        <p>Search and Download Your Favorite Movies Instantly</p>
+    </header>
+
     <!-- Search Bar -->
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search Here...">
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    if (sessionStorage.getItem("focusSearch") === "true") {
-        let searchBar = document.getElementById("searchBar");
-        searchBar.focus(); // Auto-focus
-        searchBar.select(); // Ensure the keyboard opens
-        sessionStorage.removeItem("focusSearch"); // Remove flag after focusing
-    }
-});
-</script>
+        <input type="text" id="searchBar" placeholder="Search Movies, Web Series..." autofocus>
+        <div class="search-icon">🔍</div>
     </div>
 
     <!-- Results Section -->
     <div id="searchResults"></div>
 
-    <!-- Link to External JavaScript -->
+    <!-- External JavaScript -->
     <script src="../javascript/Main-Search-Bar.js"></script>
 
 </body>
