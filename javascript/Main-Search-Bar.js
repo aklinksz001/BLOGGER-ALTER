@@ -1,102 +1,92 @@
-const FilesPages = [
-    { url: "../pages/Anime-English.html", category: "Anime", language: "English" },
-    { url: "../pages/Cartoon-Anime-Tamil.html", category: "Cartoon", language: "Tamil" },
-    { url: "../pages/Tamil-Webseries.html", category: "Webseries", language: "Tamil" },
-    { url: "pages/Movies-English.html", category: "Movies", language: "English" },
-    { url: "pages/Movies-Hindi.html", category: "Movies", language: "Hindi" },
-    { url: "pages/WebSeries.html", category: "Web Series", language: "Mixed" },
-    { url: "pages/Cartoons.html", category: "Cartoons", language: "English" },
-    { url: "pages/Korean-Drama-Tamil.html", category: "Dramas", language: "Mixed" }
+// List of all file pages to search
+const filePages = [
+    "Korean-Drama-Tamil.html",
+    "Anime-English.html",
+    "Movies-Hindi.html",
+    "Webseries-Tamil.html",
+    "Cartoon-Tamil.html",
+    // Add more files here
 ];
 
-let filesData = [];
+// Function to fetch and search data
+function searchFiles(query) {
+    let results = [];
+    let searchLower = query.toLowerCase(); // Convert query to lowercase
 
-// Function to Fetch Data from All Files
-async function fetchFilesData() {
-    let requests = FilesPages.map(file =>
-        fetch(file.url).then(response => response.text().then(html => ({ html, file })))
+    let fetchPromises = filePages.map(page =>
+        fetch(page)
+            .then(response => response.text())
+            .then(data => {
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(data, "text/html");
+
+                let containers = doc.querySelectorAll(".container");
+                containers.forEach(container => {
+                    let title = container.querySelector(".heading-title")?.innerText || "Unknown Title";
+                    let img = container.querySelector("img")?.src || "";
+                    let link = container.querySelector("a")?.href || "#";
+                    let languageElement = container.querySelector(".language");
+                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
+
+                    let titleLower = title.toLowerCase();
+                    let languageLower = language.toLowerCase();
+
+                    // Search should work with or without language filter
+                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                        results.push({ title, img, link, language });
+                    }
+                });
+            })
     );
 
-    let pages = await Promise.all(requests);
-
-    pages.forEach(({ html, file }) => {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(html, "text/html");
-        let containers = doc.querySelectorAll(".container");
-
-        containers.forEach(container => {
-            let titleElement = container.querySelector(".heading-title");
-            let imageElement = container.querySelector("img");
-            let linkElement = container.querySelector("a");
-
-            if (titleElement && imageElement && linkElement) {
-                filesData.push({
-                    title: titleElement.innerText.toLowerCase(),
-                    image: imageElement.src,
-                    link: file.url,
-                    category: file.category,
-                    language: file.language
-                });
-            }
-        });
-    });
+    // After all fetch requests complete, show results
+    Promise.all(fetchPromises).then(() => showResults(results));
 }
 
-// **Levenshtein Distance Algorithm for Fuzzy Search**
-function levenshteinDistance(a, b) {
-    let tmp;
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-    if (a.length > b.length) tmp = a, a = b, b = tmp;
+// Function to display search results inside a modal popup
+function showResults(results) {
+    let resultModal = document.getElementById("searchResults");
+    let resultContainer = document.getElementById("resultContainer");
 
-    let row = Array(a.length + 1).fill().map((_, i) => i);
-    for (let i = 1; i <= b.length; i++) {
-        let prev = i;
-        for (let j = 1; j <= a.length; j++) {
-            let val = b[i - 1] === a[j - 1] ? row[j - 1] : Math.min(row[j - 1] + 1, prev + 1, row[j] + 1);
-            row[j - 1] = prev;
-            prev = val;
-        }
-        row[a.length] = prev;
-    }
-    return row[a.length];
-}
+    resultContainer.innerHTML = ""; // Clear previous results
 
-// Function to Search with Spelling Correction
-function searchFiles() {
-    let query = document.getElementById("searchBar").value.toLowerCase();
-    let searchResults = document.getElementById("searchResults");
-    searchResults.innerHTML = ""; // Clear previous results
-
-    let filteredResults = filesData
-        .map(file => ({
-            ...file,
-            distance: levenshteinDistance(query, file.title) // Calculate similarity score
-        }))
-        .filter(file => file.distance <= Math.ceil(query.length * 0.4)) // Allow up to 40% difference
-        .sort((a, b) => a.distance - b.distance); // Sort by closest match
-
-    if (filteredResults.length === 0) {
-        searchResults.innerHTML = "<p>No results found</p>";
-        return;
-    }
-
-    filteredResults.forEach(file => {
-        let resultHTML = `
-            <div class="search-item">
-                <a href="${file.link}" target="_blank" class="search-link">
-                    <img src="${file.image}" alt="${file.title}" class="search-img">
-                    <div class="search-info">
-                        <h4>${file.title}</h4>
-                        <p class="category-tag">${file.category}</p>
-                        <p class="language-tag">${file.language}</p>
+    if (results.length === 0) {
+        resultContainer.innerHTML = "<p>No results found</p>";
+    } else {
+        results.forEach(item => {
+            let resultItem = document.createElement("div");
+            resultItem.classList.add("result-item");
+            resultItem.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+                    <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
+                    <div>
+                        <h4 style="margin: 0;">${item.title}</h4>
+                        <p style="margin: 2px 0; font-size: 14px;">Language: ${item.language}</p>
+                        <a href="${item.link}" target="_blank" style="color: blue; text-decoration: underline;">Download</a>
                     </div>
-                </a>
-            </div>
-        `;
-        searchResults.innerHTML += resultHTML;
-    });
+                </div>
+            `;
+            resultContainer.appendChild(resultItem);
+        });
+    }
+
+    resultModal.style.display = "block"; // Show modal popup
 }
 
-// Fetch Data Once at Start
-fetchFilesData();
+// Attach search function to input field
+document.getElementById("searchBar").addEventListener("input", function () {
+    let query = this.value.trim();
+    if (query.length > 0) {
+        searchFiles(query);
+    } else {
+        document.getElementById("searchResults").style.display = "none";
+    }
+});
+
+// Close modal when clicking outside
+window.onclick = function (event) {
+    let resultModal = document.getElementById("searchResults");
+    if (event.target == resultModal) {
+        resultModal.style.display = "none";
+    }
+};
