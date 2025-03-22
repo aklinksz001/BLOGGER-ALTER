@@ -36,10 +36,16 @@
 </div>
     </div>
 
-      <h1>Search Files</h1>
-    <input type="text" id="searchBar" placeholder="Search Here..." onkeyup="searchFiles()">
+      <input type="text" id="searchBar" placeholder="Search Here...">
 
-    <div id="searchResults" class="results-container"></div>
+<!-- Modal for Search Results -->
+<div id="searchResults" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('searchResults').style.display='none'">&times;</span>
+        <h3 style="color: red; font-weight: bold;">Search Results</h3>
+        <div id="resultContainer"></div>
+    </div>
+</div>
     <main>
         <h2>𝙾𝚄𝚁 𝙻𝙸𝚂𝚃 </h2>
         <ul id="postsList">
