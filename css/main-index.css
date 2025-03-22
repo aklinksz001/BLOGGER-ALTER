@@ -61,25 +61,31 @@ ul li a:hover {
     animation: colorChangeLoop 2s infinite;
 }
 
-/* Keyframes for color change animation */
+/* Keyframes for smooth neon color transition */
 @keyframes colorChangeLoop {
     0% {
-        color: red;
+        color: #ff4500; /* Neon Orange */
+        text-shadow: 0 0 10px #ff4500, 0 0 20px #ff6347;
     }
     20% {
-        color: blue;
+        color: #00ffcc; /* Neon Aqua */
+        text-shadow: 0 0 10px #00ffcc, 0 0 20px #00e6b8;
     }
     40% {
-        color: green;
+        color: #ff00ff; /* Neon Pink */
+        text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff66ff;
     }
     60% {
-        color: pink;
+        color: #ffea00; /* Neon Yellow */
+        text-shadow: 0 0 10px #ffea00, 0 0 20px #ffff33;
     }
     80% {
-        color: yellow;
+        color: #00ff00; /* Neon Green */
+        text-shadow: 0 0 10px #00ff00, 0 0 20px #33ff33;
     }
     100% {
-        color: red;
+        color: #ff4500; /* Back to Neon Orange */
+        text-shadow: 0 0 10px #ff4500, 0 0 20px #ff6347;
     }
 }
 
