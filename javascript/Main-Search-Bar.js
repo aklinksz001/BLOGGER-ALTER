@@ -31,9 +31,9 @@ async function fetchFilesData() {
 
             if (titleElement && imageElement && linkElement) {
                 filesData.push({
-                    title: titleElement.innerText,
+                    title: titleElement.innerText.toLowerCase(),
                     image: imageElement.src,
-                    link: file.url,  // Link to respective page
+                    link: file.url,
                     category: file.category,
                     language: file.language
                 });
@@ -42,13 +42,39 @@ async function fetchFilesData() {
     });
 }
 
-// Function to Search and Display Results
+// **Levenshtein Distance Algorithm for Fuzzy Search**
+function levenshteinDistance(a, b) {
+    let tmp;
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    if (a.length > b.length) tmp = a, a = b, b = tmp;
+
+    let row = Array(a.length + 1).fill().map((_, i) => i);
+    for (let i = 1; i <= b.length; i++) {
+        let prev = i;
+        for (let j = 1; j <= a.length; j++) {
+            let val = b[i - 1] === a[j - 1] ? row[j - 1] : Math.min(row[j - 1] + 1, prev + 1, row[j] + 1);
+            row[j - 1] = prev;
+            prev = val;
+        }
+        row[a.length] = prev;
+    }
+    return row[a.length];
+}
+
+// Function to Search with Spelling Correction
 function searchFiles() {
     let query = document.getElementById("searchBar").value.toLowerCase();
     let searchResults = document.getElementById("searchResults");
     searchResults.innerHTML = ""; // Clear previous results
 
-    let filteredResults = filesData.filter(file => file.title.toLowerCase().includes(query));
+    let filteredResults = filesData
+        .map(file => ({
+            ...file,
+            distance: levenshteinDistance(query, file.title) // Calculate similarity score
+        }))
+        .filter(file => file.distance <= Math.ceil(query.length * 0.4)) // Allow up to 40% difference
+        .sort((a, b) => a.distance - b.distance); // Sort by closest match
 
     if (filteredResults.length === 0) {
         searchResults.innerHTML = "<p>No results found</p>";
