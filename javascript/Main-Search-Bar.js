@@ -1,10 +1,10 @@
 // List of all file pages to search
 const filePages = [
-    "Korean-Drama-Tamil.html",
-    "Anime-English.html",
-    "Movies-Hindi.html",
-    "Webseries-Tamil.html",
-    "Cartoon-Tamil.html",
+    "../Korean-Drama-Tamil.html",
+    "../Anime-English.html",
+    "../Filmography.html",
+    "../Special-Shows-Series.html",
+    "../Tamil-Webseries.html",
     // Add more files here
 ];
 
