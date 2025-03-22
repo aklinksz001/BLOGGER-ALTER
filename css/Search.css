@@ -58,7 +58,7 @@
     font-size: 16px;
     font-weight: bold;
     text-transform: uppercase;
-    text-decoration: none; /* ❌ Remove Underline */
+    text-decoration: none;
 }
 
 .result-item a::before {
@@ -68,4 +68,8 @@
 
 .result-item a {
     color: #FF0000; /* DOWNLOAD text in Red */
+}
+
+.result-item a:hover {
+    text-decoration: underline;
 }
