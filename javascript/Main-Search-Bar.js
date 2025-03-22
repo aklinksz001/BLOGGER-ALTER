@@ -87,12 +87,14 @@ function showResults(results) {
             resultItem.classList.add("result-item");
 
             resultItem.innerHTML = `
-                <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+                 <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
-                    <div>
+                    <div style="text-align: center; flex-grow: 1;">
                         <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px;"><strong>Language:</strong> ${item.language}</p>
-                        <a href="${item.link}" target="_blank" style="color: blue; text-decoration: underline;">Download</a>
+                        <p style="margin: 2px 0; font-size: 14px; color: #00FF00; font-weight: bold;">${item.language}</p>
+                        <a href="${item.link}" target="_blank" style="color: red; font-weight: bold; font-size: 16px; text-decoration: none;">
+                            <span style="color: black;">➥</span> DOWNLOAD
+                        </a>
                     </div>
                 </div>
             `;
