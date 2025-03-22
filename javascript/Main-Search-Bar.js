@@ -6,7 +6,7 @@ const FilesPages = [
     { url: "pages/Movies-Hindi.html", category: "Movies", language: "Hindi" },
     { url: "pages/WebSeries.html", category: "Web Series", language: "Mixed" },
     { url: "pages/Cartoons.html", category: "Cartoons", language: "English" },
-    { url: "pages/Dramas.html", category: "Dramas", language: "Mixed" }
+    { url: "pages/Korean-Drama-Tamil.html", category: "Dramas", language: "Mixed" }
 ];
 
 let filesData = [];
