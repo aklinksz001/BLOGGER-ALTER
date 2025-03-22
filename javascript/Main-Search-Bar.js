@@ -11,7 +11,7 @@ const filePages = [
 // Function to fetch and search data
 function searchFiles(query) {
     let results = [];
-    let searchLower = query.toLowerCase().trim();
+    let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
@@ -24,45 +24,46 @@ function searchFiles(query) {
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
+                    let linkElement = container.querySelector("a.trigger-modal");
                     let languageElement = container.querySelector(".language");
-                    let modalId = container.querySelector(".trigger-modal")?.getAttribute("data-modal-id");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
+                    let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
                     let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
-                    let link = "#"; // Default if no link is found
 
-                    // Find the correct "Download" link from the modal
+                    // If there's a modal, get download link inside it
+                    let link = "#";
                     if (modalId) {
-                        const modal = doc.getElementById(modalId);
+                        let modal = doc.getElementById(modalId);
                         if (modal) {
-                            const movieList = modal.querySelector("ul");
-                            const downloadLink = Array.from(modal.querySelectorAll("a")).find(a =>
-                                a.innerText.toLowerCase().includes("download")
-                            );
-
-                            if (downloadLink) {
-                                link = downloadLink.href;
-                            }
-
-                            // Search inside collection movie names
-                            if (movieList) {
-                                movieList.querySelectorAll("li").forEach((movie) => {
-                                    let movieTitle = movie.textContent.trim();
-                                    if (movieTitle.toLowerCase().includes(searchLower)) {
-                                        results.push({ title: movieTitle, img, link, language });
-                                    }
-                                });
+                            let modalLink = modal.querySelector("a.ad-link");
+                            if (modalLink) {
+                                link = modalLink.href;
                             }
                         }
                     }
 
-                    // Search by collection name or language
+                    // Check if search query matches title, subtitles, or language
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                         results.push({ title, img, link, language });
+                    }
+
+                    // Check subtitles inside modal
+                    if (modalId) {
+                        let modal = doc.getElementById(modalId);
+                        if (modal) {
+                            let subtitles = modal.querySelectorAll("ul li");
+                            subtitles.forEach(subtitle => {
+                                let subtitleText = subtitle.innerText.trim();
+                                if (subtitleText.toLowerCase().includes(searchLower)) {
+                                    results.push({ title: subtitleText, img, link, language });
+                                }
+                            });
+                        }
                     }
                 });
             })
@@ -91,7 +92,7 @@ function showResults(results) {
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
                     <div>
                         <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px;">Language: ${item.language}</p>
+                        <p style="margin: 2px 0; font-size: 14px;"><strong>Language:</strong> ${item.language}</p>
                         <a href="${item.link}" target="_blank" style="color: blue; text-decoration: underline;">Download</a>
                     </div>
                 </div>
