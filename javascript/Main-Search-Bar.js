@@ -1,7 +1,7 @@
 const FilesPages = [
-    { url: "pages/Anime-English.html", category: "Anime", language: "English" },
-    { url: "pages/Anime-Japanese.html", category: "Anime", language: "Japanese" },
-    { url: "pages/Anime-Hindi.html", category: "Anime", language: "Hindi" },
+    { url: "../pages/Anime-English.html", category: "Anime", language: "English" },
+    { url: "../pages/Cartoon-Anime-Tamil.html", category: "Cartoon", language: "Tamil" },
+    { url: "../pages/Tamil-Webseries.html", category: "Webseries", language: "Tamil" },
     { url: "pages/Movies-English.html", category: "Movies", language: "English" },
     { url: "pages/Movies-Hindi.html", category: "Movies", language: "Hindi" },
     { url: "pages/WebSeries.html", category: "Web Series", language: "Mixed" },
