@@ -11,7 +11,17 @@
 
     <!-- Search Bar -->
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search movies..." autofocus>
+        <input type="text" id="searchBar" placeholder="Search Here...">
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (sessionStorage.getItem("focusSearch") === "true") {
+        let searchBar = document.getElementById("searchBar");
+        searchBar.focus(); // Auto-focus
+        searchBar.select(); // Ensure the keyboard opens
+        sessionStorage.removeItem("focusSearch"); // Remove flag after focusing
+    }
+});
+</script>
     </div>
 
     <!-- Results Section -->
