@@ -24,23 +24,31 @@ function searchFiles(query) {
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
-                    let linkElement = container.querySelector("a");
                     let languageElement = container.querySelector(".language");
                     let modalId = container.querySelector(".trigger-modal")?.getAttribute("data-modal-id");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
-                    let link = linkElement ? linkElement.href : "#";
                     let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
+                    let link = "#"; // Default if no link is found
 
-                    // Search in collection's individual movie names
+                    // Find the correct "Download" link from the modal
                     if (modalId) {
                         const modal = doc.getElementById(modalId);
                         if (modal) {
                             const movieList = modal.querySelector("ul");
+                            const downloadLink = Array.from(modal.querySelectorAll("a")).find(a =>
+                                a.innerText.toLowerCase().includes("download")
+                            );
+
+                            if (downloadLink) {
+                                link = downloadLink.href;
+                            }
+
+                            // Search inside collection movie names
                             if (movieList) {
                                 movieList.querySelectorAll("li").forEach((movie) => {
                                     let movieTitle = movie.textContent.trim();
