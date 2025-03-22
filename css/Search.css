@@ -55,16 +55,6 @@ body {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Search Icon */
-.search-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    color: white;
-    cursor: pointer;
-}
 
 /* Search Results */
 #searchResults {
