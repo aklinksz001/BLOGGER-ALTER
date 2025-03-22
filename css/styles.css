@@ -28,6 +28,12 @@
     margin-bottom: 15px; /* Space below the heading */
     text-transform: uppercase; /* Transform text to uppercase */
 }
+/* Language */
+
+ .language { 
+     color: #FFFF00; 
+
+ }
 
 /* Search bar */
 
