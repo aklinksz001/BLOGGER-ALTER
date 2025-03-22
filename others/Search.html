@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #searchBar {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #resultContainer {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 800px;
+            margin: auto;
+        }
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .result-item img {
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .result-item h4 {
+            margin: 0;
+        }
+        .result-item p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="searchBar" placeholder="Search for movies..." autofocus>
+
+    <div id="resultContainer"></div>
+
+    <script src="javascript/Main-Search-Bar.js"></script>
+</body>
+</html>
