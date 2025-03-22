@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,25 +7,29 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/Search.css">
 </head>
-<body><!-- Search Bar -->
+<body>
+
+<!-- Search Bar -->
 <div class="search-container">
     <input type="text" id="searchBar" placeholder="Search Here...">
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    if (sessionStorage.getItem("focusSearch") === "true") {
-        let searchBar = document.getElementById("searchBar");
-        searchBar.focus(); // Auto-focus
-        searchBar.select(); // Ensure the keyboard opens
-        sessionStorage.removeItem("focusSearch"); // Remove flag after focusing
-    }
-});
-</script></div>
+</div>
 
 <!-- Results Section -->
 <div id="searchResults"></div>
 
-<!-- Link to External JavaScript -->
+<!-- Auto-focus when navigating from index page -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (sessionStorage.getItem("focusSearch") === "true") {
+        let searchBar = document.getElementById("searchBar");
+        searchBar.focus();
+        searchBar.select();
+        sessionStorage.removeItem("focusSearch");
+    }
+});
+</script>
+
+<!-- Link to JavaScript -->
 <script src="../javascript/Main-Search-Bar.js"></script>
 
 </body>
