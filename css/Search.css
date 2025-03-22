@@ -115,7 +115,7 @@ body {
     font-size: 22px;
     font-weight: bold;
     text-transform: uppercase;
-    color: white;
+    color: #F0FFFF;
     text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 
@@ -130,7 +130,7 @@ body {
 
 /* Make only the actual language name Green */
 .result-item p strong {
-    color: #ffffff;
+    color: #00FF00;
 }
 
 .result-item p strong + span {
@@ -148,17 +148,12 @@ body {
     padding: 8px 12px;
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
-    color: #ff0000;
+    color: #FFE4E1;
     background: black;
     border: 2px solid #ff0000;
     box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
 }
 
-/* Download Arrow Symbol */
-.result-item a::before {
-    content: "➥ ";
-    color: white;
-}
 
 /* Hover effect for Download Link */
 .result-item a:hover {
