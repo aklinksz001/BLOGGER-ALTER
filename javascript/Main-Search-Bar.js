@@ -1,17 +1,17 @@
-// List of all file pages in the same directory
+// List of file pages in the same directory
 const filePages = [
     "posts/Korean-Drama-Tamil.html",
     "posts/Anime-English.html",
     "posts/Dubbed-Movie-Series-Tamil.html",
     "posts/Cartoon-Anime-Tamil.html",
-    "posts/Tamil-Webseries.html",
+    "posts/Tamil-Webseries.html"
     // Add more files here
 ];
 
 // Function to fetch and search data
 function searchFiles(query) {
     let results = [];
-    let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
+    let searchLower = query.toLowerCase().trim();
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
@@ -24,62 +24,32 @@ function searchFiles(query) {
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
-                    let linkElement = container.querySelector("a.trigger-modal");
+                    let linkElement = container.querySelector("a");
                     let languageElement = container.querySelector(".language");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
-                    let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
+                    let link = linkElement ? linkElement.href : "#";
                     let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // If there's a modal, get download link inside it
-                    let link = "#";
-                    if (modalId) {
-                        let modal = doc.getElementById(modalId);
-                        if (modal) {
-                            let modalLink = modal.querySelector("a.ad-link");
-                            if (modalLink) {
-                                link = modalLink.href;
-                            }
-                        }
-                    }
-
-                    // Check if search query matches title, subtitles, or language
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                         results.push({ title, img, link, language });
-                    }
-
-                    // Check subtitles inside modal
-                    if (modalId) {
-                        let modal = doc.getElementById(modalId);
-                        if (modal) {
-                            let subtitles = modal.querySelectorAll("ul li");
-                            subtitles.forEach(subtitle => {
-                                let subtitleText = subtitle.innerText.trim();
-                                if (subtitleText.toLowerCase().includes(searchLower)) {
-                                    results.push({ title: subtitleText, img, link, language });
-                                }
-                            });
-                        }
                     }
                 });
             })
             .catch(error => console.error(`Error loading ${page}:`, error))
     );
 
-    // After all fetch requests complete, show results
     Promise.all(fetchPromises).then(() => showResults(results));
 }
 
-// Function to display search results inside a modal popup
+// Function to display search results
 function showResults(results) {
-    let resultModal = document.getElementById("searchResults");
     let resultContainer = document.getElementById("resultContainer");
-
-    resultContainer.innerHTML = ""; // Clear previous results
+    resultContainer.innerHTML = "";
 
     if (results.length === 0) {
         resultContainer.innerHTML = "<p>No results found</p>";
@@ -88,36 +58,26 @@ function showResults(results) {
             let resultItem = document.createElement("div");
             resultItem.classList.add("result-item");
             resultItem.innerHTML = `
-                <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
-                    <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
+                <div>
+                    <img src="${item.img}" alt="${item.title}" width="100">
                     <div>
-                        <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px;"><strong>Language:</strong> ${item.language}</p>
-                        <a href="${item.link}" target="_blank" style="color: blue; text-decoration: underline;">Download</a>
+                        <h4>${item.title}</h4>
+                        <p>Language: ${item.language}</p>
+                        <a href="${item.link}" target="_blank">Download</a>
                     </div>
                 </div>
             `;
             resultContainer.appendChild(resultItem);
         });
     }
-
-    resultModal.style.display = "block"; // Show modal popup
 }
 
-// Attach search function to input field
+// Attach live search functionality
 document.getElementById("searchBar").addEventListener("input", function () {
     let query = this.value.trim();
     if (query.length > 0) {
         searchFiles(query);
     } else {
-        document.getElementById("searchResults").style.display = "none";
+        document.getElementById("resultContainer").innerHTML = "";
     }
 });
-
-// Close modal when clicking outside
-window.onclick = function (event) {
-    let resultModal = document.getElementById("searchResults");
-    if (event.target == resultModal) {
-        resultModal.style.display = "none";
-    }
-};
