@@ -25,14 +25,16 @@
     font-size: 16px; /* Customize the font size */
     color: #333; /* Change the text color */
     font-weight: bold; /* Make the text bold */
-    margin-bottom: 15px; /* Space below the heading */
+    margin-bottom: 8px; /* Space below the heading */
     text-transform: uppercase; /* Transform text to uppercase */
 }
 /* Language */
 
  .language { 
      color: #FFFF00; 
-
+     font-size: 10px;
+     margin-bottom: 15px;
+     text-transform: uppercase;
  }
 
 /* Search bar */
