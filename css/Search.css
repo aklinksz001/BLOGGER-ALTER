@@ -69,7 +69,3 @@
 .result-item a {
     color: #FF0000; /* DOWNLOAD text in Red */
 }
-
-.result-item a:hover {
-    text-decoration: underline;
-}
