@@ -11,7 +11,7 @@ const filePages = [
 // Function to fetch and search data
 function searchFiles(query) {
     let results = [];
-    let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
+    let searchLower = query.toLowerCase().trim();
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
@@ -26,6 +26,7 @@ function searchFiles(query) {
                     let imgElement = container.querySelector("img");
                     let linkElement = container.querySelector("a");
                     let languageElement = container.querySelector(".language");
+                    let modalId = container.querySelector(".trigger-modal")?.getAttribute("data-modal-id");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
@@ -35,7 +36,23 @@ function searchFiles(query) {
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Check if search query matches title or language (handles spelling mistakes)
+                    // Search in collection's individual movie names
+                    if (modalId) {
+                        const modal = doc.getElementById(modalId);
+                        if (modal) {
+                            const movieList = modal.querySelector("ul");
+                            if (movieList) {
+                                movieList.querySelectorAll("li").forEach((movie) => {
+                                    let movieTitle = movie.textContent.trim();
+                                    if (movieTitle.toLowerCase().includes(searchLower)) {
+                                        results.push({ title: movieTitle, img, link, language });
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    // Search by collection name or language
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                         results.push({ title, img, link, language });
                     }
