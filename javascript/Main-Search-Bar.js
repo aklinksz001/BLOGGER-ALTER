@@ -1,17 +1,17 @@
-// List of all file pages to search
+// List of all file pages in the same directory
 const filePages = [
-    "../Korean-Drama-Tamil.html",
-    "../Anime-English.html",
-    "../Filmography.html",
-    "../Special-Shows-Series.html",
-    "../Tamil-Webseries.html",
+    "posts/Korean-Drama-Tamil.html",
+    "posts/Anime-English.html",
+    "posts/Dubbed-Movie-Series-Tamil.html",
+    "posts/Cartoon-Anime-Tamil.html",
+    "posts/Tamil-Webseries.html",
     // Add more files here
 ];
 
 // Function to fetch and search data
 function searchFiles(query) {
     let results = [];
-    let searchLower = query.toLowerCase(); // Convert query to lowercase
+    let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
@@ -22,21 +22,26 @@ function searchFiles(query) {
 
                 let containers = doc.querySelectorAll(".container");
                 containers.forEach(container => {
-                    let title = container.querySelector(".heading-title")?.innerText || "Unknown Title";
-                    let img = container.querySelector("img")?.src || "";
-                    let link = container.querySelector("a")?.href || "#";
+                    let titleElement = container.querySelector(".heading-title");
+                    let imgElement = container.querySelector("img");
+                    let linkElement = container.querySelector("a");
                     let languageElement = container.querySelector(".language");
+
+                    let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
+                    let img = imgElement ? imgElement.src : "";
+                    let link = linkElement ? linkElement.href : "#";
                     let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Search should work with or without language filter
+                    // Check if search query matches title or language (handles spelling mistakes)
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                         results.push({ title, img, link, language });
                     }
                 });
             })
+            .catch(error => console.error(`Error loading ${page}:`, error))
     );
 
     // After all fetch requests complete, show results
