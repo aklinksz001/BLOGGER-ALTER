@@ -35,24 +35,35 @@ function searchFiles(query) {
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Check if search query matches title or language
-                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                        results.push({ title, img, link: "#", language });
-                    }
-
-                    // Check subtitles inside modal
+                    // Extract multiple links from modal
                     if (modalId) {
                         let modal = doc.getElementById(modalId);
                         if (modal) {
-                            let subtitles = modal.querySelectorAll("a.ad-link");
-                            subtitles.forEach(subtitle => {
-                                let subtitleText = subtitle.innerText.trim();
-                                let subtitleLink = subtitle.href;
-                                if (subtitleText.toLowerCase().includes(searchLower)) {
-                                    results.push({ title: subtitleText, img, link: subtitleLink, language });
-                                }
+                            let modalLinks = modal.querySelectorAll("a.ad-link");
+                            let extractedTitles = [];
+
+                            modalLinks.forEach(modalLink => {
+                                let linkText = modalLink.innerText.trim();
+                                let linkHref = modalLink.href;
+
+                                // If the link contains multiple seasons, split them into separate results
+                                let separatedTitles = linkText.split(/,| - | \| /);
+                                separatedTitles.forEach(seasonTitle => {
+                                    let cleanTitle = seasonTitle.trim();
+                                    if (cleanTitle) {
+                                        extractedTitles.push({ title: cleanTitle, img, link: linkHref, language });
+                                    }
+                                });
                             });
+
+                            // Add all extracted results
+                            results = results.concat(extractedTitles);
                         }
+                    }
+
+                    // Normal title search
+                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                        results.push({ title, img, link: "#", language });
                     }
                 });
             })
@@ -63,7 +74,7 @@ function searchFiles(query) {
     Promise.all(fetchPromises).then(() => showResults(results));
 }
 
-// Function to display search results directly below search bar
+// Function to display search results
 function showResults(results) {
     let resultContainer = document.getElementById("searchResults");
     resultContainer.innerHTML = ""; // Clear previous results
