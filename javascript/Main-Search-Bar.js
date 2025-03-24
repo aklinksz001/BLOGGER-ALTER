@@ -15,10 +15,7 @@ function searchFiles(query) {
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
-            .then(response => {
-                if (!response.ok) throw new Error(`Failed to load ${page}`);
-                return response.text();
-            })
+            .then(response => response.text())
             .then(data => {
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(data, "text/html");
@@ -27,53 +24,73 @@ function searchFiles(query) {
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
-                    let linkElement = container.querySelector("a.trigger-modal");
+                    let linkElement = container.querySelector("a");
                     let languageElement = container.querySelector(".language");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
+                    let link = linkElement ? linkElement.href : "#";
                     let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
-                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim().toUpperCase() : "UNKNOWN";
+                    let language = languageElement ? languageElement.innerText.replace("Language:", "").trim().toUpperCase() : "UNKNOWN";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    let extractedResults = [];
+                    // TYPE 1 - Direct Download Link (No Modal)
+                    if (linkElement && linkElement.href.includes("video=") && !modalId) {
+                        results.push({
+                            title,
+                            img,
+                            link,
+                            language
+                        });
+                    }
 
-                    // Extract links from the modal
+                    // TYPE 2 & 3 - Modal-based extraction
                     if (modalId) {
                         let modal = doc.getElementById(modalId);
                         if (modal) {
-                            let modalLinks = modal.querySelectorAll("a.ad-link");
+                            let modalLinks = modal.querySelectorAll("a.ad-link"); // Get all download links
+                            let subtitles = modal.querySelectorAll("ul li"); // Get all subtitles
 
-                            modalLinks.forEach(modalLink => {
-                                let linkText = modalLink.innerText.trim();
-                                let linkHref = modalLink.href;
-
-                                let seasonTitles = linkText.split(/,| - | \| /); // Split titles if multiple
-                                seasonTitles.forEach(seasonTitle => {
-                                    let cleanTitle = seasonTitle.trim();
-                                    if (cleanTitle) {
-                                        extractedResults.push({ title: cleanTitle, img, link: linkHref, language });
-                                    }
+                            if (modalLinks.length > 1) {
+                                // TYPE 2 - If multiple links exist, treat each separately
+                                modalLinks.forEach((modalLink) => {
+                                    results.push({
+                                        title,
+                                        img,
+                                        link: modalLink.href,
+                                        language
+                                    });
                                 });
-                            });
+                            } else if (subtitles.length > 0 && modalLinks.length === 1) {
+                                // TYPE 3 - If multiple subtitles but one link, show each title separately
+                                subtitles.forEach((subtitle) => {
+                                    let subtitleText = subtitle.innerText.trim();
+                                    results.push({
+                                        title: subtitleText,
+                                        img,
+                                        link: modalLinks[0].href,
+                                        language
+                                    });
+                                });
+                            } else if (modalLinks.length === 1) {
+                                // Single title, single link (common case)
+                                results.push({
+                                    title,
+                                    img,
+                                    link: modalLinks[0].href,
+                                    language
+                                });
+                            }
                         }
-                    }
-
-                    // Add extracted results
-                    results = results.concat(extractedResults);
-
-                    // Normal title or language search
-                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                        results.push({ title, img, link: "#", language });
                     }
                 });
             })
             .catch(error => console.error(`Error loading ${page}:`, error))
     );
 
-    // Wait for all fetches to complete
+    // After all fetch requests complete, show results
     Promise.all(fetchPromises).then(() => showResults(results));
 }
 
