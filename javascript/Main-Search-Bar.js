@@ -1,14 +1,14 @@
-// List of all file pages in the same directory
+// List of all file pages to search in
 const filePages = [
     "posts/Korean-Drama-Tamil.html",
     "posts/Anime-English.html",
     "posts/Dubbed-Movie-Series-Tamil.html",
     "posts/Cartoon-Anime-Tamil.html",
     "posts/Tamil-Webseries.html"
-    // Add more files here
+    // Add more files here if needed
 ];
 
-// Function to fetch and search data
+// Function to search across all files
 function searchFiles(query) {
     let results = [];
     let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
@@ -36,14 +36,14 @@ function searchFiles(query) {
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
+                    // Match query with title or language
+                    if (!titleLower.includes(searchLower) && !languageLower.includes(searchLower)) {
+                        return;
+                    }
+
                     // TYPE 1 - Direct Download Link (No Modal)
                     if (linkElement && linkElement.href.includes("video=") && !modalId) {
-                        results.push({
-                            title,
-                            img,
-                            link,
-                            language
-                        });
+                        results.push({ title, img, link, language });
                     }
 
                     // TYPE 2 & 3 - Modal-based extraction
@@ -56,32 +56,17 @@ function searchFiles(query) {
                             if (modalLinks.length > 1) {
                                 // TYPE 2 - If multiple links exist, treat each separately
                                 modalLinks.forEach((modalLink) => {
-                                    results.push({
-                                        title,
-                                        img,
-                                        link: modalLink.href,
-                                        language
-                                    });
+                                    results.push({ title, img, link: modalLink.href, language });
                                 });
                             } else if (subtitles.length > 0 && modalLinks.length === 1) {
                                 // TYPE 3 - If multiple subtitles but one link, show each title separately
                                 subtitles.forEach((subtitle) => {
                                     let subtitleText = subtitle.innerText.trim();
-                                    results.push({
-                                        title: subtitleText,
-                                        img,
-                                        link: modalLinks[0].href,
-                                        language
-                                    });
+                                    results.push({ title: subtitleText, img, link: modalLinks[0].href, language });
                                 });
                             } else if (modalLinks.length === 1) {
                                 // Single title, single link (common case)
-                                results.push({
-                                    title,
-                                    img,
-                                    link: modalLinks[0].href,
-                                    language
-                                });
+                                results.push({ title, img, link: modalLinks[0].href, language });
                             }
                         }
                     }
@@ -111,7 +96,9 @@ function showResults(results) {
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
                     <div style="text-align: center; flex-grow: 1;">
                         <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px; color: #00FF00; font-weight: bold;">${item.language}</p>
+                        <p style="margin: 2px 0; font-size: 14px; font-weight: bold;">
+                            <span style="color: black;">Language:</span> <span style="color: #00FF00;">${item.language}</span>
+                        </p>
                         <a href="${item.link}" target="_blank" style="color: red; font-weight: bold; font-size: 16px; text-decoration: none;">
                             <span style="color: black;">➥</span> DOWNLOAD
                         </a>
