@@ -15,7 +15,10 @@ function searchFiles(query) {
 
     let fetchPromises = filePages.map(page =>
         fetch(page)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) throw new Error(`Failed to load ${page}`);
+                return response.text();
+            })
             .then(data => {
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(data, "text/html");
@@ -35,18 +38,18 @@ function searchFiles(query) {
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Extract multiple links from modal
+                    let extractedTitles = [];
+
+                    // Extract links from the modal
                     if (modalId) {
                         let modal = doc.getElementById(modalId);
                         if (modal) {
                             let modalLinks = modal.querySelectorAll("a.ad-link");
-                            let extractedTitles = [];
 
                             modalLinks.forEach(modalLink => {
                                 let linkText = modalLink.innerText.trim();
                                 let linkHref = modalLink.href;
 
-                                // If the link contains multiple seasons, split them into separate results
                                 let separatedTitles = linkText.split(/,| - | \| /);
                                 separatedTitles.forEach(seasonTitle => {
                                     let cleanTitle = seasonTitle.trim();
@@ -55,13 +58,13 @@ function searchFiles(query) {
                                     }
                                 });
                             });
-
-                            // Add all extracted results
-                            results = results.concat(extractedTitles);
                         }
                     }
 
-                    // Normal title search
+                    // Add extracted results
+                    results = results.concat(extractedTitles);
+
+                    // Normal title or language search
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                         results.push({ title, img, link: "#", language });
                     }
@@ -70,7 +73,7 @@ function searchFiles(query) {
             .catch(error => console.error(`Error loading ${page}:`, error))
     );
 
-    // After all fetch requests complete, show results
+    // Wait for all fetches to complete
     Promise.all(fetchPromises).then(() => showResults(results));
 }
 
