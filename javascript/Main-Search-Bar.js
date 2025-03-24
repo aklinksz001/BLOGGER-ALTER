@@ -1,10 +1,10 @@
 // List of all file pages in the same directory
 const filePages = [
-    "../posts/Korean-Drama-Tamil.html",
-    "../posts/Anime-English.html",
-    "../posts/Dubbed-Movie-Series-Tamil.html",
-    "../posts/Cartoon-Anime-Tamil.html",
-    "../posts/Tamil-Webseries.html"
+    "posts/Korean-Drama-Tamil.html",
+    "posts/Anime-English.html",
+    "posts/Dubbed-Movie-Series-Tamil.html",
+    "posts/Cartoon-Anime-Tamil.html",
+    "posts/Tamil-Webseries.html"
     // Add more files here
 ];
 
@@ -30,37 +30,26 @@ function searchFiles(query) {
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
                     let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
-                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
+                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim().toUpperCase() : "UNKNOWN";
 
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Extract download link correctly
-                    let link = "#";
-                    if (modalId) {
-                        let modal = doc.getElementById(modalId);
-                        if (modal) {
-                            let modalLink = modal.querySelector("a.ad-link");
-                            if (modalLink) {
-                                link = modalLink.href;
-                            }
-                        }
-                    }
-
-                    // Check if search query matches title, subtitles, or language
+                    // Check if search query matches title or language
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                        results.push({ title, img, link, language });
+                        results.push({ title, img, link: "#", language });
                     }
 
                     // Check subtitles inside modal
                     if (modalId) {
                         let modal = doc.getElementById(modalId);
                         if (modal) {
-                            let subtitles = modal.querySelectorAll("ul li");
+                            let subtitles = modal.querySelectorAll("a.ad-link");
                             subtitles.forEach(subtitle => {
                                 let subtitleText = subtitle.innerText.trim();
+                                let subtitleLink = subtitle.href;
                                 if (subtitleText.toLowerCase().includes(searchLower)) {
-                                    results.push({ title: subtitleText, img, link, language });
+                                    results.push({ title: subtitleText, img, link: subtitleLink, language });
                                 }
                             });
                         }
@@ -87,7 +76,7 @@ function showResults(results) {
             resultItem.classList.add("result-item");
 
             resultItem.innerHTML = `
-                 <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+                <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
                     <div style="text-align: center; flex-grow: 1;">
                         <h4 style="margin: 0;">${item.title}</h4>
