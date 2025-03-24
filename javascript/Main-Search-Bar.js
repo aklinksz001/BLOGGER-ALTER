@@ -52,22 +52,30 @@ async function searchFiles(query) {
                         let modalLinks = modal.querySelectorAll("a.ad-link"); // Get all links
                         let subtitleElements = modal.querySelectorAll("ul li"); // Get all subtitles
 
-                        if (modalLinks.length > 1) {
-                            // **Type 2: Multiple links inside a modal**
+                        if (modalLinks.length > 1 && subtitleElements.length === 0) {
+                            // **Type 2: Multiple links with corresponding titles**
                             modalLinks.forEach((modalLink) => {
-                                let modalText = modalLink.innerText.toLowerCase();
-                                if (modalText.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                                    results.push({ title, img, link: modalLink.href, language });
+                                let subtitleText = modalLink.innerText.trim(); // Extract subtitle from link text
+                                let subtitleLower = subtitleText.toLowerCase();
+                                if (subtitleLower.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                    results.push({ title: subtitleText, img, link: modalLink.href, language });
                                 }
                             });
                         } else if (subtitleElements.length > 0 && modalLinks.length === 1) {
-                            // **Type 3: Multiple titles but a single download link**
+                            // **Type 3: Multiple subtitles with a single download link**
                             let sharedLink = modalLinks[0].href;
+                            
+                            // Include **Main Title** first
+                            if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                results.push({ title, img, link: sharedLink, language });
+                            }
+                            
+                            // Add each subtitle separately
                             subtitleElements.forEach((subtitle) => {
                                 let subtitleText = subtitle.innerText.trim();
                                 let subtitleLower = subtitleText.toLowerCase();
                                 if (subtitleLower.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                                    results.push({ title: subtitleText, img, link: sharedLink, language });
+                                    results.push({ title: `${title} - ${subtitleText}`, img, link: sharedLink, language });
                                 }
                             });
                         } else {
