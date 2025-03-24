@@ -38,7 +38,7 @@ function searchFiles(query) {
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    let extractedTitles = [];
+                    let extractedResults = [];
 
                     // Extract links from the modal
                     if (modalId) {
@@ -50,11 +50,11 @@ function searchFiles(query) {
                                 let linkText = modalLink.innerText.trim();
                                 let linkHref = modalLink.href;
 
-                                let separatedTitles = linkText.split(/,| - | \| /);
-                                separatedTitles.forEach(seasonTitle => {
+                                let seasonTitles = linkText.split(/,| - | \| /); // Split titles if multiple
+                                seasonTitles.forEach(seasonTitle => {
                                     let cleanTitle = seasonTitle.trim();
                                     if (cleanTitle) {
-                                        extractedTitles.push({ title: cleanTitle, img, link: linkHref, language });
+                                        extractedResults.push({ title: cleanTitle, img, link: linkHref, language });
                                     }
                                 });
                             });
@@ -62,7 +62,7 @@ function searchFiles(query) {
                     }
 
                     // Add extracted results
-                    results = results.concat(extractedTitles);
+                    results = results.concat(extractedResults);
 
                     // Normal title or language search
                     if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
