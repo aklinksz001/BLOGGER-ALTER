@@ -1,14 +1,14 @@
-// List of all file pages to search in
+// List of all file pages in the same directory
 const filePages = [
     "posts/Korean-Drama-Tamil.html",
     "posts/Anime-English.html",
     "posts/Dubbed-Movie-Series-Tamil.html",
     "posts/Cartoon-Anime-Tamil.html",
     "posts/Tamil-Webseries.html"
-    // Add more files here if needed
+    // Add more files here
 ];
 
-// Function to search across all files
+// Function to fetch and search data
 function searchFiles(query) {
     let results = [];
     let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
@@ -24,49 +24,66 @@ function searchFiles(query) {
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
-                    let linkElement = container.querySelector("a");
+                    let linkElement = container.querySelector("a.trigger-modal") || container.querySelector("a[href^='../others/Ads.html']");
                     let languageElement = container.querySelector(".language");
 
                     let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                     let img = imgElement ? imgElement.src : "";
-                    let link = linkElement ? linkElement.href : "#";
-                    let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
-                    let language = languageElement ? languageElement.innerText.replace("Language:", "").trim().toUpperCase() : "UNKNOWN";
-
+                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim().toUpperCase() : "UNKNOWN";
+                    
                     let titleLower = title.toLowerCase();
                     let languageLower = language.toLowerCase();
 
-                    // Match query with title or language
-                    if (!titleLower.includes(searchLower) && !languageLower.includes(searchLower)) {
-                        return;
+                    // **Type 1: Single direct link (no modal)**
+                    if (linkElement && !linkElement.classList.contains("trigger-modal")) {
+                        let directLink = linkElement.href;
+                        results.push({
+                            title,
+                            img,
+                            link: directLink,
+                            language
+                        });
                     }
 
-                    // TYPE 1 - Direct Download Link (No Modal)
-                    if (linkElement && linkElement.href.includes("video=") && !modalId) {
-                        results.push({ title, img, link, language });
-                    }
-
-                    // TYPE 2 & 3 - Modal-based extraction
-                    if (modalId) {
+                    // **Type 2 & Type 3: Modal links**
+                    if (linkElement && linkElement.classList.contains("trigger-modal")) {
+                        let modalId = linkElement.getAttribute("data-modal-id");
                         let modal = doc.getElementById(modalId);
+
                         if (modal) {
-                            let modalLinks = modal.querySelectorAll("a.ad-link"); // Get all download links
-                            let subtitles = modal.querySelectorAll("ul li"); // Get all subtitles
+                            let modalLinks = modal.querySelectorAll("a.ad-link"); // Get all links
+                            let subtitleElements = modal.querySelectorAll("ul li"); // Get all subtitles
 
                             if (modalLinks.length > 1) {
-                                // TYPE 2 - If multiple links exist, treat each separately
+                                // **Type 2: Multiple links inside a modal**
                                 modalLinks.forEach((modalLink) => {
-                                    results.push({ title, img, link: modalLink.href, language });
+                                    results.push({
+                                        title,
+                                        img,
+                                        link: modalLink.href,
+                                        language
+                                    });
                                 });
-                            } else if (subtitles.length > 0 && modalLinks.length === 1) {
-                                // TYPE 3 - If multiple subtitles but one link, show each title separately
-                                subtitles.forEach((subtitle) => {
+                            } else if (subtitleElements.length > 0 && modalLinks.length === 1) {
+                                // **Type 3: Multiple titles but a single download link**
+                                let sharedLink = modalLinks[0].href; // Only one link for all
+                                subtitleElements.forEach((subtitle) => {
                                     let subtitleText = subtitle.innerText.trim();
-                                    results.push({ title: subtitleText, img, link: modalLinks[0].href, language });
+                                    results.push({
+                                        title: subtitleText,
+                                        img,
+                                        link: sharedLink,
+                                        language
+                                    });
                                 });
-                            } else if (modalLinks.length === 1) {
-                                // Single title, single link (common case)
-                                results.push({ title, img, link: modalLinks[0].href, language });
+                            } else {
+                                // If no subtitles and only one link
+                                results.push({
+                                    title,
+                                    img,
+                                    link: modalLinks.length > 0 ? modalLinks[0].href : "#", // Fallback to #
+                                    language
+                                });
                             }
                         }
                     }
@@ -79,7 +96,7 @@ function searchFiles(query) {
     Promise.all(fetchPromises).then(() => showResults(results));
 }
 
-// Function to display search results
+// Function to display search results directly below search bar
 function showResults(results) {
     let resultContainer = document.getElementById("searchResults");
     resultContainer.innerHTML = ""; // Clear previous results
@@ -96,9 +113,7 @@ function showResults(results) {
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
                     <div style="text-align: center; flex-grow: 1;">
                         <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px; font-weight: bold;">
-                            <span style="color: black;">Language:</span> <span style="color: #00FF00;">${item.language}</span>
-                        </p>
+                        <p style="margin: 2px 0; font-size: 14px; color: #00FF00; font-weight: bold;">${item.language}</p>
                         <a href="${item.link}" target="_blank" style="color: red; font-weight: bold; font-size: 16px; text-decoration: none;">
                             <span style="color: black;">➥</span> DOWNLOAD
                         </a>
