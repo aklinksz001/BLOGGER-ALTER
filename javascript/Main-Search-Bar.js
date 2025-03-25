@@ -7,52 +7,6 @@ const filePages = [
     "../posts/Tamil-Webseries.html"
 ];
 
-// IndexedDB Setup
-const dbName = "MovieSearchDB";
-const storeName = "movies";
-let db;
-
-// Open IndexedDB
-const openDB = () => {
-    return new Promise((resolve, reject) => {
-        let request = indexedDB.open(dbName, 1);
-        request.onupgradeneeded = function (event) {
-            let db = event.target.result;
-            if (!db.objectStoreNames.contains(storeName)) {
-                db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
-            }
-        };
-        request.onsuccess = function (event) {
-            db = event.target.result;
-            resolve(db);
-        };
-        request.onerror = function (event) {
-            reject("IndexedDB error: " + event.target.error);
-        };
-    });
-};
-
-// Save movies to IndexedDB
-const saveToDB = async (movies) => {
-    let db = await openDB();
-    let transaction = db.transaction(storeName, "readwrite");
-    let store = transaction.objectStore(storeName);
-    movies.forEach(movie => store.put(movie));
-};
-
-// Load movies from IndexedDB
-const loadFromDB = async () => {
-    let db = await openDB();
-    return new Promise((resolve) => {
-        let transaction = db.transaction(storeName, "readonly");
-        let store = transaction.objectStore(storeName);
-        let request = store.getAll();
-        request.onsuccess = function () {
-            resolve(request.result);
-        };
-    });
-};
-
 // Inject CSS dynamically
 const style = document.createElement("style");
 style.innerHTML = `
@@ -92,9 +46,16 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
-// Function to fetch and cache movie data
-async function fetchAndCacheMovies() {
-    let allMovies = [];
+// Function to fetch and search data
+async function searchFiles(query) {
+    let results = [];
+    let searchLower = query.toLowerCase().trim();
+
+    if (searchLower.length === 0) {
+        showResults([]); // Clear results if query is empty
+        return;
+    }
+
     let fetchPromises = filePages.map(async (page) => {
         try {
             let response = await fetch(page);
@@ -114,6 +75,9 @@ async function fetchAndCacheMovies() {
                 let link = linkElement ? linkElement.href : "#";
                 let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
+                let titleLower = title.toLowerCase();
+                let languageLower = language.toLowerCase();
+
                 let modalId = linkElement?.getAttribute("data-modal-id");
                 if (modalId) {
                     let modal = doc.getElementById(modalId);
@@ -122,21 +86,21 @@ async function fetchAndCacheMovies() {
                         let subtitles = modal.querySelectorAll("ul li");
 
                         if (subtitles.length > 0) {
-                            allMovies.push({ title, img, link: modalLinks[0]?.href || "#", language });
+                            results.push({ title, img, link: modalLinks[0]?.href || "#", language });
 
                             subtitles.forEach((subtitle) => {
                                 let subtitleText = subtitle.innerText.trim();
-                                allMovies.push({ title: subtitleText, img, link: modalLinks[0]?.href || "#", language });
+                                results.push({ title: subtitleText, img, link: modalLinks[0]?.href || "#", language });
                             });
                         } else {
                             modalLinks.forEach((modalLink) => {
                                 let linkText = modalLink.innerText.trim();
-                                allMovies.push({ title: linkText, img, link: modalLink.href, language });
+                                results.push({ title: linkText, img, link: modalLink.href, language });
                             });
                         }
                     }
                 } else {
-                    allMovies.push({ title, img, link, language });
+                    results.push({ title, img, link, language });
                 }
             });
         } catch (error) {
@@ -145,36 +109,20 @@ async function fetchAndCacheMovies() {
     });
 
     await Promise.all(fetchPromises);
-    await saveToDB(allMovies);
+    showResults(results);
 }
 
-// Function to search and display results
-let allResults = [];
-let loadedCount = 0;
-const loadBatchSize = 10;
+// Function to display search results
+function showResults(results) {
+    let resultContainer = document.getElementById("resultContainer");
+    resultContainer.innerHTML = ""; // Clear previous results
 
-async function searchFiles(query) {
-    let searchLower = query.toLowerCase().trim();
-    if (searchLower.length === 0) {
-        showResults([]);
+    if (results.length === 0) {
+        resultContainer.innerHTML = "<p>No results found</p>";
         return;
     }
 
-    let storedMovies = await loadFromDB();
-    allResults = storedMovies.filter(item => item.title.toLowerCase().includes(searchLower) || item.language.toLowerCase().includes(searchLower));
-    loadedCount = 0;
-    showResults();
-}
-
-// Function to show results with infinite scroll
-function showResults() {
-    let resultContainer = document.getElementById("resultContainer");
-    if (loadedCount === 0) resultContainer.innerHTML = ""; // Clear previous results
-
-    let nextBatch = allResults.slice(loadedCount, loadedCount + loadBatchSize);
-    loadedCount += nextBatch.length;
-
-    nextBatch.forEach((item) => {
+    results.forEach((item) => {
         let resultItem = document.createElement("div");
         resultItem.classList.add("result-item");
         resultItem.innerHTML = `
@@ -193,13 +141,6 @@ function showResults() {
     });
 }
 
-// Infinite Scroll Handler
-window.addEventListener("scroll", function () {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-        showResults();
-    }
-});
-
 // Attach search function to input field
 document.getElementById("searchBar").addEventListener("input", function () {
     let query = this.value.trim();
@@ -209,6 +150,3 @@ document.getElementById("searchBar").addEventListener("input", function () {
         document.getElementById("resultContainer").innerHTML = "";
     }
 });
-
-// Initialize data fetching
-fetchAndCacheMovies();
