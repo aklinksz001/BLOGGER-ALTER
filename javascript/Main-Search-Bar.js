@@ -1,10 +1,10 @@
 // List of HTML files in the same directory
 const filePages = [
-    "posts/Korean-Drama-Tamil.html",
-    "posts/Anime-English.html",
-    "posts/Dubbed-Movie-Series-Tamil.html",
-    "posts/Cartoon-Anime-Tamil.html",
-    "posts/Tamil-Webseries.html"
+    "../posts/Korean-Drama-Tamil.html",
+    "../posts/Anime-English.html",
+    "../posts/Dubbed-Movie-Series-Tamil.html",
+    "../posts/Cartoon-Anime-Tamil.html",
+    "../posts/Tamil-Webseries.html"
 ];
 
 // Function to fetch and search data
