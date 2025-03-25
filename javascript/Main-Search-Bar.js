@@ -1,11 +1,10 @@
 // List of HTML files in the same directory
 const filePages = [
-    "../posts/Korean-Drama-Tamil.html",
-    "../posts/Anime-English.html",
-    "../posts/Dubbed-Movie-Series-Tamil.html",
-    "../posts/Cartoon-Anime-Tamil.html",
-    "../posts/Tamil-Webseries.html"
-    // Add more files here
+    "posts/Korean-Drama-Tamil.html",
+    "posts/Anime-English.html",
+    "posts/Dubbed-Movie-Series-Tamil.html",
+    "posts/Cartoon-Anime-Tamil.html",
+    "posts/Tamil-Webseries.html"
 ];
 
 // Function to fetch and search data
@@ -53,7 +52,7 @@ async function searchFiles(query) {
                         let subtitleElements = modal.querySelectorAll("ul li"); // Get all subtitles
 
                         if (modalLinks.length > 1 && subtitleElements.length === 0) {
-                            // **Type 2: Multiple links with corresponding titles**
+                            // **Type 2: Multiple links with corresponding subtitles**
                             modalLinks.forEach((modalLink) => {
                                 let subtitleText = modalLink.innerText.trim(); // Extract subtitle from link text
                                 let subtitleLower = subtitleText.toLowerCase();
@@ -62,20 +61,20 @@ async function searchFiles(query) {
                                 }
                             });
                         } else if (subtitleElements.length > 0 && modalLinks.length === 1) {
-                            // **Type 3: Multiple subtitles with a single download link**
+                            // **Type 3: Show each subtitle separately with the same link**
                             let sharedLink = modalLinks[0].href;
-                            
-                            // Include **Main Title** first
+
+                            // Include **Main Title Separately**
                             if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
                                 results.push({ title, img, link: sharedLink, language });
                             }
-                            
-                            // Add each subtitle separately
+
+                            // Add each subtitle as its own entry
                             subtitleElements.forEach((subtitle) => {
                                 let subtitleText = subtitle.innerText.trim();
                                 let subtitleLower = subtitleText.toLowerCase();
                                 if (subtitleLower.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                                    results.push({ title: `${title} - ${subtitleText}`, img, link: sharedLink, language });
+                                    results.push({ title: subtitleText, img, link: sharedLink, language });
                                 }
                             });
                         } else {
