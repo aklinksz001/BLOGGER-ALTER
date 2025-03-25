@@ -1,4 +1,4 @@
-// List of all file pages to fetch
+// List of all file pages in the same directory
 const filePages = [
     "../posts/Korean-Drama-Tamil.html",
     "../posts/Anime-English.html",
@@ -7,151 +7,208 @@ const filePages = [
     "../posts/Tamil-Webseries.html"
 ];
 
-let cacheData = {}; // Local cache for stored pages
-let debounceTimer; // Debounce timer for optimized searching
+// IndexedDB Setup
+const dbName = "MovieSearchDB";
+const storeName = "movies";
+let db;
 
-// Function to normalize text (case-insensitive & removes spaces, hyphens, underscores)
-function normalizeText(text) {
-    return text.toLowerCase().replace(/[\s\-_]+/g, "");
-}
-
-// Function to highlight matched search terms
-function highlightMatch(text, query) {
-    let regex = new RegExp(query, "gi");
-    return text.replace(regex, (match) => `<span style="background-color: yellow; font-weight: bold;">${match}</span>`);
-}
-
-// Function to fetch and search data
-function searchFiles(query) {
-    let results = [];
-    let searchLower = normalizeText(query.trim());
-
-    let fetchPromises = filePages.map(page => {
-        if (cacheData[page]) {
-            return Promise.resolve(cacheData[page]); // Use cached data if available
-        } else {
-            return fetch(page)
-                .then(response => response.text())
-                .then(data => {
-                    cacheData[page] = data; // Store data in cache
-                    return data;
-                })
-                .catch(error => console.error(`Error loading ${page}:`, error));
-        }
+// Open IndexedDB
+const openDB = () => {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = function (event) {
+            let db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+            }
+        };
+        request.onsuccess = function (event) {
+            db = event.target.result;
+            resolve(db);
+        };
+        request.onerror = function (event) {
+            reject("IndexedDB error: " + event.target.error);
+        };
     });
+};
 
-    Promise.all(fetchPromises).then(pagesData => {
-        pagesData.forEach((data, index) => {
+// Save movies to IndexedDB
+const saveToDB = async (movies) => {
+    let db = await openDB();
+    let transaction = db.transaction(storeName, "readwrite");
+    let store = transaction.objectStore(storeName);
+    movies.forEach(movie => store.put(movie));
+};
+
+// Load movies from IndexedDB
+const loadFromDB = async () => {
+    let db = await openDB();
+    return new Promise((resolve) => {
+        let transaction = db.transaction(storeName, "readonly");
+        let store = transaction.objectStore(storeName);
+        let request = store.getAll();
+        request.onsuccess = function () {
+            resolve(request.result);
+        };
+    });
+};
+
+// Inject CSS dynamically
+const style = document.createElement("style");
+style.innerHTML = `
+    .result-item {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .result-item img {
+        border-radius: 5px;
+        margin-right: 10px;
+        width: 100px;
+    }
+    .result-item div {
+        text-align: center;
+    }
+    .result-item h4 {
+        margin: 0;
+        text-transform: uppercase;
+    }
+    .result-item p {
+        margin: 2px 0;
+        font-size: 14px;
+        color: #00FF00;
+        font-weight: bold;
+    }
+    .result-item a {
+        text-decoration: none;
+        font-weight: bold;
+        color: red;
+    }
+    .result-item a span {
+        color: black;
+    }
+`;
+document.head.appendChild(style);
+
+// Function to fetch and cache movie data
+async function fetchAndCacheMovies() {
+    let allMovies = [];
+    let fetchPromises = filePages.map(async (page) => {
+        try {
+            let response = await fetch(page);
+            let data = await response.text();
             let parser = new DOMParser();
             let doc = parser.parseFromString(data, "text/html");
 
             let containers = doc.querySelectorAll(".container");
-            containers.forEach(container => {
+            containers.forEach((container) => {
                 let titleElement = container.querySelector(".heading-title");
                 let imgElement = container.querySelector("img");
-                let linkElement = container.querySelector("a.trigger-modal");
+                let linkElement = container.querySelector("a.trigger-modal, a:not(.trigger-modal)");
                 let languageElement = container.querySelector(".language");
 
                 let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
                 let img = imgElement ? imgElement.src : "";
-                let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
+                let link = linkElement ? linkElement.href : "#";
                 let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
-                let titleLower = normalizeText(title);
-                let languageLower = normalizeText(language);
-
-                let link = "#";
+                let modalId = linkElement?.getAttribute("data-modal-id");
                 if (modalId) {
                     let modal = doc.getElementById(modalId);
                     if (modal) {
-                        let modalLink = modal.querySelector("a.ad-link");
-                        if (modalLink) {
-                            link = modalLink.href;
+                        let modalLinks = modal.querySelectorAll("a.ad-link");
+                        let subtitles = modal.querySelectorAll("ul li");
+
+                        if (subtitles.length > 0) {
+                            allMovies.push({ title, img, link: modalLinks[0]?.href || "#", language });
+
+                            subtitles.forEach((subtitle) => {
+                                let subtitleText = subtitle.innerText.trim();
+                                allMovies.push({ title: subtitleText, img, link: modalLinks[0]?.href || "#", language });
+                            });
+                        } else {
+                            modalLinks.forEach((modalLink) => {
+                                let linkText = modalLink.innerText.trim();
+                                allMovies.push({ title: linkText, img, link: modalLink.href, language });
+                            });
                         }
                     }
-                }
-
-                // Check if search query matches title or language
-                if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                    results.push({ 
-                        title: highlightMatch(title, query), 
-                        img, 
-                        link, 
-                        language: highlightMatch(language, query) 
-                    });
-                }
-
-                // Check subtitles inside modal
-                if (modalId) {
-                    let modal = doc.getElementById(modalId);
-                    if (modal) {
-                        let subtitles = modal.querySelectorAll("ul li");
-                        subtitles.forEach(subtitle => {
-                            let subtitleText = subtitle.innerText.trim();
-                            let subtitleLower = normalizeText(subtitleText);
-                            if (subtitleLower.includes(searchLower)) {
-                                results.push({ 
-                                    title: highlightMatch(subtitleText, query), 
-                                    img, 
-                                    link, 
-                                    language: highlightMatch(language, query) 
-                                });
-                            }
-                        });
-                    }
+                } else {
+                    allMovies.push({ title, img, link, language });
                 }
             });
-        });
+        } catch (error) {
+            console.error(`Error loading ${page}:`, error);
+        }
+    });
 
-        showResults(results);
+    await Promise.all(fetchPromises);
+    await saveToDB(allMovies);
+}
+
+// Function to search and display results
+let allResults = [];
+let loadedCount = 0;
+const loadBatchSize = 10;
+
+async function searchFiles(query) {
+    let searchLower = query.toLowerCase().trim();
+    if (searchLower.length === 0) {
+        showResults([]);
+        return;
+    }
+
+    let storedMovies = await loadFromDB();
+    allResults = storedMovies.filter(item => item.title.toLowerCase().includes(searchLower) || item.language.toLowerCase().includes(searchLower));
+    loadedCount = 0;
+    showResults();
+}
+
+// Function to show results with infinite scroll
+function showResults() {
+    let resultContainer = document.getElementById("resultContainer");
+    if (loadedCount === 0) resultContainer.innerHTML = ""; // Clear previous results
+
+    let nextBatch = allResults.slice(loadedCount, loadedCount + loadBatchSize);
+    loadedCount += nextBatch.length;
+
+    nextBatch.forEach((item) => {
+        let resultItem = document.createElement("div");
+        resultItem.classList.add("result-item");
+        resultItem.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+                <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
+                <div style="text-align: center;">
+                    <h4 style="margin: 0;">${item.title.toUpperCase()}</h4>
+                    <p style="margin: 2px 0; font-size: 14px;"><strong style="color: #00FF00;">${item.language.toUpperCase()}</strong></p>
+                    <a href="${item.link}" target="_blank" style="color: red; text-decoration: none; font-weight: bold;">
+                        <span style="color: black;">➥</span> DOWNLOAD
+                    </a>
+                </div>
+            </div>
+        `;
+        resultContainer.appendChild(resultItem);
     });
 }
 
-// Function to display search results
-function showResults(results) {
-    let resultContainer = document.getElementById("resultContainer");
-    resultContainer.innerHTML = "";
-
-    if (results.length === 0) {
-        resultContainer.innerHTML = "<p>No results found</p>";
-    } else {
-        results.forEach(item => {
-            let resultItem = document.createElement("div");
-            resultItem.classList.add("result-item");
-            resultItem.innerHTML = `
-                <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
-                    <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
-                    <div style="text-align: center;">
-                        <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px;"><strong style="color: #00FF00;">LANGUAGE:</strong> <span style="color: #00FF00;">${item.language.toUpperCase()}</span></p>
-                        <a href="${item.link}" target="_blank" style="color: red; font-weight: bold; text-decoration: none;">
-                            <span style="color: black;">➥</span> DOWNLOAD
-                        </a>
-                    </div>
-                </div>
-            `;
-            resultContainer.appendChild(resultItem);
-        });
-    }
-
-    document.getElementById("searchResults").style.display = "block";
-}
-
-// Function to handle input with debounce (search after user stops typing)
-document.getElementById("searchBar").addEventListener("input", function () {
-    let query = this.value.trim();
-    clearTimeout(debounceTimer); // Clear previous timer
-    if (query.length > 0) {
-        debounceTimer = setTimeout(() => searchFiles(query), 300); // Delay search by 300ms
-    } else {
-        document.getElementById("searchResults").style.display = "none";
+// Infinite Scroll Handler
+window.addEventListener("scroll", function () {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        showResults();
     }
 });
 
-// Close modal when clicking outside
-window.onclick = function (event) {
-    let resultModal = document.getElementById("searchResults");
-    if (event.target == resultModal) {
-        resultModal.style.display = "none";
+// Attach search function to input field
+document.getElementById("searchBar").addEventListener("input", function () {
+    let query = this.value.trim();
+    if (query.length > 0) {
+        searchFiles(query);
+    } else {
+        document.getElementById("resultContainer").innerHTML = "";
     }
-};
+});
+
+// Initialize data fetching
+fetchAndCacheMovies();
