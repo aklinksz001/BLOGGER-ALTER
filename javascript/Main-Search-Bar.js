@@ -1,86 +1,104 @@
-// List of all file pages in the same directory
+// List of HTML files in the same directory
 const filePages = [
     "../posts/Korean-Drama-Tamil.html",
     "../posts/Anime-English.html",
     "../posts/Dubbed-Movie-Series-Tamil.html",
     "../posts/Cartoon-Anime-Tamil.html",
-    "../posts/Tamil-Webseries.html",
+    "../posts/Tamil-Webseries.html"
 ];
 
-// Function to normalize text by removing spaces, hyphens, and underscores
-function normalizeText(text) {
-    return text.toLowerCase().replace(/[\s-_]+/g, "");
-}
-
 // Function to fetch and search data
-function searchFiles(query) {
+async function searchFiles(query) {
     let results = [];
-    let searchNormalized = normalizeText(query.trim()); // Normalize search query
+    let searchLower = query.toLowerCase().trim(); // Convert search query to lowercase
 
-    let fetchPromises = filePages.map(page =>
-        fetch(page)
-            .then(response => response.text())
-            .then(data => {
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(data, "text/html");
+    let fetchPromises = filePages.map(async (page) => {
+        try {
+            let response = await fetch(page);
+            let data = await response.text();
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(data, "text/html");
 
-                let containers = doc.querySelectorAll(".container");
-                containers.forEach(container => {
-                    let titleElement = container.querySelector(".heading-title");
-                    let imgElement = container.querySelector("img");
-                    let linkElement = container.querySelector("a.trigger-modal");
-                    let languageElement = container.querySelector(".language");
+            let containers = doc.querySelectorAll(".container");
 
-                    let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
-                    let img = imgElement ? imgElement.src : "";
-                    let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
-                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
+            containers.forEach(container => {
+                let titleElement = container.querySelector(".heading-title");
+                let imgElement = container.querySelector("img");
+                let linkElement = container.querySelector("a.trigger-modal") || container.querySelector("a[href^='../others/Ads.html']");
+                let languageElement = container.querySelector(".language");
 
-                    let titleNormalized = normalizeText(title); // Normalize title for comparison
-                    let languageNormalized = normalizeText(language);
+                let title = titleElement ? titleElement.innerText.trim() : "Unknown Title";
+                let img = imgElement ? imgElement.src : "";
+                let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim().toUpperCase() : "UNKNOWN";
+                
+                let titleLower = title.toLowerCase();
+                let languageLower = language.toLowerCase();
 
-                    let link = "#";
-                    if (modalId) {
-                        let modal = doc.getElementById(modalId);
-                        if (modal) {
-                            let modalLink = modal.querySelector("a.ad-link");
-                            if (modalLink) {
-                                link = modalLink.href;
+                // **Type 1: Direct link (No modal)**
+                if (linkElement && !linkElement.classList.contains("trigger-modal")) {
+                    let directLink = linkElement.href;
+                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                        results.push({ title, img, link: directLink, language });
+                    }
+                }
+
+                // **Type 2 & Type 3: Modal links**
+                if (linkElement && linkElement.classList.contains("trigger-modal")) {
+                    let modalId = linkElement.getAttribute("data-modal-id");
+                    let modal = doc.getElementById(modalId);
+
+                    if (modal) {
+                        let modalLinks = modal.querySelectorAll("a.ad-link"); // Get all links
+                        let subtitleElements = modal.querySelectorAll("ul li"); // Get all subtitles
+
+                        if (modalLinks.length > 1 && subtitleElements.length === 0) {
+                            // **Type 2: Multiple links with corresponding subtitles**
+                            modalLinks.forEach((modalLink) => {
+                                let subtitleText = modalLink.innerText.trim(); // Extract subtitle from link text
+                                let subtitleLower = subtitleText.toLowerCase();
+                                if (subtitleLower.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                    results.push({ title: subtitleText, img, link: modalLink.href, language });
+                                }
+                            });
+                        } else if (subtitleElements.length > 0 && modalLinks.length === 1) {
+                            // **Type 3: Show each subtitle separately with the same link**
+                            let sharedLink = modalLinks[0].href;
+
+                            // Include **Main Title Separately**
+                            if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                results.push({ title, img, link: sharedLink, language });
+                            }
+
+                            // Add each subtitle as its own entry
+                            subtitleElements.forEach((subtitle) => {
+                                let subtitleText = subtitle.innerText.trim();
+                                let subtitleLower = subtitleText.toLowerCase();
+                                if (subtitleLower.includes(searchLower) || titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                    results.push({ title: subtitleText, img, link: sharedLink, language });
+                                }
+                            });
+                        } else {
+                            // If no subtitles and only one link
+                            if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                results.push({ title, img, link: modalLinks.length > 0 ? modalLinks[0].href : "#", language });
                             }
                         }
                     }
+                }
+            });
 
-                    // Match query with title or language
-                    if (titleNormalized.includes(searchNormalized) || languageNormalized.includes(searchNormalized)) {
-                        results.push({ title, img, link, language });
-                    }
+        } catch (error) {
+            console.error(`Error loading ${page}:`, error);
+        }
+    });
 
-                    // Check subtitles inside modal
-                    if (modalId) {
-                        let modal = doc.getElementById(modalId);
-                        if (modal) {
-                            let subtitles = modal.querySelectorAll("ul li");
-                            subtitles.forEach(subtitle => {
-                                let subtitleText = subtitle.innerText.trim();
-                                let subtitleNormalized = normalizeText(subtitleText);
-                                if (subtitleNormalized.includes(searchNormalized)) {
-                                    results.push({ title: subtitleText, img, link, language });
-                                }
-                            });
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error(`Error loading ${page}:`, error))
-    );
-
-    // After all fetch requests complete, show results
-    Promise.all(fetchPromises).then(() => showResults(results));
+    await Promise.all(fetchPromises);
+    showResults(results);
 }
 
-// Function to display search results
+// Function to display search results directly below search bar
 function showResults(results) {
-    let resultContainer = document.getElementById("resultContainer");
+    let resultContainer = document.getElementById("searchResults");
     resultContainer.innerHTML = ""; // Clear previous results
 
     if (results.length === 0) {
@@ -89,13 +107,16 @@ function showResults(results) {
         results.forEach(item => {
             let resultItem = document.createElement("div");
             resultItem.classList.add("result-item");
+
             resultItem.innerHTML = `
                 <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
                     <img src="${item.img}" alt="${item.title}" width="100" style="border-radius: 5px; margin-right: 10px;">
-                    <div style="text-align: center;">
+                    <div style="text-align: center; flex-grow: 1;">
                         <h4 style="margin: 0;">${item.title}</h4>
-                        <p style="margin: 2px 0; font-size: 14px;"><strong style="color: #000;">LANGUAGE:</strong> <span style="color: #00FF00;">${item.language}</span></p>
-                        <a href="${item.link}" target="_blank" style="color: red; text-decoration: none; font-weight: bold;">➥ DOWNLOAD</a>
+                        <p style="margin: 2px 0; font-size: 14px; color: #00FF00; font-weight: bold;">${item.language}</p>
+                        <a href="${item.link}" target="_blank" style="color: red; font-weight: bold; font-size: 16px; text-decoration: none;">
+                            <span style="color: black;">➥</span> DOWNLOAD
+                        </a>
                     </div>
                 </div>
             `;
@@ -110,6 +131,6 @@ document.getElementById("searchBar").addEventListener("input", function () {
     if (query.length > 0) {
         searchFiles(query);
     } else {
-        document.getElementById("searchResults").style.display = "none";
+        document.getElementById("searchResults").innerHTML = ""; // Clear results
     }
 });
