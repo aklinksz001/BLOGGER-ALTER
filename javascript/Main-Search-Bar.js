@@ -2,9 +2,9 @@
 const filePages = [
     "../posts/Korean-Drama-Tamil.html",
     "../posts/Anime-English.html",
-    "../posts/Dubbed-Solo-Movies.html",
+    "../posts/Dubbed-Movie-Series-Tamil.html",
     "../posts/Cartoon-Anime-Tamil.html",
-    "../posts/Tamil-Webseries.html",
+    "../posts/Dubbed-Solo-Movies.html",
     // Add more files here
 ];
 
@@ -34,20 +34,24 @@ function searchFiles(query) {
 
                     let title = titleElement ? titleElement.innerText.trim() : null;
                     let img = imgElement ? imgElement.src : "";
-                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
+                    let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "UNKNOWN";
                     let titleLower = title ? title.toLowerCase() : "";
-                    let languageLower = language.toLowerCase();
+                    let languageLower = language ? language.toLowerCase() : "";
 
                     // Handling Type 4 (Direct title link)
                     if (titleLinkElement) {
                         let titleText = titleLinkElement.innerText.trim();
                         let link = titleLinkElement.href;
-                        results.push({
-                            title: titleText.toUpperCase(),
-                            img: defaultImage,
-                            link: link,
-                            language: "UNKNOWN"
-                        });
+                        let languageText = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "UNKNOWN";
+
+                        if (titleText.toLowerCase().includes(searchLower) || languageLower.includes(searchLower)) {
+                            results.push({
+                                title: titleText.toUpperCase(),
+                                img: defaultImage,
+                                link: link,
+                                language: languageText.toUpperCase()
+                            });
+                        }
                     }
 
                     // Type 1: Single title with direct link
@@ -55,70 +59,67 @@ function searchFiles(query) {
                         let directLinkElement = container.querySelector("a[href]");
                         if (directLinkElement) {
                             let directLink = directLinkElement.href;
-                            results.push({
-                                title: title.toUpperCase(),
-                                img: img,
-                                link: directLink,
-                                language: language.toUpperCase()
-                            });
+                            if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
+                                results.push({
+                                    title: title.toUpperCase(),
+                                    img: img,
+                                    link: directLink,
+                                    language: language.toUpperCase()
+                                });
+                            }
                         }
                     }
 
                     // Type 2 & 3: Titles inside modal
                     if (linkElement) {
                         let modalId = linkElement.getAttribute("data-modal-id");
-                        let link = "#";
                         if (modalId) {
                             let modal = doc.getElementById(modalId);
                             if (modal) {
                                 let modalLinks = modal.querySelectorAll("a.ad-link");
                                 let subtitles = modal.querySelectorAll("ul li");
-                                
+
                                 // Type 2: Multiple links with different subtitles
                                 if (modalLinks.length > 1) {
                                     modalLinks.forEach((modalLink, index) => {
                                         let subtitleText = modalLink.innerText.trim();
                                         let link = modalLink.href;
-                                        results.push({
-                                            title: subtitleText.toUpperCase(),
-                                            img: img,
-                                            link: link,
-                                            language: language.toUpperCase()
-                                        });
+                                        if (subtitleText.toLowerCase().includes(searchLower)) {
+                                            results.push({
+                                                title: subtitleText.toUpperCase(),
+                                                img: img,
+                                                link: link,
+                                                language: language.toUpperCase()
+                                            });
+                                        }
                                     });
                                 } 
                                 // Type 3: Multiple subtitles with same link
                                 else if (modalLinks.length === 1) {
                                     let singleLink = modalLinks[0].href;
-                                    results.push({
-                                        title: title.toUpperCase(), // Include main title
-                                        img: img,
-                                        link: singleLink,
-                                        language: language.toUpperCase()
-                                    });
-
-                                    subtitles.forEach(subtitle => {
-                                        let subtitleText = subtitle.innerText.trim();
+                                    if (titleLower.includes(searchLower)) {
                                         results.push({
-                                            title: subtitleText.toUpperCase(),
+                                            title: title.toUpperCase(),
                                             img: img,
                                             link: singleLink,
                                             language: language.toUpperCase()
                                         });
+                                    }
+
+                                    subtitles.forEach(subtitle => {
+                                        let subtitleText = subtitle.innerText.trim();
+                                        if (subtitleText.toLowerCase().includes(searchLower)) {
+                                            results.push({
+                                                title: subtitleText.toUpperCase(),
+                                                img: img,
+                                                link: singleLink,
+                                                language: language.toUpperCase()
+                                            });
+                                        }
                                     });
                                 }
                             }
                         }
-                    }
-
-                    // Search match check
-                    if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                        results.push({
-                            title: title.toUpperCase(),
-                            img: img,
-                            link: "#",
-                            language: language.toUpperCase()
-                        });
                     }
                 });
             })
