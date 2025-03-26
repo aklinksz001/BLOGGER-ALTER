@@ -71,7 +71,8 @@ fetch('Home-Posts.json')
             if (post.filename === 'Adult-Movies-Series.html') {
                 a.href = `others/Age-Verification.html?redirect=../posts/${post.filename}`;
             } else {
-                a.href = `others/verify.html?redirect=../posts/${post.filename}`;
+                a.href = `posts/${post.filename}`;
+              //  a.href = `others/verify.html?redirect=../posts/${post.filename}`;
             }
 
             // Adding the post title
