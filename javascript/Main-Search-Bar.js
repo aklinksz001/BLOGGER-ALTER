@@ -1,10 +1,10 @@
 // List of all file pages in the same directory
 const filePages = [
-    "posts/Korean-Drama-Tamil.html",
-    "posts/Anime-English.html",
-    "posts/Dubbed-Solo-Movies.html",
-    "posts/Cartoon-Anime-Tamil.html",
-    "posts/Tamil-Webseries.html",
+    "../posts/Korean-Drama-Tamil.html",
+    "../posts/Anime-English.html",
+    "../posts/Dubbed-Solo-Movies.html",
+    "../posts/Cartoon-Anime-Tamil.html",
+    "../posts/Tamil-Webseries.html",
     // Add more files here
 ];
 
