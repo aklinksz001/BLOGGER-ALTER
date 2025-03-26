@@ -11,19 +11,19 @@ const filePages = [
 // Default thumbnail for missing images
 const defaultThumbnail = "https://raw.githubusercontent.com/Alex27ak/Img-Collections/main/Files/6Zz3iCPe.jpeg";
 
-// Function to fetch and search data
-function searchFiles(query) {
-    let results = [];
-    let searchLower = query.toLowerCase().trim(); // Convert query to lowercase
+// Global variable to store preloaded data
+let movieData = [];
 
+// Function to preload all files (so search is instant)
+function preloadFiles() {
     let fetchPromises = filePages.map(page =>
         fetch(page)
             .then(response => response.text())
             .then(data => {
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(data, "text/html");
-
                 let containers = doc.querySelectorAll(".container");
+
                 containers.forEach(container => {
                     let titleElement = container.querySelector(".heading-title");
                     let imgElement = container.querySelector("img");
@@ -35,15 +35,10 @@ function searchFiles(query) {
                     let modalId = linkElement ? linkElement.getAttribute("data-modal-id") : null;
                     let language = languageElement ? languageElement.innerText.replace("Language: ", "").trim() : "Unknown";
 
-                    let titleLower = title.toLowerCase();
-                    let languageLower = language.toLowerCase();
-
-                    // Type 1: Direct link (No modal)
+                    // Type 1: Direct title with a single link
                     if (!modalId) {
                         let directLink = container.querySelector("a") ? container.querySelector("a").href : "#";
-                        if (titleLower.includes(searchLower) || languageLower.includes(searchLower)) {
-                            results.push({ title, img, link: directLink, language });
-                        }
+                        movieData.push({ title, img, link: directLink, language });
                     }
 
                     // Type 2 & 3: Modal-based content
@@ -57,25 +52,19 @@ function searchFiles(query) {
                                 // Type 2: Each link has its own subtitle
                                 modalLinks.forEach(link => {
                                     let subtitleText = link.innerText.trim().replace("➥", "").trim();
-                                    if (subtitleText.toLowerCase().includes(searchLower)) {
-                                        results.push({ title: subtitleText, img, link: link.href, language });
-                                    }
+                                    movieData.push({ title: subtitleText, img, link: link.href, language });
                                 });
                             } else if (subtitles.length > 0) {
                                 // Type 3: Multiple subtitles but one download link
                                 let singleLink = modal.querySelector("a.ad-link") ? modal.querySelector("a.ad-link").href : "#";
                                 
                                 // Add the main title first
-                                if (titleLower.includes(searchLower)) {
-                                    results.push({ title, img, link: singleLink, language });
-                                }
+                                movieData.push({ title, img, link: singleLink, language });
 
                                 // Add all subtitles separately
                                 subtitles.forEach(subtitle => {
                                     let subtitleText = subtitle.innerText.trim();
-                                    if (subtitleText.toLowerCase().includes(searchLower)) {
-                                        results.push({ title: subtitleText, img, link: singleLink, language });
-                                    }
+                                    movieData.push({ title: subtitleText, img, link: singleLink, language });
                                 });
                             }
                         }
@@ -85,8 +74,20 @@ function searchFiles(query) {
             .catch(error => console.error(`Error loading ${page}:`, error))
     );
 
-    // After all fetch requests complete, show results
-    Promise.all(fetchPromises).then(() => showResults(results));
+    return Promise.all(fetchPromises);
+}
+
+// Function to search preloaded data
+function searchMovies(query) {
+    let results = [];
+    let searchLower = query.toLowerCase().trim();
+
+    results = movieData.filter(item =>
+        item.title.toLowerCase().includes(searchLower) || 
+        item.language.toLowerCase().includes(searchLower)
+    );
+
+    showResults(results);
 }
 
 // Function to display search results
@@ -126,16 +127,11 @@ function showResults(results) {
 document.getElementById("searchBar").addEventListener("input", function () {
     let query = this.value.trim();
     if (query.length > 0) {
-        searchFiles(query);
+        searchMovies(query);
     } else {
         document.getElementById("searchResults").style.display = "none";
     }
 });
 
-// Close results when clicking outside
-window.onclick = function (event) {
-    let resultModal = document.getElementById("searchResults");
-    if (event.target == resultModal) {
-        resultModal.style.display = "none";
-    }
-};
+// Preload files on page load (ensures instant search)
+preloadFiles().then(() => console.log("All movie files preloaded!"));
