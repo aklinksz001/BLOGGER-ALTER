@@ -1,192 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Countdown to 03-09-2025</title>
+  <meta charset="UTF-8">
+  <title>Countdown to Sept 3</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap');
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f3f3f3, #d2e6ff);
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
       min-height: 100vh;
-      padding: 20px;
+      margin: 0;
     }
 
-    .container, .schedule-link-box {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      padding: 40px 30px;
-      border-radius: 20px;
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 30px 40px;
       text-align: center;
-      max-width: 550px;
-      width: 100%;
-      transition: all 0.3s ease;
-      margin-bottom: 20px;
+      width: 400px;
     }
 
     h1 {
-      font-size: 2.8rem;
+      color: #333;
+      font-size: 26px;
       margin-bottom: 10px;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to right, #ff6ec4, #7873f5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
-    #daysLeft,
-    #todayCountdown {
-      font-size: 1.6rem;
-      margin: 10px 0;
+    .countdown {
+      font-size: 32px;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 15px;
     }
 
-    #dayName {
-      font-size: 1.1rem;
-      margin-top: 15px;
-      opacity: 0.9;
+    .sub-info {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #666;
     }
 
-    #todaySchedule {
-      margin-top: 20px;
+    .schedule-box {
+      background: #e9f2ff;
       padding: 20px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 15px;
-      font-size: 1.05rem;
-      line-height: 1.7;
-      color: #eee;
-      border-left: 4px solid #ff6ec4;
-      text-align: left;
+      border-radius: 12px;
+      color: #1a1a1a;
+      margin-bottom: 25px;
     }
 
-    .label {
-      font-weight: 600;
-      color: #ffe9f7;
+    .schedule-box h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #0056b3;
     }
 
-    .schedule-link-box {
-      cursor: pointer;
+    .button {
+      background: #0056b3;
       color: #fff;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 25px 20px;
-      border-left: 4px solid #00ffd5;
-      transition: 0.3s ease;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      transition: 0.2s ease;
     }
 
-    .schedule-link-box:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.02);
-    }
-
-    .schedule-link-box strong {
-      font-size: 1.2rem;
-      color: #00ffd5;
-    }
-
-    @media screen and (max-width: 600px) {
-      h1 {
-        font-size: 2.2rem;
-      }
-
-      #daysLeft,
-      #todayCountdown {
-        font-size: 1.4rem;
-      }
+    .button:hover {
+      background: #003f8a;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>Remaining Time</h1>
-    <div id="daysLeft">Loading...</div>
-    <div id="todayCountdown">Loading...</div>
-    <div id="dayName">Today is...</div>
-    <div id="todaySchedule">Loading today's schedule...</div>
-  </div>
+    <h1>Total Remaining Days</h1>
+    <div class="countdown" id="days">Loading...</div>
+    <div class="sub-info" id="time">Loading today's timer...</div>
 
-  <div class="schedule-link-box" onclick="window.open('https://docs.google.com/spreadsheets/d/1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg/edit', '_blank')">
-    <strong>SEE FULL SCHEDULE — OPEN NOW</strong>
+    <div class="schedule-box">
+      <h3>Today's Schedule</h3>
+      <div id="schedule">Loading...</div>
+    </div>
+
+    <a class="button" href="https://docs.google.com/spreadsheets/d/1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg/edit" target="_blank">
+      SEE FULL SCHEDULE - OPEN NOW
+    </a>
   </div>
 
   <script>
-    const sheetID = "1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg";
-    const sheetURL = `https://opensheet.elk.sh/${sheetID}/Sheet1`;
-    const targetDateStr = "03-09-2025"; // DD-MM-YYYY
-    const [dd, mm, yyyy] = targetDateStr.split("-");
-    const targetDate = new Date(`${yyyy}-${mm}-${dd}T00:00:00+05:30`);
+    const deadline = new Date("2025-09-03T23:59:59+05:30");
 
-    function getIndiaTimeNow() {
+    function updateTimer() {
       const now = new Date();
-      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-      return new Date(utc + (3600000 * 5.5)); // IST (UTC+5:30)
+      const diff = deadline - now;
+      const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      const indiaTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      const hrs = indiaTime.getHours();
+      const mins = indiaTime.getMinutes();
+      const secs = indiaTime.getSeconds();
+      const weekday = indiaTime.toLocaleDateString('en-IN', { weekday: 'long' });
+
+      document.getElementById('days').innerText = `${remainingDays} Days`;
+      document.getElementById('time').innerText = `Today's Remaining: ${23 - hrs} hrs : ${59 - mins} mins : ${59 - secs} sec (${weekday})`;
     }
 
-    function formatDateIST(date) {
-      const d = String(date.getDate()).padStart(2, '0');
-      const m = String(date.getMonth() + 1).padStart(2, '0');
-      const y = date.getFullYear();
-      return `${d}-${m}-${y}`;
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // FETCH SCHEDULE
+    const sheetURL = "https://script.google.com/macros/s/AKfycbwqhhJ81rJNUs-pXO7JQi063CiA2WYesQjxeXop2tBnFfDoADP6sNKKI5ktsBDGK_hN/exec";
+
+    function fetchSchedule() {
+      const indiaNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      const dd = String(indiaNow.getDate()).padStart(2, '0');
+      const mm = String(indiaNow.getMonth() + 1).padStart(2, '0');
+      const yyyy = indiaNow.getFullYear();
+      const todayStr = `${dd}-${mm}-${yyyy}`;
+
+      fetch(sheetURL)
+        .then(res => res.json())
+        .then(data => {
+          const found = data.find(row => row.date === todayStr);
+          document.getElementById('schedule').innerText = found ? found.schedule : "No schedule added for today.";
+        })
+        .catch(err => {
+          document.getElementById('schedule').innerText = "Failed to load schedule.";
+        });
     }
 
-    function updateCountdown() {
-      const now = getIndiaTimeNow();
-      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      endOfToday.setHours(0, 0, 0, 0);
-
-      const totalDiff = targetDate - now;
-      const todayDiff = endOfToday - now;
-
-      const daysLeft = Math.max(0, Math.floor(totalDiff / (1000 * 60 * 60 * 24)));
-      const hrs = Math.floor((todayDiff / (1000 * 60 * 60)) % 24);
-      const mins = Math.floor((todayDiff / (1000 * 60)) % 60);
-      const secs = Math.floor((todayDiff / 1000) % 60);
-
-      const weekday = now.toLocaleDateString("en-GB", { weekday: 'long', timeZone: "Asia/Kolkata" });
-
-      document.getElementById("daysLeft").innerHTML =
-        `Total <span class="label">${daysLeft}</span> Day(s) Remaining`;
-
-      document.getElementById("todayCountdown").innerHTML =
-        `Today's Remaining: 
-        <span class="label">${hrs}</span> Hr 
-        <span class="label">${mins}</span> Min 
-        <span class="label">${secs}</span> Sec`;
-
-      document.getElementById("dayName").textContent = `Today is ${weekday}`;
-    }
-
-    async function loadTodaySchedule() {
-      try {
-        const todayStr = formatDateIST(getIndiaTimeNow());
-        const res = await fetch(sheetURL);
-        const data = await res.json();
-
-        const today = data.find(row => row["A"] === todayStr);
-        const scheduleText = today?.["B"] || "No schedule added for today.";
-        document.getElementById("todaySchedule").innerHTML =
-          `<strong class="label">${todayStr}</strong><br>${scheduleText}`;
-      } catch (error) {
-        document.getElementById("todaySchedule").textContent = "Failed to load schedule.";
-      }
-    }
-
-    updateCountdown();
-    loadTodaySchedule();
-    setInterval(updateCountdown, 1000);
+    fetchSchedule();
   </script>
 </body>
 </html>
