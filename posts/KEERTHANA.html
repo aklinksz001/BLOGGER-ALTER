@@ -1,72 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Countdown to 03-09-2025</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f06292, #ba68c8);
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       color: #fff;
-      text-align: center;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: center;
+      min-height: 100vh;
       padding: 20px;
     }
 
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 550px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
     h1 {
-      font-size: 3rem;
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to right, #ff6ec4, #7873f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     #countdown {
-      font-size: 2.2rem;
+      font-size: 1.7rem;
       margin: 15px 0;
+      letter-spacing: 1px;
     }
 
     #dayName {
-      font-size: 1.5rem;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      opacity: 0.9;
     }
 
     #todaySchedule {
-      margin-top: 30px;
-      font-size: 1.3rem;
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 10px;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #eee;
+      border-left: 4px solid #ff6ec4;
+      text-align: left;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #ffe9f7;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      #countdown {
+        font-size: 1.4rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Remaining Days</h1>
-  <div id="countdown"></div>
-  <div id="dayName"></div>
-  <div id="todaySchedule">Loading today's schedule...</div>
+  <div class="container">
+    <h1>Remaining Days</h1>
+    <div id="countdown">Loading...</div>
+    <div id="dayName">Today is...</div>
+    <div id="todaySchedule">Loading today's schedule...</div>
+  </div>
 
   <script>
     const sheetID = "1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg";
+    const sheetURL = `https://opensheet.elk.sh/${sheetID}/Sheet1`;
 
-    // Format: 03-09-2025 (DD-MM-YYYY)
-    const targetDate = new Date("2025-09-03T00:00:00");
+    const targetDateStr = "03-09-2025"; // DD-MM-YYYY
+    const [dd, mm, yyyy] = targetDateStr.split("-");
+    const targetDate = new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
 
     function formatDate(date) {
       const d = String(date.getDate()).padStart(2, '0');
       const m = String(date.getMonth() + 1).padStart(2, '0');
       const y = date.getFullYear();
       return `${d}-${m}-${y}`;
-    }
-
-    async function getTodaySchedule() {
-      const todayStr = formatDate(new Date());
-      const response = await fetch(`https://opensheet.elk.sh/${sheetID}/Sheet1`);
-      const data = await response.json();
-
-      const today = data.find(row => row["Date"] === todayStr || row["A"] === todayStr);
-      document.getElementById("todaySchedule").innerHTML =
-        today ? `Today's Schedule:<br>${today["Schedule"] || row["B"]}` : "No schedule found for today.";
     }
 
     function updateCountdown() {
@@ -80,15 +122,33 @@
 
       const weekday = now.toLocaleDateString("en-GB", { weekday: 'long' });
 
-      document.getElementById("countdown").textContent =
-        `${days} Days : ${hours} Hrs : ${minutes} Min : ${seconds} Sec`;
+      document.getElementById("countdown").innerHTML =
+        `<span class="label">${days}</span> Days :
+         <span class="label">${hours}</span> Hrs :
+         <span class="label">${minutes}</span> Min :
+         <span class="label">${seconds}</span> Sec`;
+
       document.getElementById("dayName").textContent = `Today is ${weekday}`;
     }
 
+    async function loadTodaySchedule() {
+      try {
+        const todayStr = formatDate(new Date());
+        const res = await fetch(sheetURL);
+        const data = await res.json();
+
+        const today = data.find(row => row["A"] === todayStr);
+        const scheduleText = today?.["B"] || "No schedule added for today.";
+        document.getElementById("todaySchedule").innerHTML =
+          `<strong class="label">${todayStr}</strong><br>${scheduleText}`;
+      } catch (error) {
+        document.getElementById("todaySchedule").textContent = "Failed to load schedule.";
+      }
+    }
+
     updateCountdown();
-    getTodaySchedule();
+    loadTodaySchedule();
     setInterval(updateCountdown, 1000);
   </script>
-
 </body>
 </html>
