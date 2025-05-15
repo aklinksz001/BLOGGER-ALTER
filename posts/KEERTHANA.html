@@ -25,7 +25,7 @@
       padding: 20px;
     }
 
-    .container {
+    .container, .schedule-link-box {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(15px);
       border: 2px solid rgba(255, 255, 255, 0.1);
@@ -36,6 +36,7 @@
       max-width: 550px;
       width: 100%;
       transition: all 0.3s ease;
+      margin-bottom: 20px;
     }
 
     h1 {
@@ -47,15 +48,15 @@
       -webkit-text-fill-color: transparent;
     }
 
-    #countdown {
-      font-size: 1.7rem;
-      margin: 15px 0;
-      letter-spacing: 1px;
+    #daysLeft,
+    #todayCountdown {
+      font-size: 1.6rem;
+      margin: 10px 0;
     }
 
     #dayName {
       font-size: 1.1rem;
-      margin-bottom: 10px;
+      margin-top: 15px;
       opacity: 0.9;
     }
 
@@ -76,12 +77,32 @@
       color: #ffe9f7;
     }
 
+    .schedule-link-box {
+      cursor: pointer;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 25px 20px;
+      border-left: 4px solid #00ffd5;
+      transition: 0.3s ease;
+    }
+
+    .schedule-link-box:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
+    }
+
+    .schedule-link-box strong {
+      font-size: 1.2rem;
+      color: #00ffd5;
+    }
+
     @media screen and (max-width: 600px) {
       h1 {
         font-size: 2.2rem;
       }
 
-      #countdown {
+      #daysLeft,
+      #todayCountdown {
         font-size: 1.4rem;
       }
     }
@@ -90,10 +111,15 @@
 <body>
 
   <div class="container">
-    <h1>Remaining Days</h1>
-    <div id="countdown">Loading...</div>
+    <h1>Remaining Time</h1>
+    <div id="daysLeft">Loading...</div>
+    <div id="todayCountdown">Loading...</div>
     <div id="dayName">Today is...</div>
     <div id="todaySchedule">Loading today's schedule...</div>
+  </div>
+
+  <div class="schedule-link-box" onclick="window.open('https://docs.google.com/spreadsheets/d/1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg/edit', '_blank')">
+    <strong>SEE FULL SCHEDULE — OPEN NOW</strong>
   </div>
 
   <script>
@@ -113,20 +139,26 @@
 
     function updateCountdown() {
       const now = new Date();
-      const diff = targetDate - now;
+      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
+      const totalDiff = targetDate - now;
+      const todayDiff = endOfToday - now;
+
+      const daysLeft = Math.max(0, Math.floor(totalDiff / (1000 * 60 * 60 * 24)));
+      const hrs = Math.floor((todayDiff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((todayDiff / (1000 * 60)) % 60);
+      const secs = Math.floor((todayDiff / 1000) % 60);
 
       const weekday = now.toLocaleDateString("en-GB", { weekday: 'long' });
 
-      document.getElementById("countdown").innerHTML =
-        `<span class="label">${days}</span> Days :
-         <span class="label">${hours}</span> Hrs :
-         <span class="label">${minutes}</span> Min :
-         <span class="label">${seconds}</span> Sec`;
+      document.getElementById("daysLeft").innerHTML =
+        `Total <span class="label">${daysLeft}</span> Day(s) Remaining`;
+
+      document.getElementById("todayCountdown").innerHTML =
+        `Today's Remaining: 
+        <span class="label">${hrs}</span> Hr 
+        <span class="label">${mins}</span> Min 
+        <span class="label">${secs}</span> Sec`;
 
       document.getElementById("dayName").textContent = `Today is ${weekday}`;
     }
