@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Countdown with Schedule</title>
+  <title>Countdown to 03-09-2025</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -47,17 +47,26 @@
   <div id="todaySchedule">Loading today's schedule...</div>
 
   <script>
-    const sheetID = "YOUR_SHEET_ID_HERE"; // Replace this
+    const sheetID = "1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg";
+
+    // Format: 03-09-2025 (DD-MM-YYYY)
     const targetDate = new Date("2025-09-03T00:00:00");
 
+    function formatDate(date) {
+      const d = String(date.getDate()).padStart(2, '0');
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const y = date.getFullYear();
+      return `${d}-${m}-${y}`;
+    }
+
     async function getTodaySchedule() {
-      const todayStr = new Date().toISOString().split("T")[0];
-      const response = await fetch(`https://opensheet.elk.sh/${sheetID}/1`);
+      const todayStr = formatDate(new Date());
+      const response = await fetch(`https://opensheet.elk.sh/${sheetID}/Sheet1`);
       const data = await response.json();
 
-      const today = data.find(row => row.Date === todayStr);
+      const today = data.find(row => row["Date"] === todayStr || row["A"] === todayStr);
       document.getElementById("todaySchedule").innerHTML =
-        today ? `Today's Schedule:<br>${today.Schedule}` : "No schedule found for today.";
+        today ? `Today's Schedule:<br>${today["Schedule"] || row["B"]}` : "No schedule found for today.";
     }
 
     function updateCountdown() {
@@ -69,7 +78,7 @@
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      const weekday = now.toLocaleDateString("en-US", { weekday: 'long' });
+      const weekday = now.toLocaleDateString("en-GB", { weekday: 'long' });
 
       document.getElementById("countdown").textContent =
         `${days} Days : ${hours} Hrs : ${minutes} Min : ${seconds} Sec`;
