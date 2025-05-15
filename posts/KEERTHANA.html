@@ -103,7 +103,8 @@
     <div id="daysLeft">Loading...</div>
     <div id="todayCountdown">Loading...</div>
     <div id="dayName">Today is...</div>
-    <div id="todaySchedule">Loading today's schedule...</div>
+    <div id="todayScheduleDate" class="label" style="margin-bottom: 5px;"></div>
+    <div id="todayScheduleText"></div>
   </div>
 
   <div class="schedule-link-box" onclick="window.open('https://docs.google.com/spreadsheets/d/1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg/edit?usp=drivesdk', '_blank')">
@@ -161,10 +162,10 @@
         <span class="label">${secs}</span> Sec`;
 
       document.getElementById("dayName").textContent = `Today is ${weekday}`;
-      document.getElementById("todaySchedule").innerHTML =
-        `<strong class="label">${todayKey}</strong><br>${todaySchedule}`;
-    }
+      document.getElementById("todayScheduleDate").textContent = todayKey;
+document.getElementById("todayScheduleText").innerHTML = todaySchedule;
 
+      
     updateCountdown();
     setInterval(updateCountdown, 1000);
   </script>
