@@ -3,121 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Schedule Countdown</title>
+  <title>Countdown to 03-09-2025</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap');
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(145deg, #fff0f5, #ffe6f0);
-      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 20px;
-      color: #333;
     }
 
-    .countdown-container, .schedule-link-box {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 30px;
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    .container, .schedule-link-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      padding: 40px 30px;
+      border-radius: 20px;
       text-align: center;
+      max-width: 550px;
+      width: 100%;
+      margin-bottom: 20px;
     }
 
-    h1, h2 {
+    h1 {
+      font-size: 2.5rem;
       margin-bottom: 10px;
-      color: #222;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to right, #ff6ec4, #7873f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .highlight {
-      color: #FF0090;
-      font-weight: bold;
+    #daysLeft, #todayCountdown {
+      font-size: 1.6rem;
+      margin: 10px 0;
     }
 
-    .time-segment {
-      font-size: 1.4em;
-      margin: 8px 0;
+    #dayName {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      opacity: 0.9;
+    }
+
+    #todaySchedule {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #eee;
+      border-left: 4px solid #ff6ec4;
+      text-align: left;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #ffe9f7;
     }
 
     .schedule-link-box {
-      margin-top: 40px;
-      background-color: #ffe0f0;
       cursor: pointer;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 25px 20px;
+      border-left: 4px solid #00ffd5;
       transition: 0.3s ease;
     }
 
     .schedule-link-box:hover {
-      background-color: #ffd0e5;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
     }
 
-    .schedule {
-      margin-top: 20px;
-      background: #fff9fc;
-      border: 1px dashed #FF0090;
-      padding: 20px;
-      border-radius: 12px;
+    .schedule-link-box strong {
+      font-size: 1.2rem;
+      color: #00ffd5;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      #daysLeft, #todayCountdown { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
-  <div class="countdown-container">
-    <h1>Countdown to <span class="highlight">3 September 2025</span></h1>
-    <div class="time-segment">
-      <strong>Total Remaining Days:</strong> <span class="highlight" id="remaining-days"></span>
-    </div>
-    <div class="time-segment">
-      <strong>Today (<span class="highlight" id="today-day"></span>, <span class="highlight" id="today-date"></span>) Remaining:</strong>
-      <br>
-      <span class="highlight" id="remaining-time"></span>
-    </div>
 
-    <div class="schedule">
-      <h2>Today's Schedule</h2>
-      <div id="today-schedule" class="highlight">Loading...</div>
-    </div>
+  <div class="container">
+    <h1>Remaining Time</h1>
+    <div id="daysLeft">Loading...</div>
+    <div id="todayCountdown">Loading...</div>
+    <div id="dayName">Today is...</div>
+    <div id="todaySchedule">Loading today's schedule...</div>
   </div>
 
   <div class="schedule-link-box" onclick="window.open('https://docs.google.com/spreadsheets/d/1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg/edit?usp=drivesdk', '_blank')">
-    <strong>SEE FULL SCHEDULE — OPEN NOW</strong>
-  </div>
+  <strong>SEE FULL SCHEDULE — OPEN NOW</strong>
+</div>
 
   <script>
-    const endDate = new Date("2025-09-03T00:00:00+05:30"); // Indian time
-    const scheduleData = {
-      "14-05-2025": "Start your new mission with positive energy!",
-      "15-05-2025": "Design layout for schedule UI.",
-      "16-05-2025": "Code logic for countdown and timer.",
-      "17-05-2025": "Review and optimize the visuals.",
-      "18-05-2025": "Integrate share and print feature.",
-      "19-05-2025": "Polish schedule for next week.",
-      "20-05-2025": "Test responsive layout.",
-      // Add more manually...
+    const targetDate = new Date("2025-09-03T00:00:00+05:30");
+
+    // Add schedules directly here in "DD-MM-YYYY": "Your schedule"
+    const schedule = {
+      "15-05-2025": "Finish HTML timer layout<br>Test final styles<br>Review with team",
+      "16-05-2025": "Add animation effects<br>Update favicon<br>Check responsiveness",
+      "17-05-2025": "Upload to server<br>Write blog post<br>Share with users",
+      // Add more dates below:
+      "03-09-2025": "Project Launch Day! Celebrate!"
     };
 
-    function updateCountdown() {
+    function getIndiaTimeNow() {
       const now = new Date();
-      const nowIST = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      return new Date(utc + (3600000 * 5.5));
+    }
 
-      const diff = endDate - nowIST;
-      const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+    function formatDateIST(date) {
+      const d = String(date.getDate()).padStart(2, '0');
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const y = date.getFullYear();
+      return `${d}-${m}-${y}`;
+    }
 
-      const today = nowIST.toLocaleDateString("en-GB").split("/").join("-");
-      const dayOfWeek = nowIST.toLocaleDateString("en-US", { weekday: 'long', timeZone: 'Asia/Kolkata' });
-      const todayDate = nowIST.toLocaleDateString("en-GB", { timeZone: 'Asia/Kolkata' });
+    function updateCountdown() {
+      const now = getIndiaTimeNow();
+      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      endOfToday.setHours(0, 0, 0, 0);
 
-      const endOfDay = new Date(nowIST);
-      endOfDay.setHours(23, 59, 59, 999);
+      const totalDiff = targetDate - now;
+      const todayDiff = endOfToday - now;
 
-      const timeRemainingToday = endOfDay - nowIST;
-      const hours = String(Math.floor((timeRemainingToday / (1000 * 60 * 60)) % 24)).padStart(2, '0');
-      const minutes = String(Math.floor((timeRemainingToday / (1000 * 60)) % 60)).padStart(2, '0');
-      const seconds = String(Math.floor((timeRemainingToday / 1000) % 60)).padStart(2, '0');
+      const daysLeft = Math.max(0, Math.floor(totalDiff / (1000 * 60 * 60 * 24)));
+      const hrs = Math.floor((todayDiff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((todayDiff / (1000 * 60)) % 60);
+      const secs = Math.floor((todayDiff / 1000) % 60);
 
-      document.getElementById("remaining-days").textContent = remainingDays;
-      document.getElementById("remaining-time").textContent = `${hours} hrs : ${minutes} mins : ${seconds} sec`;
-      document.getElementById("today-day").textContent = dayOfWeek;
-      document.getElementById("today-date").textContent = todayDate;
+      const weekday = now.toLocaleDateString("en-GB", { weekday: 'long', timeZone: "Asia/Kolkata" });
+      const todayKey = formatDateIST(now);
+      const todaySchedule = schedule[todayKey] || "No schedule added for today.";
 
-      document.getElementById("today-schedule").textContent = scheduleData[today] || "No schedule added for today.";
+      document.getElementById("daysLeft").innerHTML =
+        `Total <span class="label">${daysLeft}</span> Day(s) Remaining`;
+
+      document.getElementById("todayCountdown").innerHTML =
+        `Today's Remaining: <span class="label">${hrs}</span> Hr 
+        <span class="label">${mins}</span> Min 
+        <span class="label">${secs}</span> Sec`;
+
+      document.getElementById("dayName").textContent = `Today is ${weekday}`;
+      document.getElementById("todaySchedule").innerHTML =
+        `<strong class="label">${todayKey}</strong><br>${todaySchedule}`;
     }
 
     updateCountdown();
