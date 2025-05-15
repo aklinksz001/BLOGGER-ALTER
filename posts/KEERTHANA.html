@@ -125,12 +125,17 @@
   <script>
     const sheetID = "1prCf6fKNAf2vVj6Q-L68cGwsoJ6tVqvs-RKGaOjI9Dg";
     const sheetURL = `https://opensheet.elk.sh/${sheetID}/Sheet1`;
-
     const targetDateStr = "03-09-2025"; // DD-MM-YYYY
     const [dd, mm, yyyy] = targetDateStr.split("-");
-    const targetDate = new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
+    const targetDate = new Date(`${yyyy}-${mm}-${dd}T00:00:00+05:30`);
 
-    function formatDate(date) {
+    function getIndiaTimeNow() {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      return new Date(utc + (3600000 * 5.5)); // IST (UTC+5:30)
+    }
+
+    function formatDateIST(date) {
       const d = String(date.getDate()).padStart(2, '0');
       const m = String(date.getMonth() + 1).padStart(2, '0');
       const y = date.getFullYear();
@@ -138,8 +143,9 @@
     }
 
     function updateCountdown() {
-      const now = new Date();
+      const now = getIndiaTimeNow();
       const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      endOfToday.setHours(0, 0, 0, 0);
 
       const totalDiff = targetDate - now;
       const todayDiff = endOfToday - now;
@@ -149,7 +155,7 @@
       const mins = Math.floor((todayDiff / (1000 * 60)) % 60);
       const secs = Math.floor((todayDiff / 1000) % 60);
 
-      const weekday = now.toLocaleDateString("en-GB", { weekday: 'long' });
+      const weekday = now.toLocaleDateString("en-GB", { weekday: 'long', timeZone: "Asia/Kolkata" });
 
       document.getElementById("daysLeft").innerHTML =
         `Total <span class="label">${daysLeft}</span> Day(s) Remaining`;
@@ -165,7 +171,7 @@
 
     async function loadTodaySchedule() {
       try {
-        const todayStr = formatDate(new Date());
+        const todayStr = formatDateIST(getIndiaTimeNow());
         const res = await fetch(sheetURL);
         const data = await res.json();
 
