@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Countdown with Schedule</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f06292, #ba68c8);
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px;
+    }
 
+    h1 {
+      font-size: 3rem;
+    }
+
+    #countdown {
+      font-size: 2.2rem;
+      margin: 15px 0;
+    }
+
+    #dayName {
+      font-size: 1.5rem;
+    }
+
+    #todaySchedule {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Remaining Days</h1>
+  <div id="countdown"></div>
+  <div id="dayName"></div>
+  <div id="todaySchedule">Loading today's schedule...</div>
+
+  <script>
+    const sheetID = "YOUR_SHEET_ID_HERE"; // Replace this
+    const targetDate = new Date("2025-09-03T00:00:00");
+
+    async function getTodaySchedule() {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const response = await fetch(`https://opensheet.elk.sh/${sheetID}/1`);
+      const data = await response.json();
+
+      const today = data.find(row => row.Date === todayStr);
+      document.getElementById("todaySchedule").innerHTML =
+        today ? `Today's Schedule:<br>${today.Schedule}` : "No schedule found for today.";
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      const weekday = now.toLocaleDateString("en-US", { weekday: 'long' });
+
+      document.getElementById("countdown").textContent =
+        `${days} Days : ${hours} Hrs : ${minutes} Min : ${seconds} Sec`;
+      document.getElementById("dayName").textContent = `Today is ${weekday}`;
+    }
+
+    updateCountdown();
+    getTodaySchedule();
+    setInterval(updateCountdown, 1000);
+  </script>
+
+</body>
+</html>
