@@ -10,12 +10,38 @@
 <body>
 
 <!-- Search Bar -->
+<!-- Search Bar & UI Elements -->
 <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Search Here...">
+  <input 
+    type="text" 
+    id="searchBar" 
+    placeholder="Search movies, series..." 
+    aria-label="Search"
+  >
+  <div id="searchLoader" style="display: none;">🔍 Searching...</div>
+  <div id="searchError" style="color: red; display: none;"></div>
+  
+  <!-- Filters -->
+  <div class="filters">
+    <select id="languageFilter">
+      <option value="">All Languages</option>
+      <option value="TAMIL">TAMIL</option>
+      <option value="ENGLISH">ENGLISH</option>
+      <!-- Add more -->
+    </select>
+    <button id="clearFilters">Clear Filters</button>
+  </div>
+  
+  <!-- Results Container -->
+  <div id="searchResults"></div>
+  
+  <!-- Pagination -->
+  <div id="pagination" style="display: none;">
+    <button id="prevPage">⬅ Previous</button>
+    <span id="pageInfo">Page 1</span>
+    <button id="nextPage">Next ➡</button>
+  </div>
 </div>
-
-<!-- Results Section -->
-<div id="searchResults"></div>
 
 <!-- Auto-focus when navigating from index page -->
 <script>
