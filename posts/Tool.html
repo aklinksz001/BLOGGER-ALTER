@@ -221,6 +221,72 @@
     .tool-card:hover img { transform: rotate(-6deg) scale(1.08); }
     .tool-name { font-size: 18px; font-weight: 600; }
 
+    /* Search Overlay */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+      z-index: 3000;
+    }
+
+    .search-overlay.active { display: flex; animation: fadeIn 0.3s ease forwards; }
+
+    .search-overlay-content {
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      animation: slideDown 0.4s ease forwards;
+    }
+
+    .close-search {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #ff4d6d;
+      transition: 0.3s;
+    }
+    .close-search:hover { transform: scale(1.2); }
+
+    #overlaySearchInput {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 18px;
+      border: 2px solid #ff4d6d;
+      border-radius: 30px;
+      outline: none;
+      margin-bottom: 30px;
+      box-shadow: 0 0 20px rgba(255,77,109,0.2);
+      transition: 0.3s;
+    }
+    #overlaySearchInput:focus {
+      box-shadow: 0 0 30px rgba(255,77,109,0.4);
+    }
+
+    .search-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    /* Animate Overlay */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -292,6 +358,15 @@
   </div>
 </div>
 
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay-content">
+    <span class="close-search" onclick="closeSearch()">&#10005;</span>
+    <input type="text" id="overlaySearchInput" placeholder="Search for any tool...">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
 <script>
   function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
@@ -315,16 +390,38 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Global search
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    showSection('all'); 
-    populateAllTools();
-    document.querySelectorAll('#allToolsGrid .tool-card').forEach(tool => {
-      const text = tool.innerText.toLowerCase();
-      tool.style.display = text.includes(filter) ? 'flex' : 'none';
-    });
+  // Open search overlay on input focus
+  document.getElementById('searchInput').addEventListener('focus', openSearch);
+
+  function openSearch() {
+    document.getElementById('searchOverlay').classList.add('active');
+    document.getElementById('overlaySearchInput').focus();
+    populateSearchResults('');
+  }
+
+  function closeSearch() {
+    document.getElementById('searchOverlay').classList.remove('active');
+  }
+
+  // Populate and filter tools in overlay
+  const overlaySearchInput = document.getElementById('overlaySearchInput');
+  const searchResults = document.getElementById('searchResults');
+
+  function populateSearchResults(query) {
+    searchResults.innerHTML = '';
+    const filter = query.toLowerCase();
+    const filtered = toolCards.filter(card => card.innerText.toLowerCase().includes(filter));
+    if (filtered.length === 0) {
+      searchResults.innerHTML = '<p style="grid-column:1/-1;color:#666;">No tools found...</p>';
+    } else {
+      filtered.forEach(card => {
+        searchResults.appendChild(card.cloneNode(true));
+      });
+    }
+  }
+
+  overlaySearchInput.addEventListener('input', function() {
+    populateSearchResults(this.value);
   });
 
   // Show All Tools first
