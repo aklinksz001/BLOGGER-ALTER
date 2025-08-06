@@ -53,12 +53,32 @@
       font-family: 'Merienda', cursive;
       cursor: pointer;
     }
-    .search-icon {
-      font-size: 22px;
-      cursor: pointer;
+
+    /* SEARCH BAR */
+    .search-box {
+      position: relative;
+    }
+    .search-box input {
+      width: 150px;
+      padding: 6px 28px 6px 8px;
+      font-size: 14px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
       transition: 0.3s;
     }
-    .search-icon:hover { color: #ff4d6d; }
+    .search-box input:focus {
+      width: 200px;
+      outline: none;
+      border-color: #ff4d6d;
+    }
+    .search-box .search-icon {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #555;
+    }
 
     /* SIDEBAR */
     .sidebar {
@@ -93,16 +113,6 @@
       transition: 0.3s;
     }
     .sidebar ul li:hover { color: #ff4d6d; }
-    .auth-buttons {margin-top: 20px; display: flex; flex-direction: column; gap: 10px;}
-    .auth-buttons button {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .login-btn {background: #fff; border: 2px solid #ff4d6d; color: #ff4d6d;}
-    .signup-btn {background: #ff4d6d; color: #fff;}
 
     /* BUBBLE MENU */
     .bubble-menu {
@@ -163,29 +173,12 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    .title-section h2 {
-      font-size: clamp(22px, 5vw, 34px);
-      font-weight: bold;
-      font-family: 'Merienda', cursive;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-      animation: glowPulse 2s infinite alternate;
-    }
-    @keyframes glowPulse {
-      0% { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-      100% { text-shadow: 0 0 20px rgba(255,255,255,0.9); }
-    }
-    .title-section p {
-      font-size: clamp(14px, 3vw, 18px);
-      margin-top: 8px;
-      color: rgba(255, 255, 255, 0.9);
-    }
 
     .content { padding: 30px 20px; }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 22px;
-      margin-top: 10px;
     }
 
     /* Tool Card */
@@ -201,26 +194,10 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      text-decoration: none;
+      color: inherit;
     }
-    .tool-card::before {
-      content: "";
-      position: absolute;
-      top: -150%;
-      left: -150%;
-      width: 400%;
-      height: 400%;
-      background: radial-gradient(circle, rgba(255,0,0,0.15), transparent 70%);
-      transform: rotate(45deg);
-      transition: all 0.6s ease;
-      opacity: 0;
-    }
-    .tool-card:hover::before {
-      top: -50%; left: -50%; opacity: 1;
-    }
-    .tool-card:hover {
-      transform: translateY(-8px) scale(1.04);
-      box-shadow: 0px 15px 35px rgba(0,0,0,0.15);
-    }
+    .tool-card:hover { transform: translateY(-8px) scale(1.04); }
     .tool-card img {
       width: clamp(45px, 12vw, 60px);
       height: clamp(45px, 12vw, 60px);
@@ -230,15 +207,8 @@
       transition: transform 0.35s ease;
     }
     .tool-card:hover img { transform: rotate(-6deg) scale(1.08); }
-    .tool-name {
-      font-size: clamp(16px, 4vw, 20px);
-      font-weight: 600;
-      color: #222;
-      transition: color 0.3s;
-    }
-    .tool-card:hover .tool-name { color: #ff4d4d; }
+    .tool-name { font-size: 18px; font-weight: 600; }
 
-    @media (max-width: 768px) { .grid { gap: 18px; } .tool-card { padding: 16px; } }
   </style>
 </head>
 <body>
@@ -246,9 +216,13 @@
 <header>
   <div class="menu-btn" onclick="toggleSidebar()">&#9776;</div>
   <div class="logo">MyTools</div>
-  <div class="search-icon">&#128269;</div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search tools...">
+    <span class="search-icon">&#128269;</span>
+  </div>
 </header>
 
+<!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="close-btn" onclick="toggleSidebar()">&#10005;</div>
   <ul>
@@ -256,46 +230,43 @@
     <li onclick="showSection('seo');toggleSidebar()">SEO Tools</li>
     <li onclick="showSection('pdf');toggleSidebar()">PDF Tools</li>
   </ul>
-  <div class="auth-buttons">
-    <button class="login-btn">Login</button>
-    <button class="signup-btn">Sign Up</button>
-  </div>
 </div>
 
+<!-- Bubble Menu -->
 <div class="bubble-menu">
   <button onclick="showSection('developer')">Developer Tools</button>
   <button onclick="showSection('seo')">SEO Tools</button>
   <button onclick="showSection('pdf')">PDF Tools</button>
 </div>
 
-<!-- SECTIONS -->
+<!-- Sections -->
 <div class="container" id="developer">
-  <div class="title-section"><h2>DEVELOPER TOOLS</h2><p>Powerful utilities to simplify coding.</p></div>
+  <div class="title-section"><h2>DEVELOPER TOOLS</h2></div>
   <div class="content">
     <div class="grid">
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">HTML Minifier</span></div>
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">CSS Minifier</span></div>
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">JS Minifier</span></div>
+      <a href="/html-minifier-tool" class="tool-card"><img src="" alt=""><span class="tool-name">HTML Minifier</span></a>
+      <a href="/css-minifier-tool" class="tool-card"><img src="" alt=""><span class="tool-name">CSS Minifier</span></a>
+      <a href="/js-minifier-tool" class="tool-card"><img src="" alt=""><span class="tool-name">JS Minifier</span></a>
     </div>
   </div>
 </div>
 
 <div class="container" id="seo">
-  <div class="title-section"><h2>SEO TOOLS</h2><p>Analyze, optimize, and boost website performance.</p></div>
+  <div class="title-section"><h2>SEO TOOLS</h2></div>
   <div class="content">
     <div class="grid">
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">Keyword Finder</span></div>
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">Backlink Checker</span></div>
+      <a href="/keyword-finder" class="tool-card"><img src="" alt=""><span class="tool-name">Keyword Finder</span></a>
+      <a href="/backlink-checker" class="tool-card"><img src="" alt=""><span class="tool-name">Backlink Checker</span></a>
     </div>
   </div>
 </div>
 
 <div class="container" id="pdf">
-  <div class="title-section"><h2>PDF TOOLS</h2><p>Merge, split, compress, and convert PDFs easily.</p></div>
+  <div class="title-section"><h2>PDF TOOLS</h2></div>
   <div class="content">
     <div class="grid">
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">Merge PDF</span></div>
-      <div class="tool-card"><img src="" alt=""><span class="tool-name">PDF to Word</span></div>
+      <a href="/merge-pdf" class="tool-card"><img src="" alt=""><span class="tool-name">Merge PDF</span></a>
+      <a href="/pdf-to-word" class="tool-card"><img src="" alt=""><span class="tool-name">PDF to Word</span></a>
     </div>
   </div>
 </div>
@@ -306,18 +277,25 @@
   }
 
   function showSection(id) {
-    const allSections = document.querySelectorAll('.container');
-    allSections.forEach(sec => {
+    const sections = document.querySelectorAll('.container');
+    sections.forEach(sec => {
       sec.classList.remove('active');
       setTimeout(()=>sec.style.display='none', 600);
     });
-
     const section = document.getElementById(id);
     section.style.display = 'block';
     setTimeout(()=>section.classList.add('active'), 20);
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Search filter
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('.tool-card').forEach(tool => {
+      const text = tool.innerText.toLowerCase();
+      tool.style.display = text.includes(filter) ? 'flex' : 'none';
+    });
+  });
 
   // Show first section by default
   showSection('developer');
