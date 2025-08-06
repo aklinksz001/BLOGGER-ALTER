@@ -63,15 +63,15 @@
       100% { text-shadow: 0 0 18px rgba(255,77,109,0.9); }
     }
 
-    /* SEARCH BAR */
+    /* SEARCH BOX */
     .search-box {
       position: relative;
     }
     .search-box input {
       width: 150px;
-      padding: 6px 28px 6px 8px;
+      padding: 6px 34px 6px 12px;
       font-size: 14px;
-      border-radius: 20px;
+      border-radius: 25px;
       border: 1px solid #ccc;
       transition: 0.3s;
     }
@@ -81,13 +81,29 @@
       border-color: #ff4d6d;
       box-shadow: 0 0 6px rgba(255,77,109,0.4);
     }
+
+    /* Premium Search Icon */
     .search-box .search-icon {
       position: absolute;
-      right: 8px;
+      right: 6px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 16px;
-      color: #ff4d6d;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d6d, #ff9900);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 6px rgba(255,77,109,0.5);
+    }
+    .search-box .search-icon:hover {
+      transform: translateY(-50%) scale(1.15);
+      box-shadow: 0 0 12px rgba(255,77,109,0.8);
     }
 
     /* SIDEBAR */
@@ -153,7 +169,7 @@
       box-shadow: 0 4px 12px rgba(255,77,109,0.4);
     }
 
-    /* CONTAINERS */
+    /* Containers */
     .container {
       width: 100%;
       max-width: 1100px;
@@ -278,15 +294,8 @@
       gap: 20px;
     }
 
-    /* Animate Overlay */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideDown {
-      from { transform: translateY(-30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -296,7 +305,7 @@
   <div class="logo">MyTools</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search tools...">
-    <span class="search-icon">&#128269;</span>
+    <div class="search-icon" onclick="openSearch()">&#128269;</div>
   </div>
 </header>
 
@@ -390,9 +399,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Open search overlay on input focus
-  document.getElementById('searchInput').addEventListener('focus', openSearch);
-
   function openSearch() {
     document.getElementById('searchOverlay').classList.add('active');
     document.getElementById('overlaySearchInput').focus();
@@ -403,7 +409,6 @@
     document.getElementById('searchOverlay').classList.remove('active');
   }
 
-  // Populate and filter tools in overlay
   const overlaySearchInput = document.getElementById('overlaySearchInput');
   const searchResults = document.getElementById('searchResults');
 
@@ -424,7 +429,6 @@
     populateSearchResults(this.value);
   });
 
-  // Show All Tools first
   showSection('all');
 </script>
 
