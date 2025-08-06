@@ -80,40 +80,6 @@
       color: #555;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -280px;
-      width: 260px;
-      height: 100vh;
-      background: #fff;
-      color: #333;
-      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
-      transition: 0.4s ease;
-      padding: 60px 20px;
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .sidebar.active { left: 0; }
-    .sidebar .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 28px;
-      cursor: pointer;
-    }
-    .sidebar ul {list-style: none; padding: 0;}
-    .sidebar ul li {
-      padding: 12px 0;
-      cursor: pointer;
-      font-weight: 500;
-      transition: 0.3s;
-    }
-    .sidebar ul li:hover { color: #ff4d6d; }
-
     /* BUBBLE MENU */
     .bubble-menu {
       display: flex;
@@ -214,7 +180,7 @@
 <body>
 
 <header>
-  <div class="menu-btn" onclick="toggleSidebar()">&#9776;</div>
+  <div class="menu-btn">&#9776;</div>
   <div class="logo">MyTools</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search tools...">
@@ -222,24 +188,22 @@
   </div>
 </header>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-  <div class="close-btn" onclick="toggleSidebar()">&#10005;</div>
-  <ul>
-    <li onclick="showSection('developer');toggleSidebar()">Developer Tools</li>
-    <li onclick="showSection('seo');toggleSidebar()">SEO Tools</li>
-    <li onclick="showSection('pdf');toggleSidebar()">PDF Tools</li>
-  </ul>
-</div>
-
 <!-- Bubble Menu -->
 <div class="bubble-menu">
+  <button onclick="showSection('all')">All Tools</button>
   <button onclick="showSection('developer')">Developer Tools</button>
   <button onclick="showSection('seo')">SEO Tools</button>
   <button onclick="showSection('pdf')">PDF Tools</button>
 </div>
 
 <!-- Sections -->
+<div class="container" id="all">
+  <div class="title-section"><h2>ALL TOOLS</h2></div>
+  <div class="content">
+    <div class="grid" id="allToolsGrid"></div>
+  </div>
+</div>
+
 <div class="container" id="developer">
   <div class="title-section"><h2>DEVELOPER TOOLS</h2></div>
   <div class="content">
@@ -272,33 +236,39 @@
 </div>
 
 <script>
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
+  // Collect all tools
+  const toolCards = Array.from(document.querySelectorAll('.tool-card'));
+  const allGrid = document.getElementById('allToolsGrid');
+
+  // Populate All Tools in random order
+  function populateAllTools() {
+    allGrid.innerHTML = '';
+    const shuffled = [...toolCards].sort(() => Math.random() - 0.5);
+    shuffled.forEach(card => allGrid.appendChild(card.cloneNode(true)));
   }
 
   function showSection(id) {
-    const sections = document.querySelectorAll('.container');
-    sections.forEach(sec => {
-      sec.classList.remove('active');
-      setTimeout(()=>sec.style.display='none', 600);
-    });
+    document.querySelectorAll('.container').forEach(sec => sec.classList.remove('active'));
     const section = document.getElementById(id);
-    section.style.display = 'block';
-    setTimeout(()=>section.classList.add('active'), 20);
+    section.classList.add('active');
+    if(id === 'all') populateAllTools();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Search filter
-  document.getElementById('searchInput').addEventListener('input', function() {
+  // Search filter for all tools
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
     const filter = this.value.toLowerCase();
-    document.querySelectorAll('.tool-card').forEach(tool => {
+    showSection('all'); // Always show all tools for search
+    populateAllTools();
+    document.querySelectorAll('#allToolsGrid .tool-card').forEach(tool => {
       const text = tool.innerText.toLowerCase();
       tool.style.display = text.includes(filter) ? 'flex' : 'none';
     });
   });
 
-  // Show first section by default
-  showSection('developer');
+  // Show All Tools first
+  showSection('all');
 </script>
 
 </body>
