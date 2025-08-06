@@ -31,8 +31,9 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 20px;
-      background: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -41,8 +42,9 @@
       font-size: 28px;
       cursor: pointer;
       transition: 0.3s;
+      color: #ff4d6d;
     }
-    .menu-btn:hover { transform: scale(1.1); }
+    .menu-btn:hover { transform: scale(1.15); }
     .logo {
       position: absolute;
       left: 50%;
@@ -52,6 +54,13 @@
       color: #ff4d6d;
       font-family: 'Merienda', cursive;
       cursor: pointer;
+      text-shadow: 0 0 10px rgba(255,77,109,0.5);
+      animation: glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% { text-shadow: 0 0 8px rgba(255,77,109,0.4); }
+      100% { text-shadow: 0 0 18px rgba(255,77,109,0.9); }
     }
 
     /* SEARCH BAR */
@@ -70,6 +79,7 @@
       width: 200px;
       outline: none;
       border-color: #ff4d6d;
+      box-shadow: 0 0 6px rgba(255,77,109,0.4);
     }
     .search-box .search-icon {
       position: absolute;
@@ -77,8 +87,42 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 16px;
-      color: #555;
+      color: #ff4d6d;
     }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 260px;
+      height: 100vh;
+      background: #fff;
+      color: #333;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+      transition: 0.4s ease;
+      padding: 60px 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.active { left: 0; }
+    .sidebar .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #ff4d6d;
+    }
+    .sidebar ul {list-style: none; padding: 0;}
+    .sidebar ul li {
+      padding: 12px 0;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    .sidebar ul li:hover { color: #ff4d6d; transform: translateX(5px); }
 
     /* BUBBLE MENU */
     .bubble-menu {
@@ -87,7 +131,8 @@
       justify-content: center;
       gap: 12px;
       padding: 20px 10px;
-      background: #fff;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(6px);
     }
     .bubble-menu button {
       border: none;
@@ -99,12 +144,13 @@
       font-weight: 500;
       transition: 0.3s;
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     .bubble-menu button:hover {
       background: #ff4d6d;
       color: #fff;
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,77,109,0.4);
     }
 
     /* CONTAINERS */
@@ -163,7 +209,7 @@
       text-decoration: none;
       color: inherit;
     }
-    .tool-card:hover { transform: translateY(-8px) scale(1.04); }
+    .tool-card:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0px 15px 35px rgba(255,77,109,0.2); }
     .tool-card img {
       width: clamp(45px, 12vw, 60px);
       height: clamp(45px, 12vw, 60px);
@@ -180,13 +226,24 @@
 <body>
 
 <header>
-  <div class="menu-btn">&#9776;</div>
+  <div class="menu-btn" onclick="toggleSidebar()">&#9776;</div>
   <div class="logo">MyTools</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search tools...">
     <span class="search-icon">&#128269;</span>
   </div>
 </header>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="close-btn" onclick="toggleSidebar()">&#10005;</div>
+  <ul>
+    <li onclick="showSection('all');toggleSidebar()">All Tools</li>
+    <li onclick="showSection('developer');toggleSidebar()">Developer Tools</li>
+    <li onclick="showSection('seo');toggleSidebar()">SEO Tools</li>
+    <li onclick="showSection('pdf');toggleSidebar()">PDF Tools</li>
+  </ul>
+</div>
 
 <!-- Bubble Menu -->
 <div class="bubble-menu">
@@ -236,11 +293,14 @@
 </div>
 
 <script>
-  // Collect all tools
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+  }
+
+  // Gather all tools
   const toolCards = Array.from(document.querySelectorAll('.tool-card'));
   const allGrid = document.getElementById('allToolsGrid');
 
-  // Populate All Tools in random order
   function populateAllTools() {
     allGrid.innerHTML = '';
     const shuffled = [...toolCards].sort(() => Math.random() - 0.5);
@@ -255,11 +315,11 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Search filter for all tools
+  // Global search
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('input', function() {
     const filter = this.value.toLowerCase();
-    showSection('all'); // Always show all tools for search
+    showSection('all'); 
     populateAllTools();
     document.querySelectorAll('#allToolsGrid .tool-card').forEach(tool => {
       const text = tool.innerText.toLowerCase();
