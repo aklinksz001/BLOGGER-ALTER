@@ -3,24 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tools Website Header</title>
+  <title>Premium Tools Website</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
     }
 
     body {
-      background-color: #f9f9f9;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f4f7fc, #dde6ff, #fff0f0);
+      background-size: 300% 300%;
+      animation: gradientBG 12s ease infinite;
+      margin: 0;
     }
 
-    /* Header */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* HEADER */
     header {
       display: flex;
       justify-content: space-between;
@@ -33,7 +42,6 @@
       z-index: 1000;
     }
 
-    /* Menu Button */
     .menu-btn {
       font-size: 28px;
       cursor: pointer;
@@ -41,18 +49,17 @@
     }
     .menu-btn:hover { transform: scale(1.1); }
 
-    /* Logo Center */
     .logo {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
       font-size: 22px;
-      font-weight: 600;
+      font-weight: 700;
       color: #ff4d6d;
       cursor: pointer;
+      font-family: 'Merienda', cursive;
     }
 
-    /* Search Icon */
     .search-icon {
       font-size: 22px;
       cursor: pointer;
@@ -60,7 +67,72 @@
     }
     .search-icon:hover { color: #ff4d6d; }
 
-    /* Bubble Menu */
+    /* SIDEBAR MENU */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 260px;
+      height: 100vh;
+      background: #fff;
+      color: #333;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+      transition: 0.4s ease;
+      padding: 60px 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sidebar.active { left: 0; }
+
+    .sidebar .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 12px 0;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    .sidebar ul li:hover { color: #ff4d6d; }
+
+    .sidebar .auth-buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar .auth-buttons button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .login-btn {
+      background: #fff;
+      border: 2px solid #ff4d6d;
+      color: #ff4d6d;
+    }
+
+    .signup-btn {
+      background: #ff4d6d;
+      color: #fff;
+    }
+
+    /* BUBBLE MENU */
     .bubble-menu {
       display: flex;
       flex-wrap: wrap;
@@ -70,8 +142,8 @@
       background: #fff;
     }
 
-    .bubble-menu a {
-      text-decoration: none;
+    .bubble-menu button {
+      border: none;
       background: #f4f7fc;
       color: #333;
       padding: 10px 18px;
@@ -79,43 +151,255 @@
       font-size: 14px;
       font-weight: 500;
       transition: 0.3s;
+      cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .bubble-menu a:hover {
+    .bubble-menu button:hover {
       background: #ff4d6d;
       color: #fff;
       transform: translateY(-2px);
     }
 
-    @media(max-width: 600px) {
-      .logo { font-size: 18px; }
-      .bubble-menu a { font-size: 12px; padding: 8px 14px; }
+    /* CONTAINERS */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+      animation: fadeIn 1.2s ease forwards;
+      margin: 30px auto;
+      display: none; /* hidden by default */
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-section {
+      background: linear-gradient(135deg, #ff4d4d, #ff9900, #000);
+      background-size: 200% 200%;
+      animation: gradientMove 5s ease infinite;
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .title-section h2 {
+      font-size: clamp(22px, 5vw, 34px);
+      font-weight: bold;
+      margin: 0;
+      font-family: 'Merienda', cursive;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+      animation: glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+      100% { text-shadow: 0 0 20px rgba(255,255,255,0.9); }
+    }
+
+    .title-section p {
+      font-size: clamp(14px, 3vw, 18px);
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .content {
+      padding: 30px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin-top: 10px;
+      opacity: 0;
+      animation: gridAppear 1s ease forwards 0.5s;
+    }
+
+    @keyframes gridAppear {
+      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px); }
+    }
+
+    .tool-card {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(145deg, #ffffff, #f2f2f2);
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid #eee;
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: "";
+      position: absolute;
+      top: -150%;
+      left: -150%;
+      width: 400%;
+      height: 400%;
+      background: radial-gradient(circle, rgba(255,0,0,0.15), transparent 70%);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+      opacity: 0;
+    }
+
+    .tool-card:hover::before {
+      top: -50%;
+      left: -50%;
+      opacity: 1;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-8px) scale(1.04);
+      box-shadow: 0px 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .tool-card img {
+      width: clamp(45px, 12vw, 60px);
+      height: clamp(45px, 12vw, 60px);
+      margin-right: 15px;
+      flex-shrink: 0;
+      filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.2));
+      transition: transform 0.35s ease;
+    }
+
+    .tool-card:hover img {
+      transform: rotate(-6deg) scale(1.08);
+    }
+
+    .tool-name {
+      font-size: clamp(16px, 4vw, 20px);
+      font-weight: 600;
+      color: #222;
+      line-height: 1.2;
+      transition: color 0.3s;
+    }
+
+    .tool-card:hover .tool-name {
+      color: #ff4d4d;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        gap: 18px;
+      }
+      .tool-card {
+        padding: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tool-card {
+        flex-direction: row;
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <!-- Left Menu Button -->
-    <div class="menu-btn">&#9776;</div>
+<!-- HEADER -->
+<header>
+  <div class="menu-btn" onclick="toggleSidebar()">&#9776;</div>
+  <div class="logo">MyTools</div>
+  <div class="search-icon">&#128269;</div>
+</header>
 
-    <!-- Center Logo -->
-    <div class="logo">MyTools</div>
-
-    <!-- Right Search Icon -->
-    <div class="search-icon">&#128269;</div>
-  </header>
-
-  <!-- Bubble Menu -->
-  <div class="bubble-menu">
-    <a href="#">All</a>
-    <a href="#">Convert PDF</a>
-    <a href="#">Optimize PDF</a>
-    <a href="#">Edit PDF</a>
-    <a href="#">PDF Security</a>
-    <a href="#">Merge & Split</a>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="close-btn" onclick="toggleSidebar()">&#10005;</div>
+  <ul>
+    <li onclick="showSection('developer');toggleSidebar()">Developer Tools</li>
+    <li onclick="showSection('seo');toggleSidebar()">SEO Tools</li>
+    <li onclick="showSection('pdf');toggleSidebar()">PDF Tools</li>
+  </ul>
+  <div class="auth-buttons">
+    <button class="login-btn">Login</button>
+    <button class="signup-btn">Sign Up</button>
   </div>
+</div>
+
+<!-- BUBBLE MENU -->
+<div class="bubble-menu">
+  <button onclick="showSection('developer')">Developer Tools</button>
+  <button onclick="showSection('seo')">SEO Tools</button>
+  <button onclick="showSection('pdf')">PDF Tools</button>
+</div>
+
+<!-- SECTIONS -->
+<div class="container" id="developer">
+  <div class="title-section">
+    <h2>DEVELOPER TOOLS</h2>
+    <p>Powerful utilities to simplify coding, debugging, and data processing tasks.</p>
+  </div>
+  <div class="content">
+    <div class="grid">
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">HTML Minifier</span></div>
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">CSS Minifier</span></div>
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">JS Minifier</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="seo">
+  <div class="title-section">
+    <h2>SEO TOOLS</h2>
+    <p>Analyze, optimize, and boost your website performance.</p>
+  </div>
+  <div class="content">
+    <div class="grid">
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">Keyword Finder</span></div>
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">Backlink Checker</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="pdf">
+  <div class="title-section">
+    <h2>PDF TOOLS</h2>
+    <p>Merge, split, compress, and convert PDF files easily.</p>
+  </div>
+  <div class="content">
+    <div class="grid">
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">Merge PDF</span></div>
+      <div class="tool-card"><img src="" alt=""><span class="tool-name">PDF to Word</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sidebar toggle
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+  }
+
+  // Show selected section
+  function showSection(id) {
+    document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Show first section by default
+  showSection('developer');
+</script>
 
 </body>
 </html>
