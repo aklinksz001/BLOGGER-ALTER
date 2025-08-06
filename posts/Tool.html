@@ -66,6 +66,8 @@
     /* SEARCH BOX */
     .search-box {
       position: relative;
+      display: flex;
+      align-items: center;
     }
     .search-box input {
       width: 150px;
@@ -82,28 +84,31 @@
       box-shadow: 0 0 6px rgba(255,77,109,0.4);
     }
 
-    /* Premium Search Icon */
-    .search-box .search-icon {
+    /* Pure CSS SVG Icon */
+    .search-icon {
       position: absolute;
       right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ff4d6d, #ff9900);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 14px;
+      width: 24px;
+      height: 24px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
       transition: 0.3s;
-      box-shadow: 0 0 6px rgba(255,77,109,0.5);
     }
-    .search-box .search-icon:hover {
-      transform: translateY(-50%) scale(1.15);
-      box-shadow: 0 0 12px rgba(255,77,109,0.8);
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: #ff4d6d;
+      stroke-width: 2;
+      fill: none;
+    }
+    .search-icon:hover { transform: scale(1.2); }
+
+    /* Mobile Hide Input */
+    @media (max-width: 768px) {
+      .search-box input { display: none; }
     }
 
     /* SIDEBAR */
@@ -196,6 +201,7 @@
       padding: 25px 30px;
       text-align: center;
     }
+
     @keyframes gradientMove {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -244,15 +250,13 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.97);
       display: none;
       align-items: flex-start;
       justify-content: center;
       padding-top: 80px;
       z-index: 3000;
     }
-
     .search-overlay.active { display: flex; animation: fadeIn 0.3s ease forwards; }
 
     .search-overlay-content {
@@ -261,7 +265,6 @@
       text-align: center;
       animation: slideDown 0.4s ease forwards;
     }
-
     .close-search {
       position: absolute;
       top: 20px;
@@ -305,7 +308,12 @@
   <div class="logo">MyTools</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search tools...">
-    <div class="search-icon" onclick="openSearch()">&#128269;</div>
+    <div class="search-icon" onclick="openSearch()">
+      <svg viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="16.5" y1="16.5" x2="22" y2="22"></line>
+      </svg>
+    </div>
   </div>
 </header>
 
@@ -381,7 +389,6 @@
     document.getElementById('sidebar').classList.toggle('active');
   }
 
-  // Gather all tools
   const toolCards = Array.from(document.querySelectorAll('.tool-card'));
   const allGrid = document.getElementById('allToolsGrid');
 
