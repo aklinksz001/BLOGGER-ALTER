@@ -12,7 +12,6 @@
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
 
   <style>
-    /* ---------- Premium theme variables ---------- */
     :root{
       --bg: #fbfbfc;
       --card-bg: #ffffff;
@@ -23,41 +22,24 @@
       --shadow-sm: 0 4px 12px rgba(16,24,40,0.06);
       --shadow-lg: 0 10px 30px rgba(16,24,40,0.10);
       --radius: 12px;
-      --glass: rgba(255,255,255,0.6);
     }
 
-    /* ---------- Base ---------- */
     html,body{
       height:100%;
       margin:0;
       background: var(--bg);
       color:#0f1724;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       padding-bottom:40px;
     }
 
-    .page {
-      max-width:980px;
-      margin:22px auto;
-      padding:0 14px;
-    }
+    .page { max-width:980px; margin:22px auto; padding:0 14px; }
 
-    /* ---------- Search area (one-line) ---------- */
-    .search-area {
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom:14px;
-    }
+    .search-area { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
 
-    .search-wrap {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      width:100%;
-    }
+    .search-wrap { display:flex; align-items:center; gap:12px; width:100%; }
 
     #searchBar {
       width:100%;
@@ -73,147 +55,74 @@
       -webkit-appearance:none;
     }
 
-    #searchBar:focus{
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-1px);
-    }
+    #searchBar:focus{ box-shadow: var(--shadow-lg); transform: translateY(-1px); }
 
-    /* ---------- Controls (below search) ---------- */
-    .controls-row {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:flex-start;
-      flex-wrap:wrap;
-    }
+    .controls-row { display:flex; gap:12px; align-items:center; justify-content:flex-start; flex-wrap:wrap; }
 
-    /* Refresh button: premium gradient */
     #refreshIndex {
-      padding:10px 14px;
-      border-radius: 10px;
-      border: none;
-      cursor:pointer;
-      background: var(--accent);
-      color: #fff;
-      font-weight:700;
+      padding:10px 14px; border-radius: 10px; border: none; cursor:pointer;
+      background: var(--accent); color: #fff; font-weight:700;
       box-shadow: 0 6px 18px rgba(255,105,105,0.14);
-      transition: transform .10s ease, box-shadow .10s ease, opacity .12s ease;
     }
-    #refreshIndex:active{ transform: translateY(1px) scale(.998); }
     #refreshIndex[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; }
 
-    /* Secondary control style */
     .control-secondary {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      background: #fff;
-      border-radius:10px;
-      border:1px solid rgba(15,23,36,0.04);
-      box-shadow: var(--shadow-sm);
-      color: var(--muted);
-      font-weight:600;
-      font-size:14px;
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; background:#fff;
+      border-radius:10px; border:1px solid rgba(15,23,36,0.04); box-shadow: var(--shadow-sm);
+      color: var(--muted); font-weight:600; font-size:14px;
     }
+    .control-secondary input[type="checkbox"]{ width:18px; height:18px; margin:0; accent-color: var(--accent-solid); }
 
-    .control-secondary input[type="checkbox"]{
-      width:18px; height:18px; margin:0; accent-color: var(--accent-solid);
-    }
+    #searchMeta { margin-top:6px; color:var(--muted); font-size:13px; }
 
-    /* meta info: small note and results count */
-    #searchMeta {
-      margin-top:6px;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    /* ---------- Results list ---------- */
-    main#searchResults {
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    main#searchResults { margin-top:10px; display:flex; flex-direction:column; gap:10px; }
 
     .card {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      text-decoration:none;
-      color:inherit;
-      border-radius: 14px;
-      background: var(--card-bg);
-      padding:10px;
-      border: 1px solid rgba(15,23,36,0.03);
-      box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+      display:flex; gap:12px; align-items:center; text-decoration:none; color:inherit;
+      border-radius: 14px; background: var(--card-bg); padding:10px;
+      border: 1px solid rgba(15,23,36,0.03); box-shadow: 0 6px 18px rgba(16,24,40,0.04);
       transition: transform .12s ease, box-shadow .12s ease;
     }
-    .card:hover{
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
+    .card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
-    .thumb-wrap { flex:0 0 140px; max-width:35%; }
-    .thumb {
-      width:100%;
-      height:0;
-      padding-bottom:56.25%;
-      border-radius:10px;
-      background-position:center;
-      background-size:cover;
-      box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06);
-    }
+    .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; } /* relative so tag can absolute */
+    .thumb { width:100%; height:0; padding-bottom:56.25%; border-radius:10px; background-position:center; background-size:cover; box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06); }
 
-    .details {
-      flex:1;
+    /* TAG PILL (top-right on thumbnail) */
+    .tag-pill {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(180deg,#ffefef,#fff1f0);
+      color: #c93a2f;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 11px;
+      border: 1px solid rgba(201,58,47,0.08);
+      box-shadow: 0 4px 10px rgba(201,58,47,0.06);
       display:flex;
-      flex-direction:column;
-      justify-content:center;
-      min-height:64px;
-      padding-right:6px;
-    }
-
-    .title {
-      font-weight:800;
-      color:#081126;
-      margin:0;
-      line-height:1.1;
-      font-size: clamp(13px, 1.9vw, 17px);
-      letter-spacing: 0.1px;
-    }
-
-    .meta-row {
-      margin-top:8px;
-      display:flex;
-      gap:8px;
+      gap:6px;
       align-items:center;
-      font-size:13px;
+      white-space:nowrap;
     }
 
-    .badge {
-      display:inline-block;
-      background: linear-gradient(180deg,#f5faf5,#ffffff);
-      padding:6px 9px;
-      border-radius:999px;
-      color:var(--green);
-      font-weight:800;
-      font-size:12px;
-      border: 1px solid rgba(4,107,47,0.06);
-      box-shadow: 0 2px 6px rgba(11,155,80,0.04);
+    .tag-pill .plus-count {
+      background: rgba(0,0,0,0.06);
+      border-radius: 999px;
+      padding: 2px 6px;
+      font-weight:700;
+      color:#6b6b6b;
+      font-size:11px;
     }
 
-    /* smaller thin muted label (optional) */
-    .subtle {
-      color:var(--muted);
-      font-weight:600;
-      font-size:13px;
-    }
+    .details { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:64px; padding-right:6px; }
+    .title { font-weight:800; color:#081126; margin:0; line-height:1.1; font-size: clamp(13px, 1.9vw, 17px); letter-spacing: 0.1px; }
+    .meta-row { margin-top:8px; display:flex; gap:8px; align-items:center; font-size:13px; }
+    .badge { display:inline-block; background: linear-gradient(180deg,#f5faf5,#ffffff); padding:6px 9px; border-radius:999px; color: #0b9b50; font-weight:800; font-size:12px; border: 1px solid rgba(4,107,47,0.06); box-shadow: 0 2px 6px rgba(11,155,80,0.04); }
 
-    /* no results */
     .no-results { padding:14px; color:var(--muted); background:linear-gradient(180deg,#fff,#fbfbfb); border-radius:10px; border:1px dashed rgba(15,23,36,0.04); }
 
-    /* responsive */
     @media (max-width:640px){
       .page{ margin:12px auto; padding:0 12px; }
       .thumb-wrap { flex:0 0 110px; max-width:40%; }
@@ -244,8 +153,7 @@
         </div>
 
         <div style="margin-left:auto; align-self:center;">
-          <!-- optional hint -->
-          <div class="subtle">Tip: Use full titles for precise matches</div>
+          <div style="color:var(--muted); font-size:13px;">Tip: Use full titles for precise matches</div>
         </div>
       </div>
 
@@ -261,16 +169,13 @@
     document.addEventListener("DOMContentLoaded", function () {
       if (sessionStorage.getItem("focusSearch") === "true") {
         const searchBar = document.getElementById("searchBar");
-        if (searchBar) {
-          searchBar.focus();
-          searchBar.select();
-        }
+        if (searchBar) { searchBar.focus(); searchBar.select(); }
         sessionStorage.removeItem("focusSearch");
       }
     });
   </script>
 
-  <!-- Main script (Fuse + UI) -->
+  <!-- Main script (Fuse + UI + tags) -->
   <script>
     // ========== CONFIG: update these JSON file paths ==========
     const jsonFiles = [
@@ -283,7 +188,8 @@
       keys: [
         { name: "title", weight: 0.7 },
         { name: "language", weight: 0.2 },
-        { name: "year", weight: 0.1 }
+        { name: "year", weight: 0.1 },
+        { name: "tags", weight: 0.15 } // include tags in search
       ],
       includeScore: true,
       ignoreLocation: true,
@@ -334,7 +240,14 @@
             img: String(it.img || "").trim(),
             language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
             link: String(it.link || "#").trim(),
-            year: it.year ? String(it.year).trim() : ""
+            year: it.year ? String(it.year).trim() : "",
+            // normalize tags: either array or comma-separated string -> array
+            tags: (() => {
+              if (!it.tags) return [];
+              if (Array.isArray(it.tags)) return it.tags.map(t => String(t).trim()).filter(Boolean);
+              // if string like "Action,Drama"
+              return String(it.tags).split(",").map(s => s.trim()).filter(Boolean);
+            })()
           }));
         } catch (err) {
           console.error(`Error loading ${path}:`, err);
@@ -362,20 +275,9 @@
 
     async function refreshIndex() {
       const btn = document.getElementById("refreshIndex");
-      if (btn) {
-        btn.disabled = true;
-        btn.innerText = "Refreshing...";
-      }
-      try {
-        await preloadJSON();
-      } catch (e) {
-        console.error("Refresh failed:", e);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerText = "Refresh Index";
-        }
-      }
+      if (btn) { btn.disabled = true; btn.innerText = "Refreshing..."; }
+      try { await preloadJSON(); } catch (e) { console.error("Refresh failed:", e); }
+      finally { if (btn) { btn.disabled = false; btn.innerText = "Refresh Index"; } }
     }
 
     // ========== SEARCH ==========
@@ -394,19 +296,13 @@
     function updateMeta(count) {
       const meta = document.getElementById("searchMeta");
       if (!meta) return;
-      if (!isLoaded) {
-        meta.textContent = "Index loading…";
-      } else {
-        meta.textContent = count ? `${count} result${count === 1 ? "" : "s"}` : `Index ready — ${allItems.length} items`;
-      }
+      if (!isLoaded) meta.textContent = "Index loading…";
+      else meta.textContent = count ? `${count} result${count === 1 ? "" : "s"}` : `Index ready — ${allItems.length} items`;
     }
 
-    // shrink title to fit container if too long
     function shrinkTitleToFit(titleEl, minSize = 12, maxSize = 17) {
       if (!titleEl) return;
       titleEl.style.fontSize = maxSize + "px";
-      const parent = titleEl.parentElement;
-      if (!parent) return;
       const maxLines = 2;
       const lineHeight = parseFloat(getComputedStyle(titleEl).lineHeight || (maxSize * 1.15));
       const maxHeight = lineHeight * maxLines + 2;
@@ -417,6 +313,25 @@
         titleEl.style.fontSize = size + "px";
         if (size <= minSize) break;
       }
+    }
+
+    // Build and render tag pills
+    function createTagPill(tagsArr) {
+      if (!Array.isArray(tagsArr) || tagsArr.length === 0) return null;
+      const pill = document.createElement("div");
+      pill.className = "tag-pill";
+
+      const first = document.createElement("span");
+      first.textContent = tagsArr[0].length > 14 ? tagsArr[0].slice(0,14) + "…" : tagsArr[0];
+      pill.appendChild(first);
+
+      if (tagsArr.length > 1) {
+        const more = document.createElement("span");
+        more.className = "plus-count";
+        more.textContent = `+${tagsArr.length - 1}`;
+        pill.appendChild(more);
+      }
+      return pill;
     }
 
     function showResults(results) {
@@ -439,6 +354,7 @@
         const safeLink = escapeHtml(item.link);
         const safeLanguage = escapeHtml(item.language || "UNKNOWN");
         const safeYear = escapeHtml(item.year || "");
+        const tags = Array.isArray(item.tags) ? item.tags : [];
 
         const a = document.createElement("a");
         a.className = "card";
@@ -448,10 +364,15 @@
 
         const thumbWrap = document.createElement("div");
         thumbWrap.className = "thumb-wrap";
+
         const thumb = document.createElement("div");
         thumb.className = "thumb";
         thumb.style.backgroundImage = `url('${safeImg}')`;
         thumbWrap.appendChild(thumb);
+
+        // tag pill overlay (if tags exist)
+        const pill = createTagPill(tags);
+        if (pill) thumbWrap.appendChild(pill);
 
         const details = document.createElement("div");
         details.className = "details";
@@ -462,16 +383,8 @@
 
         const metaRow = document.createElement("div");
         metaRow.className = "meta-row";
-        if (safeYear) {
-          const y = document.createElement("div");
-          y.className = "badge";
-          y.textContent = safeYear;
-          metaRow.appendChild(y);
-        }
-        const lang = document.createElement("div");
-        lang.className = "badge";
-        lang.textContent = safeLanguage;
-        metaRow.appendChild(lang);
+        if (safeYear) { const y = document.createElement("div"); y.className = "badge"; y.textContent = safeYear; metaRow.appendChild(y); }
+        const lang = document.createElement("div"); lang.className = "badge"; lang.textContent = safeLanguage; metaRow.appendChild(lang);
 
         details.appendChild(title);
         details.appendChild(metaRow);
@@ -484,7 +397,6 @@
 
       container.appendChild(frag);
 
-      // adjust titles to fit
       requestAnimationFrame(() => {
         const titles = container.querySelectorAll(".card .title");
         titles.forEach(t => shrinkTitleToFit(t, 12, 17));
