@@ -12,7 +12,14 @@
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
 
   <style>
-    /* Layout */
+    /* Container */
+    body {
+      background: #fff;
+      color: #111;
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
     .search-container {
       display: flex;
       gap: 8px;
@@ -22,17 +29,14 @@
 
     #searchBar {
       flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #e2e2e2;
+      background: #fafafa;
     }
 
-    #controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    #controls { display:flex; gap:8px; align-items:center; }
 
     #searchMeta {
       padding: 8px 12px;
@@ -41,51 +45,50 @@
     }
 
     main#searchResults {
-      padding: 12px;
+      padding: 8px 12px 20px 12px;
       display: grid;
-      gap: 12px;
-      grid-auto-rows: minmax(88px, auto);
+      gap: 8px;               /* small gap between rows */
     }
 
-    /* Card row style */
+    /* card row */
     .card {
       display: flex;
-      gap: 12px;
-      align-items: stretch;
+      gap: 10px;
+      align-items: center;
       text-decoration: none;
       color: inherit;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
       background: #fff;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(16,24,40,0.06);
       padding: 8px;
       transition: transform .12s ease, box-shadow .12s ease;
-      height: 100%;
+      border: 1px solid rgba(0,0,0,0.03);
     }
 
     .card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+      box-shadow: 0 8px 20px rgba(16,24,40,0.08);
     }
 
-    /* Left thumbnail container: fixed width, 16:9 aspect ratio */
+    /* thumbnail left: compact */
     .card .thumb-wrap {
-      flex: 0 0 160px; /* left column width (adjustable) */
-      max-width: 32%;
+      flex: 0 0 140px;       /* fixed left column (adjust if needed) */
+      max-width: 36%;
       display: block;
     }
 
     .card .thumb {
       width: 100%;
       height: 0;
-      padding-bottom: 56.25%; /* 16:9 ratio */
+      padding-bottom: 56.25%; /* 16:9 */
       background-position: center;
       background-size: cover;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
     }
 
-    /* Right details */
+    /* details on right */
     .card .details {
       flex: 1 1 auto;
       display: flex;
@@ -100,53 +103,46 @@
       margin: 0;
       line-height: 1.15;
       color: #111;
-      /* clamp for nice scaling; JS will further shrink for very long titles */
       font-size: clamp(13px, 1.6vw, 16px);
       word-break: break-word;
     }
 
+    /* meta row: year and language inline */
     .card .meta-row {
-      margin-top: 6px;
+      margin-top: 8px;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       font-size: 13px;
       color: #08a04a;
       font-weight: 700;
     }
 
-    .card .meta-row .year,
-    .card .meta-row .language {
-      background: rgba(0,0,0,0.04);
+    .card .meta-row .badge {
+      display: inline-block;
+      background: #f5faf5;
       padding: 4px 8px;
       border-radius: 999px;
       color: #046b2f;
       font-weight: 700;
       font-size: 12px;
+      line-height: 1;
+      border: 1px solid rgba(4,107,47,0.06);
     }
 
-    /* Responsive: on small screens thumbnail becomes smaller; use stacking if necessary */
+    /* small screens: shrink thumbnail and stack if necessary */
     @media (max-width: 560px) {
       .card {
         gap: 10px;
         padding: 8px;
       }
       .card .thumb-wrap {
-        flex: 0 0 120px;
+        flex: 0 0 110px;
       }
-      .card .title {
-        font-size: clamp(12px, 2.6vw, 15px);
-      }
+      .card .title { font-size: clamp(12px, 3vw, 15px); }
     }
 
-    /* ensure minimum tap target */
-    .card:active { transform: translateY(-1px); }
-
-    /* No results styling */
-    .no-results {
-      padding: 14px;
-      color: #666;
-    }
+    .no-results { padding: 14px; color: #666; }
   </style>
 </head>
 <body>
@@ -181,7 +177,7 @@
   </script>
 
   <script>
-    // ================== CONFIG ==================
+    // ========== CONFIG: update your JSON files ==========
     const jsonFiles = [
       "../posts/index1.json",
       "../posts/index2.json",
@@ -199,12 +195,12 @@
       minMatchCharLength: 1
     };
 
-    // ================== STATE ==================
+    // ========== STATE ==========
     let allItems = [];
     let fuse = null;
     let isLoaded = false;
 
-    // ================== HELPERS ==================
+    // ========== HELPERS ==========
     function escapeHtml(unsafe) {
       return String(unsafe || "")
         .replaceAll("&", "&amp;")
@@ -227,7 +223,7 @@
       fuse = new Fuse(allItems, opts);
     }
 
-    // ================== LOAD & INDEX ==================
+    // ========== LOAD & INDEX ==========
     async function preloadJSON() {
       isLoaded = false;
       allItems = [];
@@ -287,7 +283,7 @@
       }
     }
 
-    // ================== SEARCH ==================
+    // ========== SEARCH ==========
     function searchQuery(q, maxResults = 200, strict = false) {
       if (!isLoaded || !fuse) return [];
       const query = String(q || "").trim();
@@ -299,7 +295,7 @@
       return raw.map(r => r.item);
     }
 
-    // ================== UI RENDER ==================
+    // ========== UI ==========
     function updateMeta(count) {
       const meta = document.getElementById("searchMeta");
       if (!meta) return;
@@ -310,28 +306,24 @@
       }
     }
 
-    // Adjust title font-size so it fits within its container (down to min size)
+    // shrink title to fit container if too long
     function shrinkTitleToFit(titleEl, minSize = 12, maxSize = 16) {
       if (!titleEl) return;
-      // reset to max first (in px)
       titleEl.style.fontSize = maxSize + "px";
-      // compute available width and height
       const parent = titleEl.parentElement;
       if (!parent) return;
-      // allow up to 2 lines (we'll measure height)
-      const maxHeight = parseFloat(getComputedStyle(titleEl).lineHeight || (maxSize * 1.15)) * 2.2;
+      const maxLines = 2;
+      const lineHeight = parseFloat(getComputedStyle(titleEl).lineHeight || (maxSize * 1.15));
+      const maxHeight = lineHeight * maxLines + 2;
 
       let size = maxSize;
-      // loop until fits or reaches min size
       while ((titleEl.scrollWidth > titleEl.clientWidth || titleEl.scrollHeight > maxHeight) && size > minSize) {
         size -= 1;
         titleEl.style.fontSize = size + "px";
-        // break to avoid infinite loop if measurement fails
         if (size <= minSize) break;
       }
     }
 
-    // Create card elements and run title shrink
     function showResults(results) {
       const container = document.getElementById("searchResults");
       if (!container) return;
@@ -353,14 +345,12 @@
         const safeLanguage = escapeHtml(item.language || "UNKNOWN");
         const safeYear = escapeHtml(item.year || "");
 
-        // anchor whole card
         const a = document.createElement("a");
         a.className = "card";
         a.href = safeLink;
         a.target = "_self";
         a.setAttribute("role", "listitem");
 
-        // left thumbnail
         const thumbWrap = document.createElement("div");
         thumbWrap.className = "thumb-wrap";
         const thumb = document.createElement("div");
@@ -368,9 +358,9 @@
         thumb.style.backgroundImage = `url('${safeImg}')`;
         thumbWrap.appendChild(thumb);
 
-        // right details
         const details = document.createElement("div");
         details.className = "details";
+
         const title = document.createElement("div");
         title.className = "title";
         title.innerHTML = safeTitle;
@@ -379,12 +369,12 @@
         metaRow.className = "meta-row";
         if (safeYear) {
           const y = document.createElement("div");
-          y.className = "year";
+          y.className = "badge";
           y.textContent = safeYear;
           metaRow.appendChild(y);
         }
         const lang = document.createElement("div");
-        lang.className = "language";
+        lang.className = "badge";
         lang.textContent = safeLanguage;
         metaRow.appendChild(lang);
 
@@ -395,20 +385,18 @@
         a.appendChild(details);
 
         frag.appendChild(a);
-
-        // After element appended to DOM we will shrink title to fit; but since not in DOM yet, push to container then fix sizes later
       });
 
       container.appendChild(frag);
 
-      // After DOM insertion, adjust title sizes for all titles
+      // adjust titles to fit
       requestAnimationFrame(() => {
         const titles = container.querySelectorAll(".card .title");
         titles.forEach(t => shrinkTitleToFit(t, 12, 16));
       });
     }
 
-    // ================== WIRING ==================
+    // ========== WIRING ==========
     function attachHandlers() {
       const searchBar = document.getElementById("searchBar");
       const refreshBtn = document.getElementById("refreshIndex");
@@ -429,7 +417,6 @@
 
       if (searchBar) {
         searchBar.addEventListener("input", onInput);
-
         searchBar.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -444,7 +431,7 @@
       if (refreshBtn) refreshBtn.addEventListener("click", refreshIndex);
     }
 
-    // ================== INIT ==================
+    // ========== INIT ==========
     (async function init() {
       attachHandlers();
       updateMeta(0);
