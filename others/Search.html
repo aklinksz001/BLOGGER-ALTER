@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
 
   <style>
-    /* Grid layout & card styling */
+    /* Layout */
     .search-container {
       display: flex;
       gap: 8px;
@@ -40,64 +40,112 @@
       color: #333;
     }
 
-    #searchResults {
+    main#searchResults {
       padding: 12px;
       display: grid;
       gap: 12px;
-      /* responsive columns */
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-auto-rows: minmax(88px, auto);
     }
 
+    /* Card row style */
     .card {
-      display: block;
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
       text-decoration: none;
       color: inherit;
       border-radius: 8px;
       overflow: hidden;
       background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      padding: 8px;
       transition: transform .12s ease, box-shadow .12s ease;
       height: 100%;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+
+    /* Left thumbnail container: fixed width, 16:9 aspect ratio */
+    .card .thumb-wrap {
+      flex: 0 0 160px; /* left column width (adjustable) */
+      max-width: 32%;
+      display: block;
     }
 
     .card .thumb {
       width: 100%;
       height: 0;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      padding-bottom: 56.25%; /* 16:9 ratio */
       background-position: center;
       background-size: cover;
+      border-radius: 6px;
+      overflow: hidden;
     }
 
-    .card .info {
-      padding: 10px;
-      text-align: center;
+    /* Right details */
+    .card .details {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 56px;
     }
 
     .card .title {
-      font-size: 15px;
-      font-weight: 600;
-      margin: 4px 0;
-      line-height: 1.2;
-      min-height: 36px;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.15;
+      color: #111;
+      /* clamp for nice scaling; JS will further shrink for very long titles */
+      font-size: clamp(13px, 1.6vw, 16px);
+      word-break: break-word;
     }
 
-    .card .meta {
-      font-size: 13px;
-      color: #08a04a; /* green like earlier */
-      font-weight: bold;
+    .card .meta-row {
       margin-top: 6px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      color: #08a04a;
+      font-weight: 700;
     }
 
-    /* small screens adjustments */
-    @media (max-width: 520px) {
-      #searchResults {
-        grid-template-columns: 1fr;
+    .card .meta-row .year,
+    .card .meta-row .language {
+      background: rgba(0,0,0,0.04);
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #046b2f;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    /* Responsive: on small screens thumbnail becomes smaller; use stacking if necessary */
+    @media (max-width: 560px) {
+      .card {
+        gap: 10px;
+        padding: 8px;
       }
+      .card .thumb-wrap {
+        flex: 0 0 120px;
+      }
+      .card .title {
+        font-size: clamp(12px, 2.6vw, 15px);
+      }
+    }
+
+    /* ensure minimum tap target */
+    .card:active { transform: translateY(-1px); }
+
+    /* No results styling */
+    .no-results {
+      padding: 14px;
+      color: #666;
     }
   </style>
 </head>
@@ -118,7 +166,7 @@
 
   <main id="searchResults" role="list"></main>
 
-  <!-- Auto-focus when navigating from index page -->
+  <!-- Auto-focus when coming from index -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (sessionStorage.getItem("focusSearch") === "true") {
@@ -134,7 +182,6 @@
 
   <script>
     // ================== CONFIG ==================
-    // Update these paths to your JSON index files
     const jsonFiles = [
       "../posts/index1.json",
       "../posts/index2.json",
@@ -219,7 +266,6 @@
       buildFuse();
       isLoaded = true;
       console.info(`Index built: ${allItems.length} items`);
-      // show count if search empty
       updateMeta(0);
     }
 
@@ -250,7 +296,6 @@
       buildFuse(strict ? 0.20 : 0.35);
 
       const raw = fuse.search(query, { limit: maxResults });
-      // map to items
       return raw.map(r => r.item);
     }
 
@@ -265,6 +310,28 @@
       }
     }
 
+    // Adjust title font-size so it fits within its container (down to min size)
+    function shrinkTitleToFit(titleEl, minSize = 12, maxSize = 16) {
+      if (!titleEl) return;
+      // reset to max first (in px)
+      titleEl.style.fontSize = maxSize + "px";
+      // compute available width and height
+      const parent = titleEl.parentElement;
+      if (!parent) return;
+      // allow up to 2 lines (we'll measure height)
+      const maxHeight = parseFloat(getComputedStyle(titleEl).lineHeight || (maxSize * 1.15)) * 2.2;
+
+      let size = maxSize;
+      // loop until fits or reaches min size
+      while ((titleEl.scrollWidth > titleEl.clientWidth || titleEl.scrollHeight > maxHeight) && size > minSize) {
+        size -= 1;
+        titleEl.style.fontSize = size + "px";
+        // break to avoid infinite loop if measurement fails
+        if (size <= minSize) break;
+      }
+    }
+
+    // Create card elements and run title shrink
     function showResults(results) {
       const container = document.getElementById("searchResults");
       if (!container) return;
@@ -272,7 +339,7 @@
 
       if (!results || results.length === 0) {
         updateMeta(0);
-        container.innerHTML = `<p style="padding:12px;color:#666">No results found</p>`;
+        container.innerHTML = `<div class="no-results">No results found</div>`;
         return;
       }
 
@@ -286,23 +353,59 @@
         const safeLanguage = escapeHtml(item.language || "UNKNOWN");
         const safeYear = escapeHtml(item.year || "");
 
-        // create anchor card that covers whole card
+        // anchor whole card
         const a = document.createElement("a");
         a.className = "card";
         a.href = safeLink;
-        a.target = "_self"; // open same tab; change to _blank if you want new tab
+        a.target = "_self";
         a.setAttribute("role", "listitem");
-        a.innerHTML = `
-          <div class="thumb" style="background-image: url('${safeImg}');"></div>
-          <div class="info">
-            <div class="title">${safeTitle}${safeYear ? ` (${safeYear})` : ""}</div>
-            <div class="meta">${safeLanguage}</div>
-          </div>
-        `;
+
+        // left thumbnail
+        const thumbWrap = document.createElement("div");
+        thumbWrap.className = "thumb-wrap";
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.style.backgroundImage = `url('${safeImg}')`;
+        thumbWrap.appendChild(thumb);
+
+        // right details
+        const details = document.createElement("div");
+        details.className = "details";
+        const title = document.createElement("div");
+        title.className = "title";
+        title.innerHTML = safeTitle;
+
+        const metaRow = document.createElement("div");
+        metaRow.className = "meta-row";
+        if (safeYear) {
+          const y = document.createElement("div");
+          y.className = "year";
+          y.textContent = safeYear;
+          metaRow.appendChild(y);
+        }
+        const lang = document.createElement("div");
+        lang.className = "language";
+        lang.textContent = safeLanguage;
+        metaRow.appendChild(lang);
+
+        details.appendChild(title);
+        details.appendChild(metaRow);
+
+        a.appendChild(thumbWrap);
+        a.appendChild(details);
+
         frag.appendChild(a);
+
+        // After element appended to DOM we will shrink title to fit; but since not in DOM yet, push to container then fix sizes later
       });
 
       container.appendChild(frag);
+
+      // After DOM insertion, adjust title sizes for all titles
+      requestAnimationFrame(() => {
+        const titles = container.querySelectorAll(".card .title");
+        titles.forEach(t => shrinkTitleToFit(t, 12, 16));
+      });
     }
 
     // ================== WIRING ==================
@@ -315,7 +418,6 @@
         if (!searchBar) return;
         const q = searchBar.value || "";
         if (!q.trim()) {
-          // show index ready
           updateMeta(0);
           document.getElementById("searchResults").innerHTML = "";
           return;
@@ -328,7 +430,6 @@
       if (searchBar) {
         searchBar.addEventListener("input", onInput);
 
-        // allow Enter key to keep focus and still show results (optional)
         searchBar.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             e.preventDefault();
