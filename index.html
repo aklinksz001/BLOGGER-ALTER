@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="monetag" content="936572de89702368b8457c7c166b865e">
+    <title>Home - List of Posts</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/main-index.css">
+
+</head>
+<body>
+    <div class="center">
+    <h2>𝐀𝐊𝐋𝐈𝐍𝐊𝐒𝐙 - 𝐍𝐄𝐓𝐖𝐎𝐑𝐊</h2>
+    </div>
+    <hr>
+       
+        <div class="center">
+        <a href="https://t.me/Aklinksz" target="_blank">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgrhjOCzYEQqSu9eHNjDNv9ls1Cl0OR161xUrTbPkQ1Fb0a7kcSw753NGctCX8boOa38t2ytFV8t71LawM4BG0-P_MejJ8usbrl4ksFHDCP6uav0xekYYJ1cODM1b2B1MoCoragAfeFIwMW17m-tjdc_hZ91KlOidF03n8R6CG9zAJWw_I-5i0pzE2diO9d/s512/images_-_2024-09-08T230050.376-removebg-preview.png" alt="Click to Join Channel" width="320" height="70" class="no-border">
+        </a>
+    </div>
+        <hr>
+    <!-- Link to open the tutorial model -->
+    <div class="center">
+<a href="javascript:void(0);" class="open-tutorial-model" style="cursor: pointer; color: red; text-decoration: none;">❯ 𝐇𝐎𝐖 𝐓𝐎 𝐔𝐒𝐄 𝐓𝐇𝐈𝐒 𝐖𝐄𝐁𝐒𝐈𝐓𝐄 ? ❮</a>
+
+<!-- Tutorial model structure -->
+<div id="tutorialModel" class="tutorial-model" style="display: none;">
+    <div class="tutorial-model-content">
+        <span class="close-tutorial-model">&times;</span>
+        <!-- This div will hold the video iframe -->
+        <div id="videoContainer"></div>
+    </div>
+</div>
+    </div>
+<br>
+      <!-- Fuse.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
+
+<!-- Your existing input (unchanged) -->
+<input type="text" id="searchBar" placeholder="Search Here..." onclick="openSearchPage()">
+
+<!-- Optional controls / results (place below the search bar) -->
+<button id="refreshIndex">Refresh Index</button>
+<label style="margin-left:8px">
+  <input type="checkbox" id="strictToggle"> Strict mode
+</label>
+<div id="searchResults"></div>
+        
+    <br>
+    
+    <footer>
+        <div class="center">
+            © 2024 My Blog. All Rights Reserved.
+        </div>
+    </footer>
+
+<!---Searchbar redirect -->
+    
+    <script>
+function redirectToSearch() {
+    // Store scroll position before redirect
+    sessionStorage.setItem("scrollToSearch", "true");
+    window.location.href = "others/Search.html";
+}
+
+function openSearchPage() {
+    sessionStorage.setItem("focusSearch", "true"); // Store focus state
+    window.location.href = "others/Search.html";
+}
+    </script>
+    <!---- Link Script --->
+<script src="javascript/Tutorial.js"></script>
+
+    
+    <!-- VERIFY CHECK -->
+<script>
+    if (sessionStorage.getItem('authenticated') !== 'true') {
+        window.location.href = "others/Date-Verify.html";     
+    }
+    </script>
+</body>
+</html>
