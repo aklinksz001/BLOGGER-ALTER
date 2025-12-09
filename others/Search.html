@@ -85,36 +85,40 @@
     }
     .card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
-    .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; } /* relative so tag can absolute */
+    .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; overflow: visible; } /* relative so tag can absolute */
     .thumb { width:100%; height:0; padding-bottom:56.25%; border-radius:10px; background-position:center; background-size:cover; box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06); }
 
     /* TAG PILL (top-right on thumbnail) */
     .tag-pill {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: linear-gradient(180deg,#ffefef,#fff1f0);
-      color: #c93a2f;
-      padding: 5px 8px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: 11px;
-      border: 1px solid rgba(201,58,47,0.08);
-      box-shadow: 0 4px 10px rgba(201,58,47,0.06);
-      display:flex;
-      gap:6px;
-      align-items:center;
-      white-space:nowrap;
-    }
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(0, 0); /* no offset */
+  background: linear-gradient(180deg,#fff5f3,#fff8f6);
+  color: #b93a2f;
+  padding: 4px 6px;          /* smaller padding */
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 10px;           /* smaller font */
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(185,58,47,0.08);
+  box-shadow: 0 4px 10px rgba(185,58,47,0.04);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+  line-height: 1;
+}
 
     .tag-pill .plus-count {
-      background: rgba(0,0,0,0.06);
-      border-radius: 999px;
-      padding: 2px 6px;
-      font-weight:700;
-      color:#6b6b6b;
-      font-size:11px;
-    }
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  padding: 2px 5px;
+  font-weight:700;
+  color:#525252;
+  font-size: 10px;           /* match smaller text */
+  line-height: 1;
+}
 
     .details { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:64px; padding-right:6px; }
     .title { font-weight:800; color:#081126; margin:0; line-height:1.1; font-size: clamp(13px, 1.9vw, 17px); letter-spacing: 0.1px; }
