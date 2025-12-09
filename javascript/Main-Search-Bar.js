@@ -1,32 +1,42 @@
-// ------- CONFIG -------
+<!-- Include Fuse.js (keep this in your page head or before the script) -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
+
+<!-- Your existing input stays the same -->
+<input type="text" id="searchBar" placeholder="Search Here..." onclick="openSearchPage()">
+
+<!-- Optional controls and results (place near the input) -->
+<button id="refreshIndex">Refresh Index</button>
+<label style="margin-left:8px">
+  <input type="checkbox" id="strictToggle"> Strict mode
+</label>
+<div id="searchResults"></div>
+
+<script>
+// ---------- CONFIG (update jsonFiles to match your paths) ----------
 const jsonFiles = [
   "../posts/index1.json",
   "../posts/index2.json",
   "../posts/1500-Webseries/index.json"
 ];
 
-// Fuse.js options
-const fuseOptions = {
+// Fuse base options (year included so combined queries work)
+const fuseBaseOptions = {
   keys: [
     { name: "title", weight: 0.7 },
     { name: "language", weight: 0.2 },
     { name: "year", weight: 0.1 }
   ],
   includeScore: true,
-  threshold: 0.35,       // adjust: lower = stricter, higher = fuzzier
   ignoreLocation: true,
   minMatchCharLength: 1
 };
 
-// Optional auto-refresh interval (ms). Set to null or 0 to disable.
-const AUTO_REFRESH_MS = null; // e.g., 5 * 60 * 1000 for 5 minutes
-
-// ------- STATE -------
-let allItems = [];   // cached items
-let isLoaded = false;
+// ---------- STATE ----------
+let allItems = [];
 let fuse = null;
+let isLoaded = false;
 
-// ------- UTIL -------
+// ---------- HELPERS ----------
 function escapeHtml(unsafe) {
   return String(unsafe || "")
     .replaceAll("&", "&amp;")
@@ -36,7 +46,7 @@ function escapeHtml(unsafe) {
     .replaceAll("'", "&#039;");
 }
 
-function debounce(fn, wait = 200) {
+function debounce(fn, wait = 180) {
   let t;
   return (...args) => {
     clearTimeout(t);
@@ -44,24 +54,28 @@ function debounce(fn, wait = 200) {
   };
 }
 
-// ------- PRELOAD & INDEX BUILD -------
+function buildFuse(threshold = 0.35) {
+  const opts = Object.assign({}, fuseBaseOptions, { threshold });
+  fuse = new Fuse(allItems, opts);
+}
+
+// ---------- LOAD & INDEX ----------
 async function preloadJSON() {
   isLoaded = false;
   allItems = [];
 
   const promises = jsonFiles.map(async (path) => {
     try {
-      const res = await fetch(path, { cache: "no-store" }); // no-store to pick fresh changes when refreshing
+      const res = await fetch(path, { cache: "no-store" });
       if (!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`);
       const json = await res.json();
       const items = Array.isArray(json.items) ? json.items : [];
-
       return items.map(it => ({
         title: String(it.title || "Unknown Title").trim(),
         img: String(it.img || "").trim(),
         language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
         link: String(it.link || "#").trim(),
-        year: it.year ? String(it.year).trim() : ""   // year is optional
+        year: it.year ? String(it.year).trim() : ""
       }));
     } catch (err) {
       console.error(`Error loading ${path}:`, err);
@@ -72,7 +86,7 @@ async function preloadJSON() {
   const results = await Promise.all(promises);
   const flat = results.flat();
 
-  // Deduplicate by exact link (keep first occurrence)
+  // Deduplicate by exact link (preserve first)
   const seen = new Set();
   for (const it of flat) {
     if (!seen.has(it.link)) {
@@ -81,51 +95,58 @@ async function preloadJSON() {
     }
   }
 
-  // Build Fuse index
-  fuse = new Fuse(allItems, fuseOptions);
-
+  // Build default Fuse
+  buildFuse(); // default threshold 0.35
   isLoaded = true;
-  console.info(`Index loaded: ${allItems.length} items`);
+  console.info(`Index built: ${allItems.length} items`);
 }
 
-// Public: refresh index (re-fetch JSON and rebuild Fuse)
+// Public refresh function
 async function refreshIndex() {
-  document.getElementById("refreshIndex").disabled = true;
-  document.getElementById("refreshIndex").innerText = "Refreshing...";
+  const btn = document.getElementById("refreshIndex");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "Refreshing...";
+  }
   try {
     await preloadJSON();
   } catch (e) {
     console.error("Refresh failed:", e);
   } finally {
-    document.getElementById("refreshIndex").disabled = false;
-    document.getElementById("refreshIndex").innerText = "Refresh Index";
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Refresh Index";
+    }
   }
 }
 
-// ------- SEARCH -------
-function searchQuery(query, maxResults = 200) {
+// ---------- SEARCH (no year-only special case) ----------
+function searchQuery(query, maxResults = 200, strict = false) {
   if (!isLoaded || !fuse) return [];
   const q = String(query || "").trim();
   if (!q) return [];
 
-  // Fuse returns array of { item, score }
+  // Rebuild fuse according to strict toggle (cheap for small-mid datasets)
+  buildFuse(strict ? 0.20 : 0.35);
+
+  // Use Fuse fuzzy search across title, language, and year.
+  // This lets queries like "Avengers 2012" match title + year, and numeric titles match normally.
   const raw = fuse.search(q, { limit: maxResults });
-  // Optional: filter by score threshold (already set in options) or add additional logic
   return raw.map(r => r.item);
 }
 
-// ------- UI: show results -------
+// ---------- UI: render ----------
 function showResults(results) {
-  const resultContainer = document.getElementById("searchResults");
-  resultContainer.innerHTML = "";
+  const container = document.getElementById("searchResults");
+  if (!container) return;
+  container.innerHTML = "";
 
   if (!results || results.length === 0) {
-    resultContainer.innerHTML = "<p>No results found</p>";
+    container.innerHTML = "<p>No results found</p>";
     return;
   }
 
   const frag = document.createDocumentFragment();
-
   results.forEach(item => {
     const safeTitle = escapeHtml(item.title);
     const safeImg = escapeHtml(item.img);
@@ -133,9 +154,9 @@ function showResults(results) {
     const safeLanguage = escapeHtml(item.language || "UNKNOWN");
     const safeYear = escapeHtml(item.year || "");
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("result-item");
-    wrapper.innerHTML = `
+    const wrap = document.createElement("div");
+    wrap.classList.add("result-item");
+    wrap.innerHTML = `
       <div style="display:flex;align-items:center;margin-bottom:10px;padding:10px;border-bottom:1px solid #ddd;">
         <img src="${safeImg}" alt="${safeTitle}" width="100" style="border-radius:5px;margin-right:10px;">
         <div style="text-align:center;flex-grow:1;">
@@ -147,50 +168,42 @@ function showResults(results) {
         </div>
       </div>
     `;
-    frag.appendChild(wrapper);
+    frag.appendChild(wrap);
   });
 
-  resultContainer.appendChild(frag);
+  container.appendChild(frag);
 }
 
-// ------- WIRING -------
-function attachSearchHandler() {
+// ---------- WIRING ----------
+function attachHandlers() {
   const searchBar = document.getElementById("searchBar");
-  if (!searchBar) {
-    console.warn("No searchBar element found.");
-    return;
-  }
+  const refreshBtn = document.getElementById("refreshIndex");
+  const strictToggle = document.getElementById("strictToggle");
 
-  const handler = debounce(() => {
-    const q = searchBar.value;
-    if (!q || q.trim().length === 0) {
-      document.getElementById("searchResults").innerHTML = "";
+  const onInput = debounce(() => {
+    if (!searchBar) return;
+    const q = searchBar.value || "";
+    if (!q.trim()) {
+      const c = document.getElementById("searchResults");
+      if (c) c.innerHTML = "";
       return;
     }
-    const results = searchQuery(q, 150);
+    const strict = strictToggle ? strictToggle.checked : false;
+    const results = searchQuery(q, 200, strict);
     showResults(results);
   }, 160);
 
-  searchBar.addEventListener("input", handler);
-}
-
-function attachRefreshHandler() {
-  const btn = document.getElementById("refreshIndex");
-  if (!btn) return;
-  btn.addEventListener("click", () => refreshIndex());
-}
-
-// ------- INIT -------
-(async function init() {
-  attachSearchHandler();
-  attachRefreshHandler();
-
-  await preloadJSON(); // initial load
-
-  if (AUTO_REFRESH_MS && Number.isFinite(AUTO_REFRESH_MS) && AUTO_REFRESH_MS > 0) {
-    setInterval(() => {
-      console.info("Auto-refreshing index...");
-      preloadJSON();
-    }, AUTO_REFRESH_MS);
+  if (searchBar) {
+    // preserve existing inline onclick — this only adds the input listener
+    searchBar.addEventListener("input", onInput);
   }
+
+  if (refreshBtn) refreshBtn.addEventListener("click", refreshIndex);
+}
+
+// ---------- INIT ----------
+(async function init() {
+  attachHandlers();
+  await preloadJSON();
 })();
+</script>
