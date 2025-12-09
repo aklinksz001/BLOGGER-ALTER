@@ -78,6 +78,7 @@
     main#searchResults { margin-top:10px; display:flex; flex-direction:column; gap:10px; }
 
     .card {
+      position: relative; /* IMPORTANT: for card-level tag positioning */
       display:flex; gap:12px; align-items:center; text-decoration:none; color:inherit;
       border-radius: 14px; background: var(--card-bg); padding:10px;
       border: 1px solid rgba(15,23,36,0.03); box-shadow: 0 6px 18px rgba(16,24,40,0.04);
@@ -85,40 +86,39 @@
     }
     .card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
-    .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; overflow: visible; } /* relative so tag can absolute */
+    .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; }
     .thumb { width:100%; height:0; padding-bottom:56.25%; border-radius:10px; background-position:center; background-size:cover; box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06); }
 
-    /* TAG PILL (top-right on thumbnail) */
+    /* TAG PILL AT CARD TOP-RIGHT (bigger, card-level) */
     .tag-pill {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translate(0, 0); /* no offset */
-  background: linear-gradient(180deg,#fff5f3,#fff8f6);
-  color: #b93a2f;
-  padding: 4px 6px;          /* smaller padding */
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 10px;           /* smaller font */
-  letter-spacing: 0.2px;
-  border: 1px solid rgba(185,58,47,0.08);
-  box-shadow: 0 4px 10px rgba(185,58,47,0.04);
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  white-space: nowrap;
-  line-height: 1;
-}
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: linear-gradient(180deg,#fff0ec,#ffe7e3);
+      color: #c23a2f;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;      /* bigger font per your request */
+      letter-spacing: 0.2px;
+      border: 1px solid rgba(194,58,47,0.12);
+      box-shadow: 0 4px 12px rgba(194,58,47,0.10);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      line-height: 1;
+      z-index: 5;
+    }
 
     .tag-pill .plus-count {
-  background: rgba(0,0,0,0.06);
-  border-radius: 999px;
-  padding: 2px 5px;
-  font-weight:700;
-  color:#525252;
-  font-size: 10px;           /* match smaller text */
-  line-height: 1;
-}
+      background: rgba(0,0,0,0.08);
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4e4e4e;
+    }
 
     .details { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:64px; padding-right:6px; }
     .title { font-weight:800; color:#081126; margin:0; line-height:1.1; font-size: clamp(13px, 1.9vw, 17px); letter-spacing: 0.1px; }
@@ -193,7 +193,7 @@
         { name: "title", weight: 0.7 },
         { name: "language", weight: 0.2 },
         { name: "year", weight: 0.1 },
-        { name: "tags", weight: 0.15 } // include tags in search
+        { name: "tags", weight: 0.15 } // include tags
       ],
       includeScore: true,
       ignoreLocation: true,
@@ -228,6 +228,27 @@
       fuse = new Fuse(allItems, opts);
     }
 
+    // Create tag pill helper (card-level)
+    function createTagPill(tagsArr) {
+      if (!Array.isArray(tagsArr) || tagsArr.length === 0) return null;
+
+      const pill = document.createElement("div");
+      pill.className = "tag-pill";
+
+      const first = document.createElement("span");
+      const label = String(tagsArr[0] || "");
+      first.textContent = label.length > 14 ? label.slice(0, 14) + "…" : label;
+      pill.appendChild(first);
+
+      if (tagsArr.length > 1) {
+        const more = document.createElement("span");
+        more.className = "plus-count";
+        more.textContent = `+${tagsArr.length - 1}`;
+        pill.appendChild(more);
+      }
+      return pill;
+    }
+
     // ========== LOAD & INDEX ==========
     async function preloadJSON() {
       isLoaded = false;
@@ -245,11 +266,10 @@
             language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
             link: String(it.link || "#").trim(),
             year: it.year ? String(it.year).trim() : "",
-            // normalize tags: either array or comma-separated string -> array
+            // normalize tags
             tags: (() => {
               if (!it.tags) return [];
               if (Array.isArray(it.tags)) return it.tags.map(t => String(t).trim()).filter(Boolean);
-              // if string like "Action,Drama"
               return String(it.tags).split(",").map(s => s.trim()).filter(Boolean);
             })()
           }));
@@ -319,25 +339,6 @@
       }
     }
 
-    // Build and render tag pills
-    function createTagPill(tagsArr) {
-      if (!Array.isArray(tagsArr) || tagsArr.length === 0) return null;
-      const pill = document.createElement("div");
-      pill.className = "tag-pill";
-
-      const first = document.createElement("span");
-      first.textContent = tagsArr[0].length > 14 ? tagsArr[0].slice(0,14) + "…" : tagsArr[0];
-      pill.appendChild(first);
-
-      if (tagsArr.length > 1) {
-        const more = document.createElement("span");
-        more.className = "plus-count";
-        more.textContent = `+${tagsArr.length - 1}`;
-        pill.appendChild(more);
-      }
-      return pill;
-    }
-
     function showResults(results) {
       const container = document.getElementById("searchResults");
       if (!container) return;
@@ -374,10 +375,6 @@
         thumb.style.backgroundImage = `url('${safeImg}')`;
         thumbWrap.appendChild(thumb);
 
-        // tag pill overlay (if tags exist)
-        const pill = createTagPill(tags);
-        if (pill) thumbWrap.appendChild(pill);
-
         const details = document.createElement("div");
         details.className = "details";
 
@@ -395,6 +392,10 @@
 
         a.appendChild(thumbWrap);
         a.appendChild(details);
+
+        // append tag pill to the card container (card-level positioning)
+        const pill = createTagPill(tags);
+        if (pill) a.appendChild(pill);
 
         frag.appendChild(a);
       });
