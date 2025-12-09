@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Search Movies</title>
 
-  <!-- Your site CSS (keeps current styles) -->
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/Search.css">
 
-  <!-- Fuse.js CDN -->
+  <!-- Fuse.js -->
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
 
   <style>
-    /* Small inline styles to ensure controls look OK even without external CSS */
+    /* Grid layout & card styling */
     .search-container {
       display: flex;
-      align-items: center;
       gap: 8px;
+      align-items: center;
       padding: 12px;
     }
+
     #searchBar {
       flex: 1;
       padding: 10px;
@@ -27,40 +27,96 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-    #refreshIndex {
-      padding: 8px 10px;
-      border-radius: 6px;
-      cursor: pointer;
+
+    #controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
-    #strictToggle {
-      margin-left: 6px;
-      transform: translateY(1px);
+
+    #searchMeta {
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #333;
     }
+
     #searchResults {
       padding: 12px;
+      display: grid;
+      gap: 12px;
+      /* responsive columns */
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
-    .result-item {
-      margin-bottom: 10px;
+
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: transform .12s ease, box-shadow .12s ease;
+      height: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .card .thumb {
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      background-position: center;
+      background-size: cover;
+    }
+
+    .card .info {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .card .title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 4px 0;
+      line-height: 1.2;
+      min-height: 36px;
+    }
+
+    .card .meta {
+      font-size: 13px;
+      color: #08a04a; /* green like earlier */
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    /* small screens adjustments */
+    @media (max-width: 520px) {
+      #searchResults {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Search Bar + Controls -->
   <div class="search-container">
-    <!-- Keep this input id exactly as your other pages expect -->
     <input type="text" id="searchBar" placeholder="Search Here..." aria-label="Search movies">
 
-    <!-- Controls -->
-    <button id="refreshIndex" title="Reload JSON index">Refresh Index</button>
-
-    <label style="font-size:14px; display:flex; align-items:center;">
-      <input type="checkbox" id="strictToggle"> <span style="margin-left:6px;">Strict mode</span>
-    </label>
+    <div id="controls">
+      <button id="refreshIndex" title="Reload JSON index">Refresh Index</button>
+      <label style="display:inline-flex; align-items:center; gap:6px; font-size:14px;">
+        <input type="checkbox" id="strictToggle"> Strict
+      </label>
+    </div>
   </div>
 
-  <!-- Results -->
-  <div id="searchResults" role="region" aria-live="polite"></div>
+  <div id="searchMeta" aria-live="polite"></div>
+
+  <main id="searchResults" role="list"></main>
 
   <!-- Auto-focus when navigating from index page -->
   <script>
@@ -76,203 +132,223 @@
     });
   </script>
 
-  <!-- Main Search Script -->
   <script>
-  // ================== CONFIG ==================
-  // Update these JSON file paths to your real files
-  const jsonFiles = [
-    "../posts/index1.json",
-    "../posts/index2.json",
-    "../posts/1500-Webseries/index.json"
-  ];
+    // ================== CONFIG ==================
+    // Update these paths to your JSON index files
+    const jsonFiles = [
+      "../posts/index1.json",
+      "../posts/index2.json",
+      "../posts/1500-Webseries/index.json"
+    ];
 
-  // Fuse keys & base options
-  const fuseBaseOptions = {
-    keys: [
-      { name: "title", weight: 0.7 },
-      { name: "language", weight: 0.2 },
-      { name: "year", weight: 0.1 }
-    ],
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 1
-  };
-
-  // ================== STATE ==================
-  let allItems = [];
-  let fuse = null;
-  let isLoaded = false;
-
-  // ================== HELPERS ==================
-  function escapeHtml(unsafe) {
-    return String(unsafe || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function debounce(fn, wait = 180) {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn.apply(this, args), wait);
+    const fuseBaseOptions = {
+      keys: [
+        { name: "title", weight: 0.7 },
+        { name: "language", weight: 0.2 },
+        { name: "year", weight: 0.1 }
+      ],
+      includeScore: true,
+      ignoreLocation: true,
+      minMatchCharLength: 1
     };
-  }
 
-  function buildFuse(threshold = 0.35) {
-    const opts = Object.assign({}, fuseBaseOptions, { threshold });
-    fuse = new Fuse(allItems, opts);
-  }
+    // ================== STATE ==================
+    let allItems = [];
+    let fuse = null;
+    let isLoaded = false;
 
-  // ================== LOAD & INDEX ==================
-  async function preloadJSON() {
-    isLoaded = false;
-    allItems = [];
-
-    const promises = jsonFiles.map(async (path) => {
-      try {
-        // use no-store so refresh picks latest JSON
-        const res = await fetch(path, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`);
-        const json = await res.json();
-        const items = Array.isArray(json.items) ? json.items : [];
-        return items.map(it => ({
-          title: String(it.title || "Unknown Title").trim(),
-          img: String(it.img || "").trim(),
-          language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
-          link: String(it.link || "#").trim(),
-          year: it.year ? String(it.year).trim() : ""
-        }));
-      } catch (err) {
-        console.error(`Error loading ${path}:`, err);
-        return [];
-      }
-    });
-
-    const results = await Promise.all(promises);
-    const flat = results.flat();
-
-    // Deduplicate by exact link (preserve first occurrence)
-    const seen = new Set();
-    for (const it of flat) {
-      if (!seen.has(it.link)) {
-        seen.add(it.link);
-        allItems.push(it);
-      }
+    // ================== HELPERS ==================
+    function escapeHtml(unsafe) {
+      return String(unsafe || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    // Build Fuse index
-    buildFuse(); // default threshold 0.35
-    isLoaded = true;
-    console.info(`Index built: ${allItems.length} items`);
-  }
-
-  // Public refresh
-  async function refreshIndex() {
-    const btn = document.getElementById("refreshIndex");
-    if (btn) {
-      btn.disabled = true;
-      btn.innerText = "Refreshing...";
+    function debounce(fn, wait = 180) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
     }
-    try {
-      await preloadJSON();
-    } catch (e) {
-      console.error("Refresh failed:", e);
-    } finally {
+
+    function buildFuse(threshold = 0.35) {
+      const opts = Object.assign({}, fuseBaseOptions, { threshold });
+      fuse = new Fuse(allItems, opts);
+    }
+
+    // ================== LOAD & INDEX ==================
+    async function preloadJSON() {
+      isLoaded = false;
+      allItems = [];
+
+      const promises = jsonFiles.map(async (path) => {
+        try {
+          const res = await fetch(path, { cache: "no-store" });
+          if (!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`);
+          const json = await res.json();
+          const items = Array.isArray(json.items) ? json.items : [];
+          return items.map(it => ({
+            title: String(it.title || "Unknown Title").trim(),
+            img: String(it.img || "").trim(),
+            language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
+            link: String(it.link || "#").trim(),
+            year: it.year ? String(it.year).trim() : ""
+          }));
+        } catch (err) {
+          console.error(`Error loading ${path}:`, err);
+          return [];
+        }
+      });
+
+      const results = await Promise.all(promises);
+      const flat = results.flat();
+
+      // Deduplicate by link
+      const seen = new Set();
+      for (const it of flat) {
+        if (!seen.has(it.link)) {
+          seen.add(it.link);
+          allItems.push(it);
+        }
+      }
+
+      buildFuse();
+      isLoaded = true;
+      console.info(`Index built: ${allItems.length} items`);
+      // show count if search empty
+      updateMeta(0);
+    }
+
+    async function refreshIndex() {
+      const btn = document.getElementById("refreshIndex");
       if (btn) {
-        btn.disabled = false;
-        btn.innerText = "Refresh Index";
+        btn.disabled = true;
+        btn.innerText = "Refreshing...";
+      }
+      try {
+        await preloadJSON();
+      } catch (e) {
+        console.error("Refresh failed:", e);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "Refresh Index";
+        }
       }
     }
-  }
 
-  // ================== SEARCH ==================
-  function searchQuery(query, maxResults = 200, strict = false) {
-    if (!isLoaded || !fuse) return [];
-    const q = String(query || "").trim();
-    if (!q) return [];
+    // ================== SEARCH ==================
+    function searchQuery(q, maxResults = 200, strict = false) {
+      if (!isLoaded || !fuse) return [];
+      const query = String(q || "").trim();
+      if (!query) return [];
 
-    // Rebuild fuse according to strict toggle (cheap for small-mid datasets)
-    buildFuse(strict ? 0.20 : 0.35);
+      buildFuse(strict ? 0.20 : 0.35);
 
-    // Use Fuse across title, language, year
-    const raw = fuse.search(q, { limit: maxResults });
-    return raw.map(r => r.item);
-  }
-
-  // ================== UI RENDER ==================
-  function showResults(results) {
-    const container = document.getElementById("searchResults");
-    if (!container) return;
-    container.innerHTML = "";
-
-    if (!results || results.length === 0) {
-      container.innerHTML = "<p>No results found</p>";
-      return;
+      const raw = fuse.search(query, { limit: maxResults });
+      // map to items
+      return raw.map(r => r.item);
     }
 
-    const frag = document.createDocumentFragment();
-    results.forEach(item => {
-      const safeTitle = escapeHtml(item.title);
-      const safeImg = escapeHtml(item.img);
-      const safeLink = escapeHtml(item.link);
-      const safeLanguage = escapeHtml(item.language || "UNKNOWN");
-      const safeYear = escapeHtml(item.year || "");
+    // ================== UI RENDER ==================
+    function updateMeta(count) {
+      const meta = document.getElementById("searchMeta");
+      if (!meta) return;
+      if (!isLoaded) {
+        meta.textContent = "Index loading...";
+      } else {
+        meta.textContent = count ? `${count} result${count === 1 ? "" : "s"}` : `Index ready — ${allItems.length} items`;
+      }
+    }
 
-      const wrap = document.createElement("div");
-      wrap.classList.add("result-item");
-      wrap.innerHTML = `
-        <div style="display:flex;align-items:center;margin-bottom:10px;padding:10px;border-bottom:1px solid #ddd;">
-          <img src="${safeImg}" alt="${safeTitle}" width="100" style="border-radius:5px;margin-right:10px;">
-          <div style="text-align:center;flex-grow:1;">
-            <h4 style="margin:0;">${safeTitle}${safeYear ? ` (${safeYear})` : ""}</h4>
-            <p style="margin:2px 0;font-size:14px;color:#00FF00;font-weight:bold;">${safeLanguage}</p>
-            <a href="${safeLink}" target="_blank" style="color:red;font-weight:bold;font-size:16px;text-decoration:none;">
-              <span style="color:black;">➥</span> DOWNLOAD
-            </a>
-          </div>
-        </div>
-      `;
-      frag.appendChild(wrap);
-    });
+    function showResults(results) {
+      const container = document.getElementById("searchResults");
+      if (!container) return;
+      container.innerHTML = "";
 
-    container.appendChild(frag);
-  }
-
-  // ================== WIRING ==================
-  function attachHandlers() {
-    const searchBar = document.getElementById("searchBar");
-    const refreshBtn = document.getElementById("refreshIndex");
-    const strictToggle = document.getElementById("strictToggle");
-
-    const onInput = debounce(() => {
-      if (!searchBar) return;
-      const q = searchBar.value || "";
-      if (!q.trim()) {
-        const c = document.getElementById("searchResults");
-        if (c) c.innerHTML = "";
+      if (!results || results.length === 0) {
+        updateMeta(0);
+        container.innerHTML = `<p style="padding:12px;color:#666">No results found</p>`;
         return;
       }
-      const strict = strictToggle ? strictToggle.checked : false;
-      const results = searchQuery(q, 200, strict);
-      showResults(results);
-    }, 160);
 
-    if (searchBar) {
-      searchBar.addEventListener("input", onInput);
+      updateMeta(results.length);
+
+      const frag = document.createDocumentFragment();
+      results.forEach(item => {
+        const safeTitle = escapeHtml(item.title);
+        const safeImg = escapeHtml(item.img);
+        const safeLink = escapeHtml(item.link);
+        const safeLanguage = escapeHtml(item.language || "UNKNOWN");
+        const safeYear = escapeHtml(item.year || "");
+
+        // create anchor card that covers whole card
+        const a = document.createElement("a");
+        a.className = "card";
+        a.href = safeLink;
+        a.target = "_self"; // open same tab; change to _blank if you want new tab
+        a.setAttribute("role", "listitem");
+        a.innerHTML = `
+          <div class="thumb" style="background-image: url('${safeImg}');"></div>
+          <div class="info">
+            <div class="title">${safeTitle}${safeYear ? ` (${safeYear})` : ""}</div>
+            <div class="meta">${safeLanguage}</div>
+          </div>
+        `;
+        frag.appendChild(a);
+      });
+
+      container.appendChild(frag);
     }
 
-    if (refreshBtn) refreshBtn.addEventListener("click", refreshIndex);
-  }
+    // ================== WIRING ==================
+    function attachHandlers() {
+      const searchBar = document.getElementById("searchBar");
+      const refreshBtn = document.getElementById("refreshIndex");
+      const strictToggle = document.getElementById("strictToggle");
 
-  // ================== INIT ==================
-  (async function init() {
-    attachHandlers();
-    await preloadJSON();
-  })();
+      const onInput = debounce(() => {
+        if (!searchBar) return;
+        const q = searchBar.value || "";
+        if (!q.trim()) {
+          // show index ready
+          updateMeta(0);
+          document.getElementById("searchResults").innerHTML = "";
+          return;
+        }
+        const strict = strictToggle ? strictToggle.checked : false;
+        const results = searchQuery(q, 300, strict);
+        showResults(results);
+      }, 160);
+
+      if (searchBar) {
+        searchBar.addEventListener("input", onInput);
+
+        // allow Enter key to keep focus and still show results (optional)
+        searchBar.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const q = searchBar.value || "";
+            const strict = strictToggle ? strictToggle.checked : false;
+            const results = searchQuery(q, 300, strict);
+            showResults(results);
+          }
+        });
+      }
+
+      if (refreshBtn) refreshBtn.addEventListener("click", refreshIndex);
+    }
+
+    // ================== INIT ==================
+    (async function init() {
+      attachHandlers();
+      updateMeta(0);
+      await preloadJSON();
+    })();
   </script>
-
 </body>
 </html>
