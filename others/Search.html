@@ -1,36 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Movies</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/Search.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Movies</title>
+
+  <!-- Your site CSS (keeps current styles) -->
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/Search.css">
+
+  <!-- Fuse.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
+
+  <style>
+    /* Small inline styles to ensure controls look OK even without external CSS */
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+    }
+    #searchBar {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    #refreshIndex {
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #strictToggle {
+      margin-left: 6px;
+      transform: translateY(1px);
+    }
+    #searchResults {
+      padding: 12px;
+    }
+    .result-item {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Search Bar -->
-<div class="search-container">
-    <input type="text" id="searchBar" placeholder="Search Here...">
-</div>
+  <!-- Search Bar + Controls -->
+  <div class="search-container">
+    <!-- Keep this input id exactly as your other pages expect -->
+    <input type="text" id="searchBar" placeholder="Search Here..." aria-label="Search movies">
 
-<!-- Results Section -->
-<div id="searchResults"></div>
+    <!-- Controls -->
+    <button id="refreshIndex" title="Reload JSON index">Refresh Index</button>
 
-<!-- Auto-focus when navigating from index page -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    if (sessionStorage.getItem("focusSearch") === "true") {
-        let searchBar = document.getElementById("searchBar");
-        searchBar.focus();
-        searchBar.select();
+    <label style="font-size:14px; display:flex; align-items:center;">
+      <input type="checkbox" id="strictToggle"> <span style="margin-left:6px;">Strict mode</span>
+    </label>
+  </div>
+
+  <!-- Results -->
+  <div id="searchResults" role="region" aria-live="polite"></div>
+
+  <!-- Auto-focus when navigating from index page -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (sessionStorage.getItem("focusSearch") === "true") {
+        const searchBar = document.getElementById("searchBar");
+        if (searchBar) {
+          searchBar.focus();
+          searchBar.select();
+        }
         sessionStorage.removeItem("focusSearch");
-    }
-});
-</script>
+      }
+    });
+  </script>
 
-<!-- Link to JavaScript -->
-<script src="../javascript/Main-Search-Bar.js"></script>
+  <!-- Main Search Script -->
+  <script>
+  // ================== CONFIG ==================
+  // Update these JSON file paths to your real files
+  const jsonFiles = [
+    "../posts/index1.json",
+    "../posts/index2.json",
+    "../posts/1500-Webseries/index.json"
+  ];
+
+  // Fuse keys & base options
+  const fuseBaseOptions = {
+    keys: [
+      { name: "title", weight: 0.7 },
+      { name: "language", weight: 0.2 },
+      { name: "year", weight: 0.1 }
+    ],
+    includeScore: true,
+    ignoreLocation: true,
+    minMatchCharLength: 1
+  };
+
+  // ================== STATE ==================
+  let allItems = [];
+  let fuse = null;
+  let isLoaded = false;
+
+  // ================== HELPERS ==================
+  function escapeHtml(unsafe) {
+    return String(unsafe || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function debounce(fn, wait = 180) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
+
+  function buildFuse(threshold = 0.35) {
+    const opts = Object.assign({}, fuseBaseOptions, { threshold });
+    fuse = new Fuse(allItems, opts);
+  }
+
+  // ================== LOAD & INDEX ==================
+  async function preloadJSON() {
+    isLoaded = false;
+    allItems = [];
+
+    const promises = jsonFiles.map(async (path) => {
+      try {
+        // use no-store so refresh picks latest JSON
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`);
+        const json = await res.json();
+        const items = Array.isArray(json.items) ? json.items : [];
+        return items.map(it => ({
+          title: String(it.title || "Unknown Title").trim(),
+          img: String(it.img || "").trim(),
+          language: String(it.language || "UNKNOWN").replace(/^Language:\s*/i, "").trim().toUpperCase(),
+          link: String(it.link || "#").trim(),
+          year: it.year ? String(it.year).trim() : ""
+        }));
+      } catch (err) {
+        console.error(`Error loading ${path}:`, err);
+        return [];
+      }
+    });
+
+    const results = await Promise.all(promises);
+    const flat = results.flat();
+
+    // Deduplicate by exact link (preserve first occurrence)
+    const seen = new Set();
+    for (const it of flat) {
+      if (!seen.has(it.link)) {
+        seen.add(it.link);
+        allItems.push(it);
+      }
+    }
+
+    // Build Fuse index
+    buildFuse(); // default threshold 0.35
+    isLoaded = true;
+    console.info(`Index built: ${allItems.length} items`);
+  }
+
+  // Public refresh
+  async function refreshIndex() {
+    const btn = document.getElementById("refreshIndex");
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "Refreshing...";
+    }
+    try {
+      await preloadJSON();
+    } catch (e) {
+      console.error("Refresh failed:", e);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "Refresh Index";
+      }
+    }
+  }
+
+  // ================== SEARCH ==================
+  function searchQuery(query, maxResults = 200, strict = false) {
+    if (!isLoaded || !fuse) return [];
+    const q = String(query || "").trim();
+    if (!q) return [];
+
+    // Rebuild fuse according to strict toggle (cheap for small-mid datasets)
+    buildFuse(strict ? 0.20 : 0.35);
+
+    // Use Fuse across title, language, year
+    const raw = fuse.search(q, { limit: maxResults });
+    return raw.map(r => r.item);
+  }
+
+  // ================== UI RENDER ==================
+  function showResults(results) {
+    const container = document.getElementById("searchResults");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!results || results.length === 0) {
+      container.innerHTML = "<p>No results found</p>";
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    results.forEach(item => {
+      const safeTitle = escapeHtml(item.title);
+      const safeImg = escapeHtml(item.img);
+      const safeLink = escapeHtml(item.link);
+      const safeLanguage = escapeHtml(item.language || "UNKNOWN");
+      const safeYear = escapeHtml(item.year || "");
+
+      const wrap = document.createElement("div");
+      wrap.classList.add("result-item");
+      wrap.innerHTML = `
+        <div style="display:flex;align-items:center;margin-bottom:10px;padding:10px;border-bottom:1px solid #ddd;">
+          <img src="${safeImg}" alt="${safeTitle}" width="100" style="border-radius:5px;margin-right:10px;">
+          <div style="text-align:center;flex-grow:1;">
+            <h4 style="margin:0;">${safeTitle}${safeYear ? ` (${safeYear})` : ""}</h4>
+            <p style="margin:2px 0;font-size:14px;color:#00FF00;font-weight:bold;">${safeLanguage}</p>
+            <a href="${safeLink}" target="_blank" style="color:red;font-weight:bold;font-size:16px;text-decoration:none;">
+              <span style="color:black;">➥</span> DOWNLOAD
+            </a>
+          </div>
+        </div>
+      `;
+      frag.appendChild(wrap);
+    });
+
+    container.appendChild(frag);
+  }
+
+  // ================== WIRING ==================
+  function attachHandlers() {
+    const searchBar = document.getElementById("searchBar");
+    const refreshBtn = document.getElementById("refreshIndex");
+    const strictToggle = document.getElementById("strictToggle");
+
+    const onInput = debounce(() => {
+      if (!searchBar) return;
+      const q = searchBar.value || "";
+      if (!q.trim()) {
+        const c = document.getElementById("searchResults");
+        if (c) c.innerHTML = "";
+        return;
+      }
+      const strict = strictToggle ? strictToggle.checked : false;
+      const results = searchQuery(q, 200, strict);
+      showResults(results);
+    }, 160);
+
+    if (searchBar) {
+      searchBar.addEventListener("input", onInput);
+    }
+
+    if (refreshBtn) refreshBtn.addEventListener("click", refreshIndex);
+  }
+
+  // ================== INIT ==================
+  (async function init() {
+    attachHandlers();
+    await preloadJSON();
+  })();
+  </script>
 
 </body>
 </html>
