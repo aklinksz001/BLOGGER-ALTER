@@ -12,157 +12,251 @@
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.basic.min.js"></script>
 
   <style>
-    /* Container */
-    body {
-      background: #fff;
-      color: #111;
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    /* ---------- Premium theme variables ---------- */
+    :root{
+      --bg: #fbfbfc;
+      --card-bg: #ffffff;
+      --muted: #667085;
+      --accent: linear-gradient(90deg,#ff6b6b,#ff9a6b);
+      --accent-solid: #ff6b6b;
+      --green: #0b9b50;
+      --shadow-sm: 0 4px 12px rgba(16,24,40,0.06);
+      --shadow-lg: 0 10px 30px rgba(16,24,40,0.10);
+      --radius: 12px;
+      --glass: rgba(255,255,255,0.6);
     }
 
-    .search-container {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      padding: 12px;
+    /* ---------- Base ---------- */
+    html,body{
+      height:100%;
+      margin:0;
+      background: var(--bg);
+      color:#0f1724;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding-bottom:40px;
+    }
+
+    .page {
+      max-width:980px;
+      margin:22px auto;
+      padding:0 14px;
+    }
+
+    /* ---------- Search area (one-line) ---------- */
+    .search-area {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .search-wrap {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      width:100%;
     }
 
     #searchBar {
-      flex: 1;
-      padding: 10px 12px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #e2e2e2;
-      background: #fafafa;
+      width:100%;
+      padding:14px 18px;
+      font-size:16px;
+      border-radius: 14px;
+      border: none;
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.95));
+      color: #0f1724;
+      transition: box-shadow .15s ease, transform .08s ease;
+      -webkit-appearance:none;
     }
 
-    #controls { display:flex; gap:8px; align-items:center; }
-
-    #searchMeta {
-      padding: 8px 12px;
-      font-size: 14px;
-      color: #333;
+    #searchBar:focus{
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
     }
 
-    main#searchResults {
-      padding: 8px 12px 20px 12px;
-      display: grid;
-      gap: 8px;               /* small gap between rows */
+    /* ---------- Controls (below search) ---------- */
+    .controls-row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:flex-start;
+      flex-wrap:wrap;
     }
 
-    /* card row */
-    .card {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
+    /* Refresh button: premium gradient */
+    #refreshIndex {
+      padding:10px 14px;
       border-radius: 10px;
-      overflow: hidden;
+      border: none;
+      cursor:pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight:700;
+      box-shadow: 0 6px 18px rgba(255,105,105,0.14);
+      transition: transform .10s ease, box-shadow .10s ease, opacity .12s ease;
+    }
+    #refreshIndex:active{ transform: translateY(1px) scale(.998); }
+    #refreshIndex[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; }
+
+    /* Secondary control style */
+    .control-secondary {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
       background: #fff;
-      box-shadow: 0 2px 8px rgba(16,24,40,0.06);
-      padding: 8px;
+      border-radius:10px;
+      border:1px solid rgba(15,23,36,0.04);
+      box-shadow: var(--shadow-sm);
+      color: var(--muted);
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .control-secondary input[type="checkbox"]{
+      width:18px; height:18px; margin:0; accent-color: var(--accent-solid);
+    }
+
+    /* meta info: small note and results count */
+    #searchMeta {
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* ---------- Results list ---------- */
+    main#searchResults {
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .card {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:inherit;
+      border-radius: 14px;
+      background: var(--card-bg);
+      padding:10px;
+      border: 1px solid rgba(15,23,36,0.03);
+      box-shadow: 0 6px 18px rgba(16,24,40,0.04);
       transition: transform .12s ease, box-shadow .12s ease;
-      border: 1px solid rgba(0,0,0,0.03);
+    }
+    .card:hover{
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(16,24,40,0.08);
+    .thumb-wrap { flex:0 0 140px; max-width:35%; }
+    .thumb {
+      width:100%;
+      height:0;
+      padding-bottom:56.25%;
+      border-radius:10px;
+      background-position:center;
+      background-size:cover;
+      box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06);
     }
 
-    /* thumbnail left: compact */
-    .card .thumb-wrap {
-      flex: 0 0 140px;       /* fixed left column (adjust if needed) */
-      max-width: 36%;
-      display: block;
+    .details {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:64px;
+      padding-right:6px;
     }
 
-    .card .thumb {
-      width: 100%;
-      height: 0;
-      padding-bottom: 56.25%; /* 16:9 */
-      background-position: center;
-      background-size: cover;
-      border-radius: 8px;
-      overflow: hidden;
+    .title {
+      font-weight:800;
+      color:#081126;
+      margin:0;
+      line-height:1.1;
+      font-size: clamp(13px, 1.9vw, 17px);
+      letter-spacing: 0.1px;
     }
 
-    /* details on right */
-    .card .details {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 56px;
+    .meta-row {
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-size:13px;
     }
 
-    .card .title {
-      font-size: 16px;
-      font-weight: 700;
-      margin: 0;
-      line-height: 1.15;
-      color: #111;
-      font-size: clamp(13px, 1.6vw, 16px);
-      word-break: break-word;
-    }
-
-    /* meta row: year and language inline */
-    .card .meta-row {
-      margin-top: 8px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 13px;
-      color: #08a04a;
-      font-weight: 700;
-    }
-
-    .card .meta-row .badge {
-      display: inline-block;
-      background: #f5faf5;
-      padding: 4px 8px;
-      border-radius: 999px;
-      color: #046b2f;
-      font-weight: 700;
-      font-size: 12px;
-      line-height: 1;
+    .badge {
+      display:inline-block;
+      background: linear-gradient(180deg,#f5faf5,#ffffff);
+      padding:6px 9px;
+      border-radius:999px;
+      color:var(--green);
+      font-weight:800;
+      font-size:12px;
       border: 1px solid rgba(4,107,47,0.06);
+      box-shadow: 0 2px 6px rgba(11,155,80,0.04);
     }
 
-    /* small screens: shrink thumbnail and stack if necessary */
-    @media (max-width: 560px) {
-      .card {
-        gap: 10px;
-        padding: 8px;
-      }
-      .card .thumb-wrap {
-        flex: 0 0 110px;
-      }
-      .card .title { font-size: clamp(12px, 3vw, 15px); }
+    /* smaller thin muted label (optional) */
+    .subtle {
+      color:var(--muted);
+      font-weight:600;
+      font-size:13px;
     }
 
-    .no-results { padding: 14px; color: #666; }
+    /* no results */
+    .no-results { padding:14px; color:var(--muted); background:linear-gradient(180deg,#fff,#fbfbfb); border-radius:10px; border:1px dashed rgba(15,23,36,0.04); }
+
+    /* responsive */
+    @media (max-width:640px){
+      .page{ margin:12px auto; padding:0 12px; }
+      .thumb-wrap { flex:0 0 110px; max-width:40%; }
+      .controls-row{ justify-content:center; }
+      .control-secondary{ font-size:13px; padding:7px 10px; }
+      #refreshIndex { padding:9px 12px; font-size:14px; }
+    }
   </style>
 </head>
 <body>
+  <div class="page">
 
-  <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Search Here..." aria-label="Search movies">
+    <!-- Search area: single-line search; controls below -->
+    <section class="search-area" aria-labelledby="search-heading">
+      <div class="search-wrap">
+        <input id="searchBar" type="text" placeholder="Search movies, languages or year — e.g. Avengers 2012" aria-label="Search movies">
+      </div>
 
-    <div id="controls">
-      <button id="refreshIndex" title="Reload JSON index">Refresh Index</button>
-      <label style="display:inline-flex; align-items:center; gap:6px; font-size:14px;">
-        <input type="checkbox" id="strictToggle"> Strict
-      </label>
-    </div>
+      <div class="controls-row" role="group" aria-label="Search controls">
+        <button id="refreshIndex" title="Reload JSON index">Refresh Index</button>
+
+        <div class="control-secondary" style="gap:10px;">
+          <input id="strictToggle" type="checkbox" aria-label="Strict mode">
+          <div style="display:flex;flex-direction:column;">
+            <span style="font-weight:800;color:#0f1724;font-size:13px;">Strict mode</span>
+            <span style="font-size:12px;color:var(--muted);margin-top:2px;">Fewer fuzzy results</span>
+          </div>
+        </div>
+
+        <div style="margin-left:auto; align-self:center;">
+          <!-- optional hint -->
+          <div class="subtle">Tip: Use full titles for precise matches</div>
+        </div>
+      </div>
+
+      <div id="searchMeta" aria-live="polite">Index loading…</div>
+    </section>
+
+    <!-- Results -->
+    <main id="searchResults" role="list"></main>
   </div>
 
-  <div id="searchMeta" aria-live="polite"></div>
-
-  <main id="searchResults" role="list"></main>
-
-  <!-- Auto-focus when coming from index -->
+  <!-- Autofocus from index -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (sessionStorage.getItem("focusSearch") === "true") {
@@ -176,8 +270,9 @@
     });
   </script>
 
+  <!-- Main script (Fuse + UI) -->
   <script>
-    // ========== CONFIG: update your JSON files ==========
+    // ========== CONFIG: update these JSON file paths ==========
     const jsonFiles = [
       "../posts/index1.json",
       "../posts/index2.json",
@@ -300,14 +395,14 @@
       const meta = document.getElementById("searchMeta");
       if (!meta) return;
       if (!isLoaded) {
-        meta.textContent = "Index loading...";
+        meta.textContent = "Index loading…";
       } else {
         meta.textContent = count ? `${count} result${count === 1 ? "" : "s"}` : `Index ready — ${allItems.length} items`;
       }
     }
 
     // shrink title to fit container if too long
-    function shrinkTitleToFit(titleEl, minSize = 12, maxSize = 16) {
+    function shrinkTitleToFit(titleEl, minSize = 12, maxSize = 17) {
       if (!titleEl) return;
       titleEl.style.fontSize = maxSize + "px";
       const parent = titleEl.parentElement;
@@ -392,7 +487,7 @@
       // adjust titles to fit
       requestAnimationFrame(() => {
         const titles = container.querySelectorAll(".card .title");
-        titles.forEach(t => shrinkTitleToFit(t, 12, 16));
+        titles.forEach(t => shrinkTitleToFit(t, 12, 17));
       });
     }
 
