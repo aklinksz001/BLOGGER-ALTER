@@ -89,17 +89,17 @@
     .thumb-wrap { flex:0 0 140px; max-width:35%; position:relative; }
     .thumb { width:100%; height:0; padding-bottom:56.25%; border-radius:10px; background-position:center; background-size:cover; box-shadow: inset 0 -6px 18px rgba(0,0,0,0.06); }
 
-    /* TAG PILL AT CARD TOP-RIGHT (bigger, card-level) */
+    /* TAG PILL AT CARD BOTTOM-RIGHT */
     .tag-pill {
       position: absolute;
-      bottom: 0;
-      right: 0;
+      bottom: 6px;
+      right: 6px;
       background: linear-gradient(180deg,#fff0ec,#ffe7e3);
       color: #c23a2f;
-      padding: 3px 5px;
+      padding: 6px 10px;
       border-radius: 999px;
       font-weight: 800;
-      font-size: 9px;      /* bigger font per your request */
+      font-size: 12px;
       letter-spacing: 0.2px;
       border: 1px solid rgba(194,58,47,0.12);
       box-shadow: 0 4px 12px rgba(194,58,47,0.10);
@@ -113,7 +113,7 @@
 
     .tag-pill .plus-count {
       background: rgba(0,0,0,0.08);
-      padding: 1px 3px;
+      padding: 2px 6px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
@@ -121,7 +121,7 @@
     }
 
     .details { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:64px; padding-right:6px; }
-    .title { text-transform: uppercase; font-weight:800; color:#081126; margin:0; line-height:1.1; font-size: clamp(13px, 1.9vw, 17px); letter-spacing: 0.1px; }
+    .title { font-weight:800; color:#081126; margin:0; line-height:1.1; font-size: clamp(13px, 1.9vw, 17px); letter-spacing: 0.1px; text-transform: uppercase; }
     .meta-row { margin-top:8px; display:flex; gap:8px; align-items:center; font-size:13px; }
     .badge { display:inline-block; background: linear-gradient(180deg,#f5faf5,#ffffff); padding:6px 9px; border-radius:999px; color: #0b9b50; font-weight:800; font-size:12px; border: 1px solid rgba(4,107,47,0.06); box-shadow: 0 2px 6px rgba(11,155,80,0.04); }
 
@@ -282,11 +282,15 @@
       const results = await Promise.all(promises);
       const flat = results.flat();
 
-      // Deduplicate by link
+      // ===== SMART DEDUPE =====
+      // Keep items unless title+link+language+year are identical.
+      // This allows showing multiple entries for same title if language or year differs.
       const seen = new Set();
+      allItems = [];
       for (const it of flat) {
-        if (!seen.has(it.link)) {
-          seen.add(it.link);
+        const key = `${it.title}||${it.link}||${it.language}||${it.year}`;
+        if (!seen.has(key)) {
+          seen.add(key);
           allItems.push(it);
         }
       }
